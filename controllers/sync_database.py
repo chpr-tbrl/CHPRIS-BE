@@ -7,11 +7,12 @@ from contextlib import closing
 from mysql.connector import connect, Error
 
 from schemas.users.baseModel import users_db
-from schemas.users import Users
+from schemas import Users
+from schemas import Sessions
 
 from schemas.sites.baseModel import sites_db
-from schemas.sites import Sites
-from schemas.sites import Regions
+from schemas import Sites
+from schemas import Regions
 
 config = configuration()
 usersDatabase = config["USERS_DATABASE"]
@@ -57,7 +58,7 @@ def create_tables():
     try:
         # create users database tables
         logger.debug(f"Syncing database {usersDatabase['MYSQL_DATABASE']} ...")
-        users_db.create_tables([Users])
+        users_db.create_tables([Users, Sessions])
 
         logger.info(f"Successfully Sync database {usersDatabase['MYSQL_DATABASE']}")
 
