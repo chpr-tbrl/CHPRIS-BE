@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 from Configs import configuration
 from error import BadRequest, InternalServerError, Unauthorized, Conflict
 from flask import Blueprint, request, jsonify
+from security import Cookie
 from datetime import timedelta
 
 v1 = Blueprint("v1", __name__)
@@ -39,9 +40,13 @@ def login():
         session = create_session(user["uid"], user_agent)
 
         res = jsonify(user)
+
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
         res.set_cookie(
             api['COOKIE_NAME'],
-            json.dumps({"sid": session["sid"], "cookie": session["data"]}),
+            e_cookie,
             max_age=timedelta(milliseconds=session["data"]["maxAge"]),
             secure=session["data"]["secure"],
             httponly=session["data"]["httpOnly"],
@@ -49,7 +54,7 @@ def login():
         )
 
         return res, 200
-    except BadRequest as err:
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except Unauthorized as err:
         return str(err), 401
@@ -58,9 +63,6 @@ def login():
     except InternalServerError as err:
         logger.error(err)
         return "internal server error", 500
-    except werkzeug.exceptions.BadRequest as err:
-        logger.error(err)
-        return "Bad request", 400
     except Exception as err:
         logger.error(err)
         return "internal server error", 500

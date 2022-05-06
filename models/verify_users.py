@@ -1,18 +1,17 @@
 import logging
 from error import Conflict, InternalServerError, Unauthorized
-from models.security import Security
+from security import Data
 
 import peewee as pw
 from schemas import Users
 
 logger = logging.getLogger(__name__)
 
-
 def verify_user(email, password):
     try:
         logger.debug(f"verifying user {email} ...")
-        # hash_password = Security.hash(password)
-        hash_password = password
+        data = Data()
+        hash_password = data.hash(password)
         users = (
             Users.select()
             .where(Users.email == email, Users.password == hash_password)
