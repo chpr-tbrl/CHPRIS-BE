@@ -27,8 +27,8 @@ def create_session(unique_identifier, user_agent):
             "sameSite": "lax",
         }
 
-        logger.debug(f"Secure session: {secure}")
-        logger.debug(f"Session maxAge: {hour}")
+        logger.debug(f"Secure cookie: {secure}")
+        logger.debug(f"Cookie maxAge: {hour}")
 
         logger.debug(f"creating session for {unique_identifier} ...")
         session = Sessions.create(

@@ -14,12 +14,16 @@ from schemas import users_db, sites_db
 v1 = Blueprint("v1", __name__)
 config = configuration()
 api = config["API"]
+cookie_name = api['COOKIE_NAME']
 
 from models import (
     verify_user,
     create_session,
     create_user,
-    change_state
+    change_state,
+    get_all_users,
+    find_session,
+    update_session
 )
 
 @v1.after_request
@@ -111,10 +115,61 @@ def login():
         res = jsonify(user)
 
         cookie = Cookie()
-        cookie_data = json.dumps({"sid": session["sid"], "cookie": session["data"]})
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
         res.set_cookie(
-            api['COOKIE_NAME'],
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except Unauthorized as err:
+        return str(err), 401
+    except Conflict as err:
+        return str(err), 409
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        return "internal server error", 500
+
+@v1.route("/users", methods=["GET"])
+def getAllUsers():
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
+        users_list = get_all_users()
+        session = update_session(sid, user_id)
+
+        res = jsonify(users_list)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
             e_cookie,
             max_age=timedelta(milliseconds=session["data"]["maxAge"]),
             secure=session["data"]["secure"],

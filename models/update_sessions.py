@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 def update_session(sid, unique_identifier):
     try:
-        secure = api["SECURE_SESSIONS"]
-        hour = eval(api["SESSION_MAXAGE"])
+        secure = api["SECURE_COOKIE"]
+        hour = eval(api["COOKIE_MAXAGE"])
         expires = datetime.now() + timedelta(milliseconds=hour)
 
         data = {
@@ -26,8 +26,8 @@ def update_session(sid, unique_identifier):
             "sameSite": "lax",
         }
 
-        logger.debug(f"Secure session: {secure}")
-        logger.debug(f"Session maxAge: {hour}")
+        logger.debug(f"Secure cookie: {secure}")
+        logger.debug(f"Cookie maxAge: {hour}")
 
         logger.debug(f"finding session {sid} for user {unique_identifier} ...")
         sessions = (

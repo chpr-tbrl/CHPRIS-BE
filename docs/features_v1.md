@@ -4,6 +4,7 @@
 
 1. [Create an account](#1-create-an-account)
 2. [Authenticate an account](#2-authenticate-an-account)
+3. [Fetch Users](#3-fetch-users)
 
 ## 1. Create an account
 
@@ -83,4 +84,43 @@ If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Heade
 {
     "uid": "xxxxxx-xxxx-xxxx-xxxx-xxxxxx"
 }
+```
+
+## 3. Fetch users
+
+The user has to provide the [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) set on their user agent during [Authentication](#2-authenticate-an-account).
+
+The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+- [Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) = [Authorization cookie](#2-authenticate-an-account)
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: xxx-xxx-xxx-xxx-xxx-xxx' \
+--data-raw ''
+```
+
+If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) is set on the user's agent valid for two hours. The cookie is used to track the user's seesion. Also the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response/body) should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+
+- []
+
+```bash
+[
+    {
+        "createdAt": "",
+        "email": "",
+        "id": "",
+        "last_login": "",
+        "name": "",
+        "occupation": "",
+        "phone_number": "",
+        "region": "",
+        "site": "",
+        "state": ""
+    }
+]
 ```
