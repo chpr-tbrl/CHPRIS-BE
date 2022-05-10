@@ -16,8 +16,68 @@ api = config["API"]
 
 from models import (
     verify_user,
-    create_session
+    create_session,
+    create_user
 )
+
+@v1.route("/signup", methods=["POST"])
+def signup():
+    try:
+        if not "email" in request.json or not request.json["email"]:
+            logger.error("no email")
+            raise BadRequest()
+        elif not "password" in request.json or not request.json["password"]:
+            logger.error("no password")
+            raise BadRequest()
+        elif not "phone_number" in request.json or not request.json["phone_number"]:
+            logger.error("no phone_number")
+            raise BadRequest()
+        elif not "name" in request.json or not request.json["name"]:
+            logger.error("no name")
+            raise BadRequest()
+        elif not "occupation" in request.json or not request.json["occupation"]:
+            logger.error("no occupation")
+            raise BadRequest()
+        elif not "site" in request.json or not request.json["site"]:
+            logger.error("no site")
+            raise BadRequest()
+        elif not "region" in request.json or not request.json["region"]:
+            logger.error("no region")
+            raise BadRequest()
+
+        email = request.json["email"]
+        password = request.json["password"]
+        phone_number = request.json["phone_number"]
+        name = request.json["name"]
+        site = request.json["site"]
+        region = request.json["region"]
+        occupation = request.json["occupation"]
+
+        user = create_user(
+            email, 
+            password, 
+            phone_number,
+            name,
+            region,
+            occupation,
+            site 
+        )
+
+        res = jsonify(user)
+
+        return res, 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except Unauthorized as err:
+        return str(err), 401
+    except Conflict as err:
+        return str(err), 409
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        return "internal server error", 500
 
 @v1.route("/login", methods=["POST"])
 def login():

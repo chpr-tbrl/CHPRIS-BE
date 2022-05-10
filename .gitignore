@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 default.ini
+logs/
 __pycache__/
 *.py[cod]
 *$py.class
