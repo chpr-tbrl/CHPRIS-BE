@@ -2,6 +2,7 @@
 
 - [Configurations](./docs/configurations.md)
 - [Features](./docs/api_version.md)
+- [References](./docs/references.md)
 
 ### Licensing
 
