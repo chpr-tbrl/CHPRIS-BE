@@ -61,9 +61,3 @@ cp configs/example.default.ini configs/default.ini
 ```bash
 python3 server.py
 ```
-
-## API SandBox
-
-```
-<host>:<PORT>/<VERSION>/api-docs/
-```
