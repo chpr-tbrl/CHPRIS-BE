@@ -8,7 +8,6 @@ config = configuration()
 api = config["API"]
 
 import peewee as pw
-from datetime import datetime, timedelta
 from schemas import Users
 
 logger = logging.getLogger(__name__)

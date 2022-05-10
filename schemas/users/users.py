@@ -6,7 +6,7 @@ from uuid import uuid1
 
 class Users(BaseModel):
     id = pw.CharField(primary_key=True, default=uuid1)
-    email = pw.CharField(null=True)
+    email = pw.CharField(null=True, unique=True)
     password = pw.CharField(null=True)
     phone_number = pw.CharField(null=True)
     name = pw.CharField(null=True)

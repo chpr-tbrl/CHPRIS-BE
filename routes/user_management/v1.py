@@ -9,6 +9,7 @@ from error import BadRequest, InternalServerError, Unauthorized, Conflict
 from flask import Blueprint, request, jsonify
 from security import Cookie
 from datetime import timedelta
+from schemas import users_db, sites_db
 
 v1 = Blueprint("v1", __name__)
 config = configuration()
@@ -17,8 +18,15 @@ api = config["API"]
 from models import (
     verify_user,
     create_session,
-    create_user
+    create_user,
+    change_state
 )
+
+@v1.after_request
+def after_request(response):
+    users_db.close()
+    sites_db.close()
+    return response
 
 @v1.route("/signup", methods=["POST"])
 def signup():
@@ -62,6 +70,7 @@ def signup():
             occupation,
             site 
         )
+        change_state(user, "verified")
 
         res = jsonify(user)
 
