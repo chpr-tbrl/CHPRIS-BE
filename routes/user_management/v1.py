@@ -25,7 +25,9 @@ from models import (
     get_all_users,
     find_session,
     update_session,
-    create_record
+    create_record,
+    get_all_records,
+    find_record
 )
 
 @v1.after_request
@@ -234,11 +236,33 @@ def createRecord(user_id, site_id, region_id):
             request.json["records_tb_treatment_history"],
             request.json["records_tb_treatment_history_contact_of_tb_patient"]
         )
-
-        # for item in payload:
-        #     print(item)
        
         result = create_record(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        return "internal server error", 500
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["GET"])
+def findRecord(user_id, site_id, region_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+
+        payload = (
+            siteId,
+            regionId,
+            userId
+        )
+       
+        result = find_record(*payload)
 
         return jsonify(result), 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
