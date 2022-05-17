@@ -24,7 +24,8 @@ from models import (
     change_state,
     get_all_users,
     find_session,
-    update_session
+    update_session,
+    create_record
 )
 
 @v1.after_request
@@ -185,6 +186,63 @@ def getAllUsers():
         return str(err), 401
     except Conflict as err:
         return str(err), 409
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        return "internal server error", 500
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["POST"])
+def createRecord(user_id, site_id, region_id):
+    try:
+
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+
+        payload = (
+            siteId,
+            regionId,
+            userId,
+            request.json["records_name"],
+            request.json["records_age"],
+            request.json["records_sex"],
+            request.json["records_date_of_test_request"],
+            request.json["records_address"],
+            request.json["records_telephone"],
+            request.json["records_telephone_2"],
+            request.json["records_has_art_unique_code"],
+            request.json["records_art_unique_code"],
+            request.json["records_status"],
+            request.json["records_ward_bed_number"],
+            request.json["records_currently_pregnant"],
+            request.json["records_symptoms_current_cough"],
+            request.json["records_symptoms_fever"],
+            request.json["records_symptoms_night_sweats"],
+            request.json["records_symptoms_weight_loss"],
+            request.json["records_symptoms_none_of_the_above"],
+            request.json["records_patient_category_hospitalized"],
+            request.json["records_patient_category_child"],
+            request.json["records_patient_category_to_initiate_art"],
+            request.json["records_patient_category_on_art_symptomatic"],
+            request.json["records_patient_category_outpatient"],
+            request.json["records_patient_category_anc"],
+            request.json["records_patient_category_diabetes_clinic"],
+            request.json["records_patient_category_other"],
+            request.json["records_reason_for_test_presumptive_tb"],
+            request.json["records_tb_treatment_history"],
+            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+        )
+
+        # for item in payload:
+        #     print(item)
+       
+        result = create_record(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
     except InternalServerError as err:
         logger.error(err)
         return "internal server error", 500

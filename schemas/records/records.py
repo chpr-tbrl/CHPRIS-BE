@@ -5,7 +5,6 @@ from peewee import (
     IntegerField,
     PrimaryKeyField
 )
-from peewee_plus import EnumField
 
 from schemas.records.baseModel import BaseModel
 from datetime import datetime
@@ -18,16 +17,16 @@ class Records(BaseModel):
     records_date = DateTimeField(default=datetime.now())
     records_name = CharField()
     records_age = IntegerField()
-    records_sex = EnumField(["male", "female"])
+    records_sex = CharField()
     records_date_of_test_request = DateTimeField()
     records_address = CharField()
     records_telephone = CharField()
     records_telephone_2 = CharField(null=True)
-    records_has_art_unique_code = EnumField(["yes", "no", "unknown"])
+    records_has_art_unique_code = CharField()
     records_art_unique_code = CharField()
-    records_status = EnumField(["outpatient", "ward-bed"])
+    records_status = CharField()
     records_ward_bed_number = CharField()
-    records_currently_pregnant = EnumField(["yes", "no"])
+    records_currently_pregnant = CharField()
     records_symptoms_current_cough = BooleanField(null=True)
     records_symptoms_fever = BooleanField(null=True)
     records_symptoms_night_sweats = BooleanField(null=True)
@@ -42,5 +41,5 @@ class Records(BaseModel):
     records_patient_category_diabetes_clinic = BooleanField(null=True)
     records_patient_category_other = CharField(null=True)
     records_reason_for_test_presumptive_tb = BooleanField(null=True)
-    records_tb_treatment_history = EnumField(["new", "relapse", "after_loss_to_follow_up", "failure"])
+    records_tb_treatment_history = CharField()
     records_tb_treatment_history_contact_of_tb_patient = CharField(null=True)

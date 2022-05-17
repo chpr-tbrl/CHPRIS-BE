@@ -5,4 +5,5 @@ from models.create_users import create_user
 from models.change_states import change_state
 from models.find_sessions import find_session
 from models.get_users import get_all_users
+from models.create_records import create_record
 
