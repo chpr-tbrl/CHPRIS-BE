@@ -13,8 +13,7 @@ def configuration():
     config.read(config_filepath)
 
     return {
-        "USERS_DATABASE": config["USERS_DATABASE"],
-        "SITES_DATABASE": config["SITES_DATABASE"],
+        "DATABASE": config["DATABASE"],
         "API": config["API"],
         "SSL_API": config["SSL_API"]
     }

@@ -7,7 +7,7 @@ config = configuration()
 api = config["API"]
 
 import peewee as pw
-from schemas import Users
+from schemas.users.users import Users
 
 logger = logging.getLogger(__name__)
 

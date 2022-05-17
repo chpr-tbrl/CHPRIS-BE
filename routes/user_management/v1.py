@@ -9,7 +9,8 @@ from error import BadRequest, InternalServerError, Unauthorized, Conflict
 from flask import Blueprint, request, jsonify
 from security import Cookie
 from datetime import timedelta
-from schemas import users_db, sites_db
+from schemas.users.baseModel import users_db
+from schemas.sites.baseModel import sites_db
 
 v1 = Blueprint("v1", __name__)
 config = configuration()

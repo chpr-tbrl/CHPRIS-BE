@@ -7,8 +7,8 @@ config = configuration()
 database = config["DATABASE"]
 
 try:
-    sites_db = MySQLDatabase(
-        database["MYSQL_SITES_DATABASE"],
+    records_db = MySQLDatabase(
+        database["MYSQL_RECORDS_DATABASE"],
         user=database["MYSQL_USER"],
         password=database["MYSQL_PASSWORD"],
         host=database["MYSQL_HOST"],
@@ -16,7 +16,7 @@ try:
 
     class BaseModel(Model):
         class Meta:
-            database = sites_db
+            database = records_db
 
 except DatabaseError as error:
     raise InternalServerError(error)

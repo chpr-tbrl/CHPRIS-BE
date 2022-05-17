@@ -3,7 +3,7 @@ from error import Conflict, InternalServerError, Unauthorized
 
 import peewee as pw
 from datetime import datetime, timedelta
-from schemas import Sessions
+from schemas.users.sessions import Sessions
 from Configs import configuration
 
 config = configuration()

@@ -3,7 +3,7 @@ from error import Conflict, InternalServerError, Unauthorized
 
 import peewee as pw
 from Configs import configuration
-from schemas import Users
+from schemas.users.users import Users
 
 config = configuration()
 

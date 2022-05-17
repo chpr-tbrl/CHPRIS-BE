@@ -3,7 +3,7 @@ from error import Conflict, InternalServerError, Unauthorized
 
 import peewee as pw
 from datetime import datetime
-from schemas import Sessions
+from schemas.users.sessions import Sessions
 
 logger = logging.getLogger(__name__)
 

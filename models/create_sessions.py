@@ -9,7 +9,7 @@ api = config["API"]
 import peewee as pw
 from uuid import uuid4
 from datetime import datetime, timedelta
-from schemas import Sessions
+from schemas.users.sessions import Sessions
 
 logger = logging.getLogger(__name__)
 

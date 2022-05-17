@@ -1,10 +1,14 @@
-import peewee as pw
+from peewee import (
+    CharField,
+    TextField,
+    DateTimeField
+)
 from schemas.users.baseModel import BaseModel
 
 class Sessions(BaseModel):
-    sid = pw.CharField(primary_key=True)
-    unique_identifier = pw.CharField(null=True)
-    user_agent = pw.CharField(null=True)
-    expires = pw.DateTimeField(null=True)
-    data = pw.TextField(null=True)
-    createdAt = pw.DateTimeField(null=True)
+    sid = CharField(primary_key=True)
+    unique_identifier = CharField(null=True)
+    user_agent = CharField(null=True)
+    expires = DateTimeField(null=True)
+    data = TextField(null=True)
+    createdAt = DateTimeField(null=True)

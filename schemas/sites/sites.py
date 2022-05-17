@@ -1,10 +1,14 @@
-import peewee as pw
+from peewee import (
+    CharField,
+    ForeignKeyField, 
+    DateTimeField
+)
 from schemas.sites.baseModel import BaseModel
 from datetime import datetime
 
 from schemas.sites.regions import Regions
 
 class Sites(BaseModel):
-    name = pw.CharField(null=True)
-    region = pw.ForeignKeyField(Regions)
-    createdAt = pw.DateTimeField(null=True, default=datetime.now())
+    name = CharField(null=True)
+    region = ForeignKeyField(Regions)
+    createdAt = DateTimeField(null=True, default=datetime.now())

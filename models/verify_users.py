@@ -3,7 +3,7 @@ from error import Conflict, InternalServerError, Unauthorized
 from security import Data
 
 import peewee as pw
-from schemas import Users
+from schemas.users.users import Users
 
 logger = logging.getLogger(__name__)
 
