@@ -147,39 +147,39 @@ def login():
 @v1.route("/users", methods=["GET"])
 def getAllUsers():
     try:
-        if not request.cookies.get(cookie_name):
-            logger.error("no cookie")
-            raise Unauthorized()
-        elif not request.headers.get("User-Agent"):
-            logger.error("no user agent")
-            raise BadRequest()
+        # if not request.cookies.get(cookie_name):
+        #     logger.error("no cookie")
+        #     raise Unauthorized()
+        # elif not request.headers.get("User-Agent"):
+        #     logger.error("no user agent")
+        #     raise BadRequest()
 
-        cookie = Cookie()
-        e_cookie = request.cookies.get(cookie_name)
-        d_cookie = cookie.decrypt(e_cookie)
-        json_cookie = json.loads(d_cookie)
+        # cookie = Cookie()
+        # e_cookie = request.cookies.get(cookie_name)
+        # d_cookie = cookie.decrypt(e_cookie)
+        # json_cookie = json.loads(d_cookie)
 
-        sid = json_cookie["sid"]
-        uid = json_cookie["uid"]
-        user_cookie = json_cookie["cookie"]
-        user_agent = request.headers.get("User-Agent")
+        # sid = json_cookie["sid"]
+        # uid = json_cookie["uid"]
+        # user_cookie = json_cookie["cookie"]
+        # user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        # user_id = find_session(sid, uid, user_agent, user_cookie)
         users_list = get_all_users()
-        session = update_session(sid, user_id)
+        # session = update_session(sid, user_id)
 
         res = jsonify(users_list)
-        cookie = Cookie()
-        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-        e_cookie = cookie.encrypt(cookie_data)
-        res.set_cookie(
-            cookie_name,
-            e_cookie,
-            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-            secure=session["data"]["secure"],
-            httponly=session["data"]["httpOnly"],
-            samesite=session["data"]["sameSite"],
-        )
+        # cookie = Cookie()
+        # cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        # e_cookie = cookie.encrypt(cookie_data)
+        # res.set_cookie(
+        #     cookie_name,
+        #     e_cookie,
+        #     max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+        #     secure=session["data"]["secure"],
+        #     httponly=session["data"]["httpOnly"],
+        #     samesite=session["data"]["sameSite"],
+        # )
 
         return res, 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
