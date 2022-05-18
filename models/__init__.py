@@ -8,4 +8,6 @@ from models.get_users import get_all_users
 from models.create_records import create_record
 from models.get_records import get_all_records
 from models.find_records import find_record
+from models.create_specimen_collections import create_specimen_collection
+from models.find_specimen_collections import find_specimen_collection
 

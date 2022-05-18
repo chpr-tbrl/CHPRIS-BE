@@ -1,5 +1,62 @@
 # Tests
 
+### Signup
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/signup' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "phone_number":"+xxx-xxx-xxx",
+    "name": "username",
+    "email": "example@mail.com",
+    "password": "password",
+    "occupation": "occupation",
+    "site": "site",
+    "region": "region"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Login
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "example@mail.com",
+    "password": "password"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Fetch all users
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred
+
 ### Create new record
 
 > Request
@@ -59,12 +116,41 @@ curl --location --request GET 'http://localhost:9000/v1/users/0/sites/0/regions/
 > - `200` = Success
 > - `500` = Error occurred
 
-### Fetch all users
+### Create new specimen_collection record
 
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/specimen_collections' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "specimen_collection_1_date":"2022-05-17",
+    "specimen_collection_1_specimen_collection_type":"sputum",
+    "specimen_collection_1_other":"text",
+    "specimen_collection_1_period":"morning",
+    "specimen_collection_1_aspect":"bloody",
+    "specimen_collection_1_received_by":"text",
+    "specimen_collection_2_date":"2022-05-17",
+    "specimen_collection_2_specimen_collection_type":"csf",
+    "specimen_collection_2_other":"text",
+    "specimen_collection_2_period":"morning",
+    "specimen_collection_2_aspect":"salivary",
+    "specimen_collection_2_received_by":"text"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Fetch specimen_collection records for user
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/specimen_collections' \
 --data-raw ''
 ```
 

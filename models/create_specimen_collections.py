@@ -2,7 +2,7 @@ import logging
 
 from error import BadRequest, InternalServerError
 
-from peewee import DatabaseError, OperationalError
+from peewee import DatabaseError, OperationalError, IntegrityError
 from schemas.records.specimen_collection import Specimen_collection
 
 logger = logging.getLogger(__name__)
@@ -65,6 +65,9 @@ def create_specimen_collection(
         logger.info(f"Specimen_collection record {specimen_collection} successfully created")
         return str(specimen_collection)
     except OperationalError as error:
+        logger.error(error)
+        raise BadRequest()
+    except IntegrityError as error:
         logger.error(error)
         raise BadRequest()
     except DatabaseError as err:

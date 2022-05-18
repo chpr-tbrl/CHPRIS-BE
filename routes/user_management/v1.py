@@ -11,6 +11,7 @@ from security import Cookie
 from datetime import timedelta
 from schemas.users.baseModel import users_db
 from schemas.sites.baseModel import sites_db
+from schemas.records.baseModel import records_db
 
 v1 = Blueprint("v1", __name__)
 config = configuration()
@@ -27,13 +28,16 @@ from models import (
     update_session,
     create_record,
     get_all_records,
-    find_record
+    find_record,
+    create_specimen_collection,
+    find_specimen_collection
 )
 
 @v1.after_request
 def after_request(response):
     users_db.close()
     sites_db.close()
+    records_db.close()
     return response
 
 @v1.route("/signup", methods=["POST"])
@@ -94,7 +98,7 @@ def signup():
         return "internal server error", 500
     except Exception as err:
         logger.error(err)
-        return "internal server error", 500
+        raise Exception(err)
 
 @v1.route("/login", methods=["POST"])
 def login():
@@ -142,7 +146,7 @@ def login():
         return "internal server error", 500
     except Exception as err:
         logger.error(err)
-        return "internal server error", 500
+        raise Exception(err)
 
 @v1.route("/users", methods=["GET"])
 def getAllUsers():
@@ -193,7 +197,7 @@ def getAllUsers():
         return "internal server error", 500
     except Exception as err:
         logger.error(err)
-        return "internal server error", 500
+        raise Exception(err)
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["POST"])
 def createRecord(user_id, site_id, region_id):
@@ -247,7 +251,7 @@ def createRecord(user_id, site_id, region_id):
         return "internal server error", 500
     except Exception as err:
         logger.error(err)
-        return "internal server error", 500
+        raise Exception(err)
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["GET"])
 def findRecord(user_id, site_id, region_id):
@@ -272,4 +276,67 @@ def findRecord(user_id, site_id, region_id):
         return "internal server error", 500
     except Exception as err:
         logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections", methods=["POST"])
+def createSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
+    try:
+
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        specimen_collection_records_id = record_id
+
+        payload = (
+            specimen_collection_records_id,
+            userId,
+            request.json["specimen_collection_1_date"],
+            request.json["specimen_collection_1_specimen_collection_type"],
+            request.json["specimen_collection_1_other"],
+            request.json["specimen_collection_1_period"],
+            request.json["specimen_collection_1_aspect"],
+            request.json["specimen_collection_1_received_by"],
+            request.json["specimen_collection_2_date"],
+            request.json["specimen_collection_2_specimen_collection_type"],
+            request.json["specimen_collection_2_other"],
+            request.json["specimen_collection_2_period"],
+            request.json["specimen_collection_2_aspect"],
+            request.json["specimen_collection_2_received_by"],
+        )
+       
+        result = create_specimen_collection(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
         return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections", methods=["GET"])
+def findSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        specimen_collection_records_id = record_id
+
+        payload = (
+            userId,
+            specimen_collection_records_id
+        )
+       
+        result = find_specimen_collection(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)

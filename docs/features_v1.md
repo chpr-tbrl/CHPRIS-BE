@@ -7,6 +7,8 @@
 3. [Fetch Users](#3-fetch-users)
 4. [Create Records](#4-create-records)
 5. [Fetch Records](#5-fetch-records)
+6. [Create specimen collection records](#6-create-specimen-collection-records)
+7. [Fetch specimen collection records](#7-fetch-specimen-collection-records)
 
 ## 1. Create an account
 
@@ -131,7 +133,7 @@ If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Heade
 
 The user has to provide the following in the [request body](https://developer.mozilla.org/en-US/docs/Web/API/Request/body):
 
-- records_name"
+- records_name
 - records_age
 - records_sex
 - records_date_of_test_request
@@ -223,39 +225,123 @@ If successful, the response should have a [status](https://developer.mozilla.org
 ```bash
 [
     {
-        "record_id":""
-        "records_date":""
-        "site_id":""
-        "region_id":""
-        "records_user_id":""
-        "records_name":""
-        "records_age":""
-        "records_sex":""
-        "records_date_of_test_request":""
-        "records_address":""
-        "records_telephone":""
-        "records_telephone_2":""
-        "records_has_art_unique_code":""
-        "records_art_unique_code":""
-        "records_status":""
-        "records_ward_bed_number":""
-        "records_currently_pregnant":""
-        "records_symptoms_current_cough":""
-        "records_symptoms_fever":""
-        "records_symptoms_night_sweats":""
-        "records_symptoms_weight_loss":""
-        "records_symptoms_none_of_the_above":""
-        "records_patient_category_hospitalized":""
-        "records_patient_category_child":""
-        "records_patient_category_to_initiate_art":""
-        "records_patient_category_on_art_symptomatic":""
-        "records_patient_category_outpatient":""
-        "records_patient_category_anc":""
-        "records_patient_category_diabetes_clinic":""
-        "records_patient_category_other":""
-        "records_reason_for_test_presumptive_tb":""
-        "records_tb_treatment_history":""
-        "records_tb_treatment_history_contact_of_tb_patient":""
+        "record_id":"",
+        "records_date":"",
+        "site_id":"",
+        "region_id":"",
+        "records_user_id":"",
+        "records_name":"",
+        "records_age":"",
+        "records_sex":"",
+        "records_date_of_test_request":"",
+        "records_address":"",
+        "records_telephone":"",
+        "records_telephone_2":"",
+        "records_has_art_unique_code":"",
+        "records_art_unique_code":"",
+        "records_status":"",
+        "records_ward_bed_number":"",
+        "records_currently_pregnant":"",
+        "records_symptoms_current_cough":"",
+        "records_symptoms_fever":"",
+        "records_symptoms_night_sweats":"",
+        "records_symptoms_weight_loss":"",
+        "records_symptoms_none_of_the_above":"",
+        "records_patient_category_hospitalized":"",
+        "records_patient_category_child":"",
+        "records_patient_category_to_initiate_art":"",
+        "records_patient_category_on_art_symptomatic":"",
+        "records_patient_category_outpatient":"",
+        "records_patient_category_anc":"",
+        "records_patient_category_diabetes_clinic":"",
+        "records_patient_category_other":"",
+        "records_reason_for_test_presumptive_tb":"",
+        "records_tb_treatment_history":"",
+        "records_tb_treatment_history_contact_of_tb_patient":"",
+    }
+]
+```
+
+## 6. Create specimen collection records
+
+The user has to provide the following in the [request body](https://developer.mozilla.org/en-US/docs/Web/API/Request/body):
+
+- specimen_collection_1_date
+- specimen_collection_1_specimen_collection_type
+- specimen_collection_1_other
+- specimen_collection_1_period
+- specimen_collection_1_aspect
+- specimen_collection_1_received_by
+- specimen_collection_2_date
+- specimen_collection_2_specimen_collection_type
+- specimen_collection_2_other
+- specimen_collection_2_period
+- specimen_collection_2_aspect
+- specimen_collection_2_received_by
+
+The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "specimen_collection_1_date":"",
+    "specimen_collection_1_specimen_collection_type":"",
+    "specimen_collection_1_other":"",
+    "specimen_collection_1_period":"",
+    "specimen_collection_1_aspect":"",
+    "specimen_collection_1_received_by":"",
+    "specimen_collection_2_date":"",
+    "specimen_collection_2_specimen_collection_type":"",
+    "specimen_collection_2_other":"",
+    "specimen_collection_2_period":"",
+    "specimen_collection_2_aspect":"",
+    "specimen_collection_2_received_by":""
+}'
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.
+
+## 7. Fetch specimen collection records
+
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections' \
+--data-raw ''
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+
+- []
+
+```bash
+[
+    {
+        "specimen_collection_1_aspect":"",
+        "specimen_collection_1_date":"",
+        "specimen_collection_1_other":"",
+        "specimen_collection_1_period":"",
+        "specimen_collection_1_received_by":"",
+        "specimen_collection_1_specimen_collection_type":"",
+        "specimen_collection_2_aspect":"",
+        "specimen_collection_2_date":"",
+        "specimen_collection_2_other":"",
+        "specimen_collection_2_period":"",
+        "specimen_collection_2_received_by":"",
+        "specimen_collection_2_specimen_collection_type":"",
+        "specimen_collection_date":"",
+        "specimen_collection_id":"",
+        "specimen_collection_records_id":"",
+        "specimen_collection_user_id":"",
     }
 ]
 ```
