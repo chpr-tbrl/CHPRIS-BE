@@ -14,7 +14,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/0/sites/0/regions
     "records_date_of_test_request":"2022-05-17",
     "records_address":"address",
     "records_telephone":"123456789",
-    "records_telephone_2":"",
+    "records_telephone_2":null,
     "records_has_art_unique_code":"yes",
     "records_art_unique_code":"1234",
     "records_status":"ward-bed",
@@ -32,10 +32,10 @@ curl --location --request POST 'http://localhost:9000/v1/users/0/sites/0/regions
     "records_patient_category_outpatient":false,
     "records_patient_category_anc":false,
     "records_patient_category_diabetes_clinic":false,
-    "records_patient_category_other":"",
+    "records_patient_category_other":null,
     "records_reason_for_test_presumptive_tb":true,
     "records_tb_treatment_history":"relapse",
-    "records_tb_treatment_history_contact_of_tb_patient":""
+    "records_tb_treatment_history_contact_of_tb_patient":null
 }'
 ```
 
