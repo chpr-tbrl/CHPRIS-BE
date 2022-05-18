@@ -7,7 +7,7 @@ config = configuration()
 api = config["API"]
 
 from peewee import DatabaseError
-from schemas.records.lab import Lab
+from schemas.records.lab import Labs
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +17,8 @@ def find_lab(lab_user_id, lab_records_id):
         result = []
         
         labs = (
-            Lab.select()
-            .where(Lab.lab_user_id == lab_user_id, Lab.lab_records_id == lab_records_id)
+            Labs.select()
+            .where(Labs.lab_user_id == lab_user_id, Labs.lab_records_id == lab_records_id)
             .dicts()
         )
         for lab in labs:

@@ -7,7 +7,7 @@ config = configuration()
 api = config["API"]
 
 from peewee import DatabaseError
-from schemas.records.specimen_collection import Specimen_collection
+from schemas.records.specimen_collection import Specimen_collections
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +17,8 @@ def find_specimen_collection(specimen_collection_user_id, specimen_collection_re
         result = []
         
         specimen_collections = (
-            Specimen_collection.select()
-            .where(Specimen_collection.specimen_collection_user_id == specimen_collection_user_id, Specimen_collection.specimen_collection_records_id == specimen_collection_records_id)
+            Specimen_collections.select()
+            .where(Specimen_collections.specimen_collection_user_id == specimen_collection_user_id, Specimen_collections.specimen_collection_records_id == specimen_collection_records_id)
             .dicts()
         )
         for specimen_collection in specimen_collections:

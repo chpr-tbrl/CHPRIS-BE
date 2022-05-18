@@ -11,7 +11,7 @@ from schemas.records.baseModel import BaseModel
 from schemas.records.records import Records
 from datetime import datetime
 
-class Specimen_collection(BaseModel):
+class Specimen_collections(BaseModel):
     specimen_collection_id = PrimaryKeyField()
     specimen_collection_records_id = ForeignKeyField(Records)
     specimen_collection_date = DateTimeField(default=datetime.now())

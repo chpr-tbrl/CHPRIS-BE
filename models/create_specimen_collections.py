@@ -3,7 +3,7 @@ import logging
 from error import BadRequest, InternalServerError
 
 from peewee import DatabaseError, OperationalError, IntegrityError
-from schemas.records.specimen_collection import Specimen_collection
+from schemas.records.specimen_collection import Specimen_collections
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ def create_specimen_collection(
             logger.error(f"specimen_collection_2_aspect got invalid value '{specimen_collection_2_aspect}'")
             raise BadRequest()
         
-        specimen_collection = Specimen_collection.create(
+        specimen_collection = Specimen_collections.create(
             specimen_collection_records_id=specimen_collection_records_id,
             specimen_collection_user_id=specimen_collection_user_id,
             specimen_collection_1_date=specimen_collection_1_date,

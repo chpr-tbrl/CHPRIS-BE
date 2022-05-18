@@ -3,7 +3,7 @@ import logging
 from error import BadRequest, InternalServerError
 
 from peewee import DatabaseError, OperationalError, IntegrityError
-from schemas.records.lab import Lab
+from schemas.records.lab import Labs
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def create_lab(
             logger.error(f"lab_urine_lf_lam_result got invalid value '{lab_urine_lf_lam_result}'")
             raise BadRequest()
         
-        lab = Lab.create(
+        lab = Labs.create(
             lab_records_id=lab_records_id,
             lab_user_id=lab_user_id,
             lab_date_specimen_collection_received=lab_date_specimen_collection_received,

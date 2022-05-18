@@ -11,7 +11,7 @@ from schemas.records.baseModel import BaseModel
 from schemas.records.records import Records
 from datetime import datetime
 
-class Lab(BaseModel):
+class Labs(BaseModel):
     lab_id = PrimaryKeyField()
     lab_records_id = ForeignKeyField(Records)
     lab_date = DateTimeField(default=datetime.now())
