@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def find_specimen_collection(specimen_collection_user_id, specimen_collection_records_id):
     try:
-        logger.debug(f"finding records for {specimen_collection_user_id} ...")
+        logger.debug(f"finding specimen_collection records for {specimen_collection_user_id} ...")
         result = []
         
         specimen_collections = (

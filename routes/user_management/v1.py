@@ -30,7 +30,9 @@ from models import (
     get_all_records,
     find_record,
     create_specimen_collection,
-    find_specimen_collection
+    find_specimen_collection,
+    create_lab,
+    find_lab
 )
 
 @v1.after_request
@@ -330,6 +332,71 @@ def findSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
         )
        
         result = find_specimen_collection(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs", methods=["POST"])
+def createLabRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        lab_records_id = record_id
+
+        payload = (
+            lab_records_id,            
+            userId,
+            request.json["lab_date_specimen_collection_received"],
+            request.json["lab_received_by"],
+            request.json["lab_registration_number"],
+            request.json["lab_smear_microscopy_result_result_1"],
+            request.json["lab_smear_microscopy_result_result_2"],
+            request.json["lab_smear_microscopy_result_date"],
+            request.json["lab_smear_microscopy_result_done_by"],
+            request.json["lab_xpert_mtb_rif_assay_result"],
+            request.json["lab_xpert_mtb_rif_assay_grades"],
+            request.json["lab_xpert_mtb_rif_assay_rif_result"],
+            request.json["lab_xpert_mtb_rif_assay_date"],
+            request.json["lab_xpert_mtb_rif_assay_done_by"],
+            request.json["lab_urine_lf_lam_result"],
+            request.json["lab_urine_lf_lam_date"],
+            request.json["lab_urine_lf_lam_done_by"],
+        )
+       
+        result = create_lab(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs", methods=["GET"])
+def findLabRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        lab_records_id = record_id
+
+        payload = (
+            userId,
+            lab_records_id
+        )
+       
+        result = find_lab(*payload)
 
         return jsonify(result), 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:

@@ -17,6 +17,7 @@ from schemas.sites.regions import Regions
 from schemas.records.baseModel import records_db
 from schemas.records.records import Records
 from schemas.records.specimen_collection import Specimen_collection
+from schemas.records.lab import Lab
 
 config = configuration()
 database = config["DATABASE"]
@@ -82,7 +83,8 @@ def create_tables():
         records_db.create_tables(
             [
                 Records,
-                Specimen_collection
+                Specimen_collection,
+                Lab
             ]
         )
 

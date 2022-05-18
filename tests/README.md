@@ -158,3 +158,49 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Create new lab record
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/labs' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "lab_date_specimen_collection_received":"2022-05-17",
+    "lab_received_by":"text",
+    "lab_registration_number":"text",
+    "lab_smear_microscopy_result_result_1":"1+",
+    "lab_smear_microscopy_result_result_2":"2+",
+    "lab_smear_microscopy_result_date":"2022-05-17",
+    "lab_smear_microscopy_result_done_by":"text",
+    "lab_xpert_mtb_rif_assay_result":"trace",
+    "lab_xpert_mtb_rif_assay_grades":"low",
+    "lab_xpert_mtb_rif_assay_rif_result":"not_done",
+    "lab_xpert_mtb_rif_assay_date":"2022-05-17",
+    "lab_xpert_mtb_rif_assay_done_by":"text",
+    "lab_urine_lf_lam_result":"positive",
+    "lab_urine_lf_lam_date":"2022-05-17",
+    "lab_urine_lf_lam_done_by":"text"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Fetch lab records for user
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/labs' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred
