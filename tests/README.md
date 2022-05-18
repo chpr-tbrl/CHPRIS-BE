@@ -62,7 +62,7 @@ curl --location --request GET 'http://localhost:9000/v1/users' \
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/0/sites/0/regions/0/records' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "records_name":"sample",
@@ -107,7 +107,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/0/sites/0/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/0/sites/0/regions/0/records' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records' \
 --data-raw ''
 ```
 
