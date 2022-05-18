@@ -4,10 +4,8 @@ from peewee import (
 )
 from schemas.users.baseModel import BaseModel
 from datetime import datetime
-from uuid import uuid1
 
 class Users(BaseModel):
-    id = CharField(primary_key=True, default=uuid1)
     email = CharField(null=True, unique=True)
     password = CharField(null=True)
     phone_number = CharField(null=True)

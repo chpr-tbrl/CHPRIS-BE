@@ -44,19 +44,19 @@ def create_record(
         logger.debug(f"creating record for {records_user_id} ...")
 
         if not records_sex in ["male", "female"]:
-            logger.error(f"records_sex got invalid value {records_sex}")
+            logger.error(f"records_sex got invalid value '{records_sex}'")
             raise BadRequest()
         if not records_has_art_unique_code in ["yes", "no", "unknown"]:
-            logger.error(f"records_has_art_unique_code got invalid value {records_has_art_unique_code}")
+            logger.error(f"records_has_art_unique_code got invalid value '{records_has_art_unique_code}'")
             raise BadRequest()
         if not records_status in ["outpatient", "ward-bed"]:
-            logger.error(f"records_status got invalid value {records_status}")
+            logger.error(f"records_status got invalid value '{records_status}'")
             raise BadRequest()
         if not records_currently_pregnant in ["yes", "no"]:
-            logger.error(f"records_currently_pregnant got invalid value {records_currently_pregnant}")
+            logger.error(f"records_currently_pregnant got invalid value '{records_currently_pregnant}'")
             raise BadRequest()
         if not records_tb_treatment_history in ["new", "relapse", "after_loss_to_follow_up", "failure"]:
-            logger.error(f"records_tb_treatment_history got invalid value {records_tb_treatment_history}")
+            logger.error(f"records_tb_treatment_history got invalid value '{records_tb_treatment_history}'")
             raise BadRequest()
         
         record = Records.create(

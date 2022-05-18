@@ -105,30 +105,30 @@ def login():
         elif not "password" in request.json or not request.json["password"]:
             logger.error("no password")
             raise BadRequest()
-        elif not request.headers.get("User-Agent"):
-            logger.error("no user agent")
-            raise BadRequest()
+        # elif not request.headers.get("User-Agent"):
+        #     logger.error("no user agent")
+        #     raise BadRequest()
 
         email = request.json["email"]
         password = request.json["password"]
-        user_agent = request.headers.get("User-Agent")
+        # user_agent = request.headers.get("User-Agent")
 
         user = verify_user(email, password)
-        session = create_session(user["uid"], user_agent)
+        # session = create_session(user["uid"], user_agent)
 
         res = jsonify(user)
 
-        cookie = Cookie()
-        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-        e_cookie = cookie.encrypt(cookie_data)
-        res.set_cookie(
-            cookie_name,
-            e_cookie,
-            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-            secure=session["data"]["secure"],
-            httponly=session["data"]["httpOnly"],
-            samesite=session["data"]["sameSite"],
-        )
+        # cookie = Cookie()
+        # cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        # e_cookie = cookie.encrypt(cookie_data)
+        # res.set_cookie(
+        #     cookie_name,
+        #     e_cookie,
+        #     max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+        #     secure=session["data"]["secure"],
+        #     httponly=session["data"]["httpOnly"],
+        #     samesite=session["data"]["sameSite"],
+        # )
 
         return res, 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:

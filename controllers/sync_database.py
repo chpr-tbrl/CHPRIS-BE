@@ -16,6 +16,7 @@ from schemas.sites.regions import Regions
 
 from schemas.records.baseModel import records_db
 from schemas.records.records import Records
+from schemas.records.specimen_collection import Specimen_collection
 
 config = configuration()
 database = config["DATABASE"]
@@ -56,19 +57,34 @@ def create_tables():
     try:
         # create users database tables
         logger.debug(f"Syncing database {database['MYSQL_USERS_DATABASE']} ...")
-        users_db.create_tables([Users, Sessions])
+        users_db.create_tables(
+            [
+                Users, 
+                Sessions
+            ]
+        )
 
         logger.info(f"Successfully Sync database {database['MYSQL_USERS_DATABASE']}")
 
         # create sites database tables
         logger.debug(f"Syncing database {database['MYSQL_SITES_DATABASE']} ...")
-        sites_db.create_tables([Sites, Regions])
+        sites_db.create_tables(
+            [
+                Sites, 
+                Regions
+            ]
+        )
 
         logger.info(f"Successfully Sync database {database['MYSQL_SITES_DATABASE']}")
 
         # create records database tables
         logger.debug(f"Syncing database {database['MYSQL_RECORDS_DATABASE']} ...")
-        records_db.create_tables([Records])
+        records_db.create_tables(
+            [
+                Records,
+                Specimen_collection
+            ]
+        )
 
         logger.info(f"Successfully Sync database {database['MYSQL_RECORDS_DATABASE']}")
     except Exception as error:

@@ -3,14 +3,15 @@ from peewee import (
     DateTimeField,
     BooleanField,
     IntegerField,
-    PrimaryKeyField
+    PrimaryKeyField,
+    DateField
 )
 
 from schemas.records.baseModel import BaseModel
 from datetime import datetime
 
 class Records(BaseModel):
-    record_id = PrimaryKeyField(primary_key=True)
+    record_id = PrimaryKeyField()
     site_id = IntegerField()
     region_id = IntegerField()
     records_user_id = IntegerField()
@@ -18,7 +19,7 @@ class Records(BaseModel):
     records_name = CharField()
     records_age = IntegerField()
     records_sex = CharField()
-    records_date_of_test_request = DateTimeField()
+    records_date_of_test_request = DateField()
     records_address = CharField()
     records_telephone = CharField()
     records_telephone_2 = CharField(null=True)
