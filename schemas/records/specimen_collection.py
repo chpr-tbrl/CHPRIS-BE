@@ -14,7 +14,7 @@ from datetime import datetime
 class Specimen_collections(BaseModel):
     specimen_collection_id = PrimaryKeyField()
     specimen_collection_records_id = ForeignKeyField(Records)
-    specimen_collection_date = DateTimeField(default=datetime.now())
+    specimen_collection_date = DateTimeField(default=datetime.now)
     specimen_collection_user_id = IntegerField()
     specimen_collection_1_date = DateField()
     specimen_collection_1_specimen_collection_type = CharField() #[‘sputum’, ‘csf’,‘lymph_node_aspirate’, ‘gastric_aspirate’, ‘urine’, ‘other’]

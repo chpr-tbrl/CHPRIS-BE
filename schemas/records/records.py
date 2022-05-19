@@ -15,7 +15,7 @@ class Records(BaseModel):
     site_id = IntegerField()
     region_id = IntegerField()
     records_user_id = IntegerField()
-    records_date = DateTimeField(default=datetime.now())
+    records_date = DateTimeField(default=datetime.now)
     records_name = CharField()
     records_age = IntegerField()
     records_sex = CharField()

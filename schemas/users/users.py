@@ -15,4 +15,4 @@ class Users(BaseModel):
     site = CharField(null=True)
     state = CharField(null=True, default="pending")
     last_login = DateTimeField(null=True)
-    createdAt = DateTimeField(null=True, default=datetime.now())
+    createdAt = DateTimeField(null=True, default=datetime.now)

@@ -32,7 +32,9 @@ from models import (
     create_specimen_collection,
     find_specimen_collection,
     create_lab,
-    find_lab
+    find_lab,
+    create_follow_up,
+    find_follow_up
 )
 
 @v1.after_request
@@ -397,6 +399,61 @@ def findLabRecord(user_id, site_id, region_id, record_id):
         )
        
         result = find_lab(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+    
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups", methods=["POST"])
+def createFollowUpRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        follow_up_records_id = record_id
+
+        payload = (
+            follow_up_records_id,
+            userId,
+            request.json["follow_up_xray"],
+            request.json["follow_up_amoxicillin"],
+            request.json["follow_up_other_antibiotic"],
+            request.json["follow_up_schedule_date"],
+            request.json["follow_up_comments"]
+        )
+       
+        result = create_follow_up(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups", methods=["GET"])
+def findFollowUpRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        follow_up_records_id = record_id
+
+        payload = (
+            userId,
+            follow_up_records_id
+        )
+       
+        result = find_follow_up(*payload)
 
         return jsonify(result), 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:

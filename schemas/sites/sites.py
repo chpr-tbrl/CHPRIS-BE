@@ -11,4 +11,4 @@ from schemas.sites.regions import Regions
 class Sites(BaseModel):
     name = CharField(null=True)
     region = ForeignKeyField(Regions)
-    createdAt = DateTimeField(null=True, default=datetime.now())
+    createdAt = DateTimeField(null=True, default=datetime.now)

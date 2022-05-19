@@ -204,3 +204,39 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Create new follow_up record
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/follow_ups' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "follow_up_xray":true,
+    "follow_up_amoxicillin":false,
+    "follow_up_other_antibiotic":null,
+    "follow_up_schedule_date":"2022-05-19",
+    "follow_up_comments":"text"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Fetch follow_up records for user
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/follow_ups' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred

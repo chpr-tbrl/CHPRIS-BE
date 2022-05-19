@@ -12,4 +12,5 @@ from models.create_specimen_collections import create_specimen_collection
 from models.find_specimen_collections import find_specimen_collection
 from models.create_labs import create_lab
 from models.find_labs import find_lab
-
+from models.create_follow_ups import create_follow_up
+from models.find_follow_ups import find_follow_up

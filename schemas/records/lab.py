@@ -14,7 +14,7 @@ from datetime import datetime
 class Labs(BaseModel):
     lab_id = PrimaryKeyField()
     lab_records_id = ForeignKeyField(Records)
-    lab_date = DateTimeField(default=datetime.now())
+    lab_date = DateTimeField(default=datetime.now)
     lab_user_id = IntegerField()
     lab_date_specimen_collection_received = DateField()
     lab_received_by = CharField()

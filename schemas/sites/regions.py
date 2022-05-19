@@ -7,4 +7,4 @@ from datetime import datetime
 
 class Regions(BaseModel):
     name = CharField(null=True)
-    createdAt = DateTimeField(null=True, default=datetime.now())
+    createdAt = DateTimeField(null=True, default=datetime.now)

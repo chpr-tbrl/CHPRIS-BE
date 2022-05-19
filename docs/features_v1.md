@@ -11,6 +11,8 @@
 7. [Fetch specimen collection records](#7-fetch-specimen-collection-records)
 8. [Create lab records](#8-create-lab-records)
 9. [Fetch lab records](#9-fetch-lab-records)
+10. [Create follow up records](#10-create-follow-up-records)
+11. [Fetch follow up records](#11-fetch-follow-up-records)
 
 ## 1. Create an account
 
@@ -375,7 +377,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/labs' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "lab_date_specimen_collection_received":"",
@@ -407,7 +409,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/labs' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs' \
 --data-raw ''
 ```
 
@@ -437,6 +439,69 @@ If successful, the response should have a [status](https://developer.mozilla.org
         "lab_xpert_mtb_rif_assay_grades":"",
         "lab_xpert_mtb_rif_assay_result":"",
         "lab_xpert_mtb_rif_assay_rif_result":""
+    }
+]
+```
+
+## 10. Create follow up records
+
+The user has to provide the following in the [request body](https://developer.mozilla.org/en-US/docs/Web/API/Request/body):
+
+- follow_up_xray
+- follow_up_amoxicillin
+- follow_up_other_antibiotic
+- follow_up_schedule_date
+- follow_up_comments
+
+The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "follow_up_xray":"",
+    "follow_up_amoxicillin":"",
+    "follow_up_other_antibiotic":"",
+    "follow_up_schedule_date":"",
+    "follow_up_comments":""
+}'
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.
+
+## 11. Fetch follow up records
+
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups' \
+--data-raw ''
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+
+- []
+
+```bash
+[
+    {
+        "follow_up_amoxicillin": "",
+        "follow_up_comments": "",
+        "follow_up_date": "",
+        "follow_up_id": "",
+        "follow_up_other_antibiotic": "",
+        "follow_up_records_id": 1,
+        "follow_up_schedule_date": "",
+        "follow_up_user_id": "",
+        "follow_up_xray": ""
     }
 ]
 ```
