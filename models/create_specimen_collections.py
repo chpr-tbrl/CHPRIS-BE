@@ -25,25 +25,6 @@ def create_specimen_collection(
     ):
     try:
         logger.debug(f"creating specimen_collection record for {specimen_collection_user_id} ...")
-
-        if not specimen_collection_1_specimen_collection_type in ["sputum", "csf", "lymph_node_aspirate", "gastric_aspirate", "urine", "other"]:
-            logger.error(f"specimen_collection_1_specimen_collection_type got invalid value '{specimen_collection_1_specimen_collection_type}'")
-            raise BadRequest()
-        if not specimen_collection_1_period in ["spot", "morning", "n_a"]:
-            logger.error(f"specimen_collection_1_period got invalid value '{specimen_collection_1_period}'")
-            raise BadRequest()
-        if not specimen_collection_1_aspect in ["mucopurulent", "bloody", "salivary","n_a"]:
-            logger.error(f"specimen_collection_1_aspect got invalid value '{specimen_collection_1_aspect}'")
-            raise BadRequest()
-        if not specimen_collection_2_specimen_collection_type in ["sputum", "csf", "lymph_node_aspirate", "gastric_aspirate", "urine", "other"]:
-            logger.error(f"specimen_collection_2_specimen_collection_type got invalid value '{specimen_collection_2_specimen_collection_type}'")
-            raise BadRequest()
-        if not specimen_collection_2_period in ["spot", "morning", "n_a"]:
-            logger.error(f"specimen_collection_2_period got invalid value '{specimen_collection_2_period}'")
-            raise BadRequest()
-        if not specimen_collection_2_aspect in ["mucopurulent", "bloody", "salivary","n_a"]:
-            logger.error(f"specimen_collection_2_aspect got invalid value '{specimen_collection_2_aspect}'")
-            raise BadRequest()
         
         specimen_collection = Specimen_collections.create(
             specimen_collection_records_id=specimen_collection_records_id,

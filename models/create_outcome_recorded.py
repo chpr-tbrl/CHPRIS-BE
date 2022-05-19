@@ -18,10 +18,6 @@ def create_outcome_recorded(
     try:
         logger.debug(f"creating outcome_recorded record for {outcome_recorded_user_id} ...")
 
-        if not outcome_recorded_started_tb_treatment_outcome in ["started_tb_treatment", "referred_for_treatment", "other"]:
-            logger.error(f"outcome_recorded_started_tb_treatment_outcome got invalid value '{outcome_recorded_started_tb_treatment_outcome}'")
-            raise BadRequest()
-
         outcome_recorded = Outcome_recorded.create(
             outcome_recorded_records_id=outcome_recorded_records_id,
             outcome_recorded_user_id=outcome_recorded_user_id,

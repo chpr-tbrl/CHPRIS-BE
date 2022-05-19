@@ -28,25 +28,6 @@ def create_lab(
     ):
     try:
         logger.debug(f"creating lab record for {lab_user_id} ...")
-
-        if not lab_smear_microscopy_result_result_1 in ["no_afb_seen", "scanty", "1+", "2+", "3+", "tb_lamp_positive", "tb_lamp_negative", "not_done"]:
-            logger.error(f"lab_smear_microscopy_result_result_1 got invalid value '{lab_smear_microscopy_result_result_1}'")
-            raise BadRequest()
-        if not lab_smear_microscopy_result_result_2 in ["no_afb_seen", "scanty", "1+", "2+", "3+", "tb_lamp_positive", "tb_lamp_negative", "not_done"]:
-            logger.error(f"lab_smear_microscopy_result_result_2 got invalid value '{lab_smear_microscopy_result_result_2}'")
-            raise BadRequest()
-        if not lab_xpert_mtb_rif_assay_result in ["detected", "trace", "not_detected", "error_invalid", "not_done"]:
-            logger.error(f"lab_xpert_mtb_rif_assay_result got invalid value '{lab_xpert_mtb_rif_assay_result}'")
-            raise BadRequest()
-        if not lab_xpert_mtb_rif_assay_grades in ["high", "medium", "low", "very_low"]:
-            logger.error(f"lab_xpert_mtb_rif_assay_grades got invalid value '{lab_xpert_mtb_rif_assay_grades}'")
-            raise BadRequest()
-        if not lab_xpert_mtb_rif_assay_rif_result in ["detected", "indeterminate", "not_detected", "not_done"]:
-            logger.error(f"lab_xpert_mtb_rif_assay_rif_result got invalid value '{lab_xpert_mtb_rif_assay_rif_result}'")
-            raise BadRequest()
-        if not lab_urine_lf_lam_result in ["negative", "positive", "error_invalid", "not_done"]:
-            logger.error(f"lab_urine_lf_lam_result got invalid value '{lab_urine_lf_lam_result}'")
-            raise BadRequest()
         
         lab = Labs.create(
             lab_records_id=lab_records_id,

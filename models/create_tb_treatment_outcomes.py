@@ -17,10 +17,6 @@ def create_tb_treatment_outcome(
     try:
         logger.debug(f"creating tb_treatment_outcome record for {tb_treatment_outcome_user_id} ...")
 
-        if not tb_treatment_outcome_result in ["cured", "treatment_completed", "lost_to_follow_up", "died", "transferred_out"]:
-            logger.error(f"tb_treatment_outcome_result got invalid value '{tb_treatment_outcome_result}'")
-            raise BadRequest()
-
         tb_treatment_outcome = Tb_treatment_outcomes.create(
             tb_treatment_outcome_records_id = tb_treatment_outcome_records_id,
             tb_treatment_outcome_user_id = tb_treatment_outcome_user_id,
