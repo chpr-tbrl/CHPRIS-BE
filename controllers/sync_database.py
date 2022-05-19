@@ -19,6 +19,7 @@ from schemas.records.records import Records
 from schemas.records.specimen_collection import Specimen_collections
 from schemas.records.lab import Labs
 from schemas.records.follow_up import Follow_ups
+from schemas.records.outcome_recorded import Outcome_recorded
 
 config = configuration()
 database = config["DATABASE"]
@@ -86,7 +87,8 @@ def create_tables():
                 Records,
                 Specimen_collections,
                 Labs,
-                Follow_ups
+                Follow_ups,
+                Outcome_recorded
             ]
         )
 

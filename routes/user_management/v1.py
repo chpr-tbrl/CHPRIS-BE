@@ -34,7 +34,9 @@ from models import (
     create_lab,
     find_lab,
     create_follow_up,
-    find_follow_up
+    find_follow_up,
+    create_outcome_recorded,
+    find_outcome_recorded
 )
 
 @v1.after_request
@@ -454,6 +456,60 @@ def findFollowUpRecord(user_id, site_id, region_id, record_id):
         )
        
         result = find_follow_up(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded", methods=["POST"])
+def createOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        outcome_recorded_records_id = record_id
+
+        payload = (
+            outcome_recorded_records_id,
+            userId,
+            request.json["outcome_recorded_started_tb_treatment_outcome"],
+            request.json["outcome_recorded_tb_rx_number"],
+            request.json["outcome_recorded_other"],
+            request.json["outcome_recorded_comments"]
+        )
+       
+        result = create_outcome_recorded(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded", methods=["GET"])
+def findOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        outcome_recorded_records_id = record_id
+
+        payload = (
+            userId,
+            outcome_recorded_records_id
+        )
+       
+        result = find_outcome_recorded(*payload)
 
         return jsonify(result), 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:

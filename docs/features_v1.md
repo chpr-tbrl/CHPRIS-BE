@@ -13,6 +13,8 @@
 9. [Fetch lab records](#9-fetch-lab-records)
 10. [Create follow up records](#10-create-follow-up-records)
 11. [Fetch follow up records](#11-fetch-follow-up-records)
+12. [Create outcome recorded records](#12-create-outcome-recorded-records)
+13. [Fetch outcome recorded records](#13-fetch-outcome-recorded-records)
 
 ## 1. Create an account
 
@@ -502,6 +504,66 @@ If successful, the response should have a [status](https://developer.mozilla.org
         "follow_up_schedule_date": "",
         "follow_up_user_id": "",
         "follow_up_xray": ""
+    }
+]
+```
+
+## 12. Create outcome recorded records
+
+The user has to provide the following in the [request body](https://developer.mozilla.org/en-US/docs/Web/API/Request/body):
+
+- outcome_recorded_started_tb_treatment_outcome
+- outcome_recorded_tb_rx_number
+- outcome_recorded_other
+- outcome_recorded_comments
+
+The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "outcome_recorded_started_tb_treatment_outcome":"",
+    "outcome_recorded_tb_rx_number":"",
+    "outcome_recorded_other":"",
+    "outcome_recorded_comments":""
+}'
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.
+
+## 13. Fetch outcome recorded records
+
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded' \
+--data-raw ''
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+
+- []
+
+```bash
+[
+    {
+        "outcome_recorded_comments": "",
+        "outcome_recorded_date": "",
+        "outcome_recorded_id": "",
+        "outcome_recorded_other": "",
+        "outcome_recorded_records_id": "",
+        "outcome_recorded_started_tb_treatment_outcome": "",
+        "outcome_recorded_tb_rx_number": "",
+        "outcome_recorded_user_id": ""
     }
 ]
 ```

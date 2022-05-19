@@ -240,3 +240,38 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Create new outcome_recorded record
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/outcome_recorded' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "outcome_recorded_started_tb_treatment_outcome":"started_tb_treatment",
+    "outcome_recorded_tb_rx_number":"text",
+    "outcome_recorded_other":null,
+    "outcome_recorded_comments":"text"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Fetch outcome_recorded records for user
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/outcome_recorded' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred

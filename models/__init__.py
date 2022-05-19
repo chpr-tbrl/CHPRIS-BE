@@ -14,3 +14,6 @@ from models.create_labs import create_lab
 from models.find_labs import find_lab
 from models.create_follow_ups import create_follow_up
 from models.find_follow_ups import find_follow_up
+from models.find_outcome_recorded import find_outcome_recorded
+from models.create_outcome_recorded import create_outcome_recorded
+
