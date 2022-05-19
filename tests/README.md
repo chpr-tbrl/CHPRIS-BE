@@ -275,3 +275,37 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Create new tb_treatment_outcome record
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/tb_treatment_outcomes' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "tb_treatment_outcome_result":"cured",
+    "tb_treatment_outcome_comments":"text",
+    "tb_treatment_outcome_close_patient_file":true
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `500` = Error occurred
+
+### Fetch tb_treatment_outcome records for user
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/tb_treatment_outcomes' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred

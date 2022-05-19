@@ -36,7 +36,9 @@ from models import (
     create_follow_up,
     find_follow_up,
     create_outcome_recorded,
-    find_outcome_recorded
+    find_outcome_recorded,
+    create_tb_treatment_outcome,
+    find_tb_treatment_outcome
 )
 
 @v1.after_request
@@ -510,6 +512,59 @@ def findOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
         )
        
         result = find_outcome_recorded(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes", methods=["POST"])
+def createTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        tb_treatment_outcome_records_id = record_id
+
+        payload = (
+            tb_treatment_outcome_records_id,
+            userId,
+            request.json["tb_treatment_outcome_result"],
+            request.json["tb_treatment_outcome_comments"],
+            request.json["tb_treatment_outcome_close_patient_file"]
+        )
+       
+        result = create_tb_treatment_outcome(*payload)
+
+        return jsonify(result), 200
+    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return str(err), 400
+    except InternalServerError as err:
+        logger.error(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.error(err)
+        raise Exception(err)
+
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes", methods=["GET"])
+def findTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
+    try:
+        userId = user_id
+        siteId = site_id
+        regionId = region_id
+        tb_treatment_outcome_records_id = record_id
+
+        payload = (
+            userId,
+            tb_treatment_outcome_records_id
+        )
+       
+        result = find_tb_treatment_outcome(*payload)
 
         return jsonify(result), 200
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
