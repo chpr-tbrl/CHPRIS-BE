@@ -29,6 +29,8 @@ def get_all_users():
                 "name": user["name"],
                 "occupation": user["occupation"],
                 "phone_number": user["phone_number"],
+                "type_of_user": user["type_of_user"],
+                "type_of_export": user["type_of_export"],
                 "region": user["region"],
                 "site": user["site"],
                 "state": user["state"]

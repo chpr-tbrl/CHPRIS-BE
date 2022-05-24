@@ -18,4 +18,5 @@ from models.find_outcome_recorded import find_outcome_recorded
 from models.create_outcome_recorded import create_outcome_recorded
 from models.create_tb_treatment_outcomes import create_tb_treatment_outcome
 from models.find_tb_treatment_outcomes import find_tb_treatment_outcome
+from models.assign_user_roles import assign_role
 
