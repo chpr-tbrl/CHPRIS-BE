@@ -11,9 +11,10 @@
 
 ### Users
 
-| Action                                        | Endpoint          | Parameters | Request body |
-| :-------------------------------------------- | :---------------- | :--------- | :----------- |
-| [Fetch Users](./features_v1.md#3-fetch-users) | **GET** /v1/users | None       | None         |
+| Action                                           | Endpoint                                   | Parameters                                                | Request body |
+| :----------------------------------------------- | :----------------------------------------- | :-------------------------------------------------------- | :----------- |
+| [Fetch Users](./features_v1.md#3-fetch-users)    | **GET** /v1/users                          | None                                                      | None         |
+| [Assign Roles](./features_v1.md#16-assign-roles) | **POST** /v1//users/<user_id>/roles/<role> | <ul><li>user_id = INTEGER</li><li>role = STRING</li></ul> | None         |
 
 ### Records
 

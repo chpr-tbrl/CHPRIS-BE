@@ -309,3 +309,18 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Assign user roles
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/1/roles/admin' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `401` = Invalid role
+> - `500` = Error occurred

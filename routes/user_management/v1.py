@@ -5,7 +5,7 @@ import werkzeug
 logger = logging.getLogger(__name__)
 
 from Configs import configuration
-from error import BadRequest, InternalServerError, Unauthorized, Conflict
+from error import BadRequest, Forbidden, InternalServerError, Unauthorized, Conflict
 from flask import Blueprint, request, jsonify
 from security import Cookie
 from datetime import timedelta
@@ -18,28 +18,27 @@ config = configuration()
 api = config["API"]
 cookie_name = api['COOKIE_NAME']
 
-from models import (
-    verify_user,
-    create_session,
-    create_user,
-    change_state,
-    get_all_users,
-    find_session,
-    update_session,
-    create_record,
-    get_all_records,
-    find_record,
-    create_specimen_collection,
-    find_specimen_collection,
-    create_lab,
-    find_lab,
-    create_follow_up,
-    find_follow_up,
-    create_outcome_recorded,
-    find_outcome_recorded,
-    create_tb_treatment_outcome,
-    find_tb_treatment_outcome
-)
+from models.verify_users import verify_user
+from models.create_sessions import create_session
+from models.update_sessions import update_session
+from models.create_users import create_user
+from models.change_states import change_state
+from models.find_sessions import find_session
+from models.get_users import get_all_users
+from models.create_records import create_record
+from models.get_records import get_all_records
+from models.find_records import find_record
+from models.create_specimen_collections import create_specimen_collection
+from models.find_specimen_collections import find_specimen_collection
+from models.create_labs import create_lab
+from models.find_labs import find_lab
+from models.create_follow_ups import create_follow_up
+from models.find_follow_ups import find_follow_up
+from models.find_outcome_recorded import find_outcome_recorded
+from models.create_outcome_recorded import create_outcome_recorded
+from models.create_tb_treatment_outcomes import create_tb_treatment_outcome
+from models.find_tb_treatment_outcomes import find_tb_treatment_outcome
+from models.assign_user_roles import assign_role
 
 @v1.after_request
 def after_request(response):
@@ -102,11 +101,11 @@ def signup():
     except Conflict as err:
         return str(err), 409
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/login", methods=["POST"])
 def login():
@@ -150,11 +149,11 @@ def login():
     except Conflict as err:
         return str(err), 409
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users", methods=["GET"])
 def getAllUsers():
@@ -201,11 +200,11 @@ def getAllUsers():
     except Conflict as err:
         return str(err), 409
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["POST"])
 def createRecord(user_id, site_id, region_id):
@@ -255,11 +254,11 @@ def createRecord(user_id, site_id, region_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["GET"])
 def findRecord(user_id, site_id, region_id):
@@ -280,11 +279,11 @@ def findRecord(user_id, site_id, region_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections", methods=["POST"])
 def createSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
@@ -318,11 +317,11 @@ def createSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections", methods=["GET"])
 def findSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
@@ -343,11 +342,11 @@ def findSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs", methods=["POST"])
 def createLabRecord(user_id, site_id, region_id, record_id):
@@ -383,11 +382,11 @@ def createLabRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs", methods=["GET"])
 def findLabRecord(user_id, site_id, region_id, record_id):
@@ -408,11 +407,11 @@ def findLabRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
     
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups", methods=["POST"])
 def createFollowUpRecord(user_id, site_id, region_id, record_id):
@@ -438,11 +437,11 @@ def createFollowUpRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups", methods=["GET"])
 def findFollowUpRecord(user_id, site_id, region_id, record_id):
@@ -463,11 +462,11 @@ def findFollowUpRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded", methods=["POST"])
 def createOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
@@ -492,11 +491,11 @@ def createOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded", methods=["GET"])
 def findOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
@@ -517,11 +516,11 @@ def findOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes", methods=["POST"])
 def createTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
@@ -545,11 +544,11 @@ def createTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes", methods=["GET"])
 def findTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
@@ -570,8 +569,32 @@ def findTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
     except (BadRequest, werkzeug.exceptions.BadRequest) as err:
         return str(err), 400
     except InternalServerError as err:
-        logger.error(err)
+        logger.exception(err)
         return "internal server error", 500
     except Exception as err:
-        logger.error(err)
-        raise Exception(err)
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/users/<user_id>/roles/<role>", methods=["POST"])
+def assign_user_role(user_id, role):
+    try:
+        userId = user_id
+
+        payload = (
+            userId,
+            role
+        )
+       
+        assign_role(*payload)
+
+        return "", 200
+    except BadRequest as err:
+        return "%s" % err, 400
+    except Unauthorized as err:
+        return "%s" % err, 401
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500

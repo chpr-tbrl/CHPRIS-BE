@@ -15,12 +15,10 @@ def assign_role(user_id, role):
     try:
         logger.debug(f"Verifying role {role} ...")
 
-        if role == "admin" or "data_collection":
-            pass
-        else:
-            logger.error(f"invalid role {role}")
+        if not role in ["admin", "data_collection"]:
+            logger.error("invalid role '%s'" % role)
             raise Unauthorized()
-
+            
         logger.debug(f"finding user {user_id} ...")
         users = (
             Users.select()

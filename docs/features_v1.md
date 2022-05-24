@@ -17,6 +17,7 @@
 13. [Fetch outcome recorded records](#13-fetch-outcome-recorded-records)
 14. [Create tb treatment outcome records](#14-create-tb-treatment-outcome-records)
 15. [Fetch tb treatment outcome records](#15-fetch-tb-treatment-outcome-records)
+16. [Assign roles](#16-assign-roles)
 
 ## 1. Create an account
 
@@ -627,3 +628,18 @@ If successful, the response should have a [status](https://developer.mozilla.org
     }
 ]
 ```
+
+## 16. Assign roles
+
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/roles/<role>' \
+--data-raw ''
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.
