@@ -1,15 +1,25 @@
 import logging
-from error import Conflict, InternalServerError, Unauthorized
-from security import Data
-
-import peewee as pw
-from schemas.users.users import Users
-
 logger = logging.getLogger(__name__)
 
-def verify_user(email, password):
+from error import Conflict, InternalServerError, Unauthorized
+from security.data import Data
+
+from peewee import DatabaseError
+from schemas.users.users import Users
+
+def verify_user(email: str, password: str) -> dict:
+    """
+    Find user in database by email and password.
+
+    Arguments:
+        email: str,
+        password: str
+
+    Returns:
+        dict
+    """
     try:
-        logger.debug(f"verifying user {email} ...")
+        logger.debug("verifying user %s ..." % email)
         data = Data()
         hash_password = data.hash(password)
         users = (
@@ -23,18 +33,18 @@ def verify_user(email, password):
 
         # check for duplicates
         if len(result) > 1:
-            logger.error(f"Multiple users {email} found")
+            logger.error("Multiple users %s found" % email)
             raise Conflict()
 
         # check for no user
         if len(result) < 1:
-            logger.error(f"No user found")
+            logger.error("No user found")
             raise Unauthorized()
 
-        logger.info(f"User {email} successfully verified")
+        logger.info("- User %s successfully verified" % email)
         return {
             "uid": result[0]["id"]
         }
-    except (pw.DatabaseError) as err:
-        logger.error(f"verifying user {email} failed check logs")
+    except DatabaseError as err:
+        logger.error("verifying user %s failed check logs" % email)
         raise InternalServerError(err)

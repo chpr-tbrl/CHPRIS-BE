@@ -1,15 +1,10 @@
 import logging
+logger = logging.getLogger(__name__)
+
 from error import InternalServerError
-from Configs import configuration
-
-config = configuration()
-
-api = config["API"]
 
 from peewee import DatabaseError
 from schemas.records.records import Records
-
-logger = logging.getLogger(__name__)
 
 def find_record(site_id, region_id, records_user_id):
     try:

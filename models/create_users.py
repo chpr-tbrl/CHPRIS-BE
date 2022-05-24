@@ -1,20 +1,30 @@
 import logging
-from error import InternalServerError, Conflict
-from Configs import configuration
-from security import Data
-
-config = configuration()
-
-api = config["API"]
-
-import peewee as pw
-from schemas.users.users import Users
-
 logger = logging.getLogger(__name__)
 
-def create_user(email, password, phone_number, name, region, occupation, site):
+from error import InternalServerError, Conflict
+from security.data import Data
+
+from peewee import DatabaseError, IntegrityError
+from schemas.users.users import Users
+
+def create_user(email: str, password: str, phone_number: str, name: str, region: str, occupation: str, site: str) -> str:
+    """
+    Add user to database.
+
+    Arguments:
+        email: str,
+        password: str,
+        phone_number: str,
+        name: str,
+        region: str,
+        occupation: str,
+        site: str
+
+    Returns:
+        str
+    """
     try:
-        logger.debug(f"creating user record for {email} ...")
+        logger.debug("creating user record for %s ..." % email)
         
         data = Data()
         password_hash = data.hash(password)
@@ -28,11 +38,11 @@ def create_user(email, password, phone_number, name, region, occupation, site):
             occupation=occupation,
             site=site
         )
-        logger.info(f"User {email} successfully created")
+        logger.info("- User %s successfully created" % email)
         return str(user)
-    except pw.IntegrityError as err:
-        logger.error(f"user {email} already has a record")
+    except IntegrityError as err:
+        logger.error("user %s already has a record" % email)
         raise Conflict()
-    except (pw.DatabaseError) as err:
-        logger.error(f"creating user {email} failed check logs")
+    except DatabaseError as err:
+        logger.error("creating user %s failed check logs" % email)
         raise InternalServerError(err)

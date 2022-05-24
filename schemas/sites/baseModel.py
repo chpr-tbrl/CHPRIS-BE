@@ -1,9 +1,9 @@
 from error import InternalServerError
-from Configs import configuration
+from Configs import baseConfig
 from peewee import MySQLDatabase, Model
 from peewee import DatabaseError
 
-config = configuration()
+config = baseConfig()
 database = config["DATABASE"]
 
 try:
@@ -15,6 +15,9 @@ try:
     )
 
     class BaseModel(Model):
+        """
+        Sites database model.
+        """
         class Meta:
             database = sites_db
 

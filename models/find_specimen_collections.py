@@ -1,17 +1,14 @@
 import logging
+logger = logging.getLogger(__name__)
+
 from error import InternalServerError
-from Configs import configuration
-
-config = configuration()
-
-api = config["API"]
 
 from peewee import DatabaseError
 from schemas.records.specimen_collection import Specimen_collections
 
-logger = logging.getLogger(__name__)
-
 def find_specimen_collection(specimen_collection_user_id, specimen_collection_records_id):
+    """
+    """
     try:
         logger.debug(f"finding specimen_collection records for {specimen_collection_user_id} ...")
         result = []

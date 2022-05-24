@@ -1,22 +1,23 @@
 import logging
+logger = logging.getLogger(__name__)
+
+from Configs import baseConfig
+config = baseConfig()
+api = config["API"]
+cookie_name = api['COOKIE_NAME']
+
+from flask import Blueprint, request, jsonify
+v1 = Blueprint("v1", __name__)
+
 import json
 import werkzeug
 
-logger = logging.getLogger(__name__)
-
-from Configs import configuration
 from error import BadRequest, Forbidden, InternalServerError, Unauthorized, Conflict
-from flask import Blueprint, request, jsonify
-from security import Cookie
+from security.cookie import Cookie
 from datetime import timedelta
 from schemas.users.baseModel import users_db
 from schemas.sites.baseModel import sites_db
 from schemas.records.baseModel import records_db
-
-v1 = Blueprint("v1", __name__)
-config = configuration()
-api = config["API"]
-cookie_name = api['COOKIE_NAME']
 
 from models.verify_users import verify_user
 from models.create_sessions import create_session

@@ -1,17 +1,14 @@
 import logging
+logger = logging.getLogger(__name__)
+
 from error import InternalServerError
-from Configs import configuration
-
-config = configuration()
-
-api = config["API"]
 
 from peewee import DatabaseError
 from schemas.records.lab import Labs
 
-logger = logging.getLogger(__name__)
-
 def find_lab(lab_user_id, lab_records_id):
+    """
+    """
     try:
         logger.debug(f"finding lab records for {lab_user_id} ...")
         result = []

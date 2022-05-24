@@ -1,19 +1,16 @@
 import logging
-from error import InternalServerError
-from Configs import configuration
-
-config = configuration()
-
-api = config["API"]
-
-import peewee as pw
-from schemas.users.users import Users
-
 logger = logging.getLogger(__name__)
 
+from error import InternalServerError
+
+from peewee import DatabaseError
+from schemas.users.users import Users
+
 def get_all_users():
+    """
+    """
     try:
-        logger.debug(f"fetching all user records ...")
+        logger.debug("fetching all user records ...")
         result = []
         
         users = (
@@ -36,8 +33,8 @@ def get_all_users():
                 "state": user["state"]
             })
 
-        logger.info("Successfully fetched all users")
+        logger.info("- Successfully fetched all users")
         return result
-    except (pw.DatabaseError) as err:
-        logger.error(f"failed to fetch all users check logs")
+    except DatabaseError as err:
+        logger.error("failed to fetch all users check logs")
         raise InternalServerError(err)

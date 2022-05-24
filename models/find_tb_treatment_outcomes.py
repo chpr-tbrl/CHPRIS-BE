@@ -1,17 +1,14 @@
 import logging
+logger = logging.getLogger(__name__)
+
 from error import InternalServerError
-from Configs import configuration
-
-config = configuration()
-
-api = config["API"]
 
 from peewee import DatabaseError
 from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
 
-logger = logging.getLogger(__name__)
-
 def find_tb_treatment_outcome(tb_treatment_outcome_user_id, tb_treatment_outcome_records_id):
+    """
+    """
     try:
         logger.debug(f"finding tb_treatment_outcome records for {tb_treatment_outcome_user_id} ...")
         result = []

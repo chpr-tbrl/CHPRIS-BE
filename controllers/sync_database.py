@@ -1,8 +1,11 @@
 import logging
 logger = logging.getLogger(__name__)
 
+from Configs import baseConfig
+config = baseConfig()
+database = config["DATABASE"]
+
 from error import InternalServerError
-from Configs import configuration
 from contextlib import closing
 from mysql.connector import connect, Error
 
@@ -21,9 +24,6 @@ from schemas.records.lab import Labs
 from schemas.records.follow_up import Follow_ups
 from schemas.records.outcome_recorded import Outcome_recorded
 from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
-
-config = configuration()
-database = config["DATABASE"]
 
 def create_database():
     try:

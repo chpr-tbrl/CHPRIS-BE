@@ -1,11 +1,15 @@
-import logging
-server_logger = logging.getLogger(__name__)
-from logger import logger
-logger()
+import os
+import argparse
 
-from Configs import configuration
+parser = argparse.ArgumentParser()
+parser.add_argument("--logs", help="Set log level")
+args = parser.parse_args()
+from logger import baseLogger
+baseLogger(args.logs or "info")
 
-config = configuration()
+from Configs import baseConfig
+
+config = baseConfig()
 api = config["API"]
 
 from flask import Flask
@@ -24,5 +28,5 @@ create_tables()
 app.register_blueprint(v1, url_prefix="/v1")
 
 if __name__ == "__main__":
-    server_logger.info(f"Running on un-secure port: {api['PORT']}")
+    app.logger.info("Running on un-secure port: %s" % api["PORT"])
     app.run(host=api["HOST"], port=api["PORT"])

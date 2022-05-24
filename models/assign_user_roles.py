@@ -1,17 +1,14 @@
 import logging
+logger = logging.getLogger(__name__)
+
 from error import Conflict, InternalServerError, Unauthorized
 
 import peewee as pw
-from Configs import configuration
 from schemas.users.users import Users
 
-config = configuration()
-
-api = config["API"]
-
-logger = logging.getLogger(__name__)
-
 def assign_role(user_id, role):
+    """
+    """
     try:
         logger.debug(f"Verifying role {role} ...")
 

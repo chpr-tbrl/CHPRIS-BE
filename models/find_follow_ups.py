@@ -1,17 +1,14 @@
 import logging
+logger = logging.getLogger(__name__)
+
 from error import InternalServerError
-from Configs import configuration
-
-config = configuration()
-
-api = config["API"]
 
 from peewee import DatabaseError
 from schemas.records.follow_up import Follow_ups
 
-logger = logging.getLogger(__name__)
-
 def find_follow_up(follow_up_user_id, follow_up_records_id):
+    """
+    """
     try:
         logger.debug(f"finding lab records for {follow_up_user_id} ...")
         result = []
