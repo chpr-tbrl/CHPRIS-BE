@@ -1,8 +1,7 @@
-from peewee import (
-    CharField,
-    TextField,
-    DateTimeField
-)
+from peewee import CharField
+from peewee import DateTimeField
+from peewee import TextField
+
 from schemas.users.baseModel import BaseModel
 
 class Sessions(BaseModel):

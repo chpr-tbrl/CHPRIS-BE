@@ -1,43 +1,40 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from security.data import Data
-
 from peewee import DatabaseError
 
 from schemas.users.users import Users
 
-from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import Unauthorized
 
-def verify_user(email: str, password: str) -> dict:
+def find_user(user_id: int) -> dict:
     """
-    Find user in database by email and password.
+    Find a user.
 
     Arguments:
-        email: str,
-        password: str
-
+        user_id: int
+    
     Returns:
         dict
     """
     try:
-        logger.debug("verifying user %s ..." % email)
-        data = Data()
-        hash_password = data.hash(password)
+        logger.debug("finding user %d ..." % user_id)
+        
         users = (
             Users.select()
-            .where(Users.email == email, Users.password == hash_password, Users.state == "verified")
+            .where(Users.id == user_id, Users.state == "verified")
             .dicts()
         )
+
         result = []
         for user in users:
             result.append(user)
 
         # check for duplicates
         if len(result) > 1:
-            logger.error("Multiple users %s found" % email)
+            logger.error("Multiple users %d found" % user_id)
             raise Conflict()
 
         # check for no user
@@ -45,11 +42,10 @@ def verify_user(email: str, password: str) -> dict:
             logger.error("No user found")
             raise Unauthorized()
 
-        logger.info("- User %s successfully verified" % email)
-        return {
-            "uid": result[0]["id"]
-        }
-        
+        logger.info("- User %d found" % user_id)
+
+        return result[0]
+
     except DatabaseError as err:
-        logger.error("verifying user %s failed check logs" % email)
+        logger.error("failed to find user %d check logs" % user_id)
         raise InternalServerError(err) from None

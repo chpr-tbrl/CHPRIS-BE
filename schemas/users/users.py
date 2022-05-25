@@ -1,21 +1,20 @@
-from peewee import (
-    CharField,
-    DateTimeField,
-    TextField
-)
+from peewee import CharField
+from peewee import DateTimeField
+from peewee import TextField
+from peewee import IntegerField
+
 from schemas.users.baseModel import BaseModel
 from datetime import datetime
 
 class Users(BaseModel):
-    email = CharField(null=True, unique=True)
-    password = CharField(null=True)
+    email = CharField(unique=True)
+    password = CharField()
     phone_number = CharField(null=True)
     name = CharField(null=True)
-    region = CharField(null=True)
     occupation = CharField(null=True)
-    site = CharField(null=True)
-    state = CharField(null=True, default="pending")
-    type_of_user = CharField(null=True, default="data_collection")
+    state = CharField(default="pending")
+    type_of_user = CharField(default="data_collection")
     type_of_export = TextField(null=True)
-    last_login = DateTimeField(null=True)
+    region_id = IntegerField()
+    site_id = IntegerField()
     createdAt = DateTimeField(null=True, default=datetime.now)

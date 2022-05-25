@@ -1,11 +1,9 @@
-from peewee import (
-    CharField,
-    DateTimeField,
-    IntegerField,
-    PrimaryKeyField,
-    ForeignKeyField,
-    BooleanField
-)
+from peewee import CharField
+from peewee import DateTimeField
+from peewee import IntegerField
+from peewee import PrimaryKeyField
+from peewee import ForeignKeyField
+from peewee import BooleanField
 
 from schemas.records.baseModel import BaseModel
 from schemas.records.records import Records

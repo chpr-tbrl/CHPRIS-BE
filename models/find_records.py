@@ -1,26 +1,39 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from error import InternalServerError
-
 from peewee import DatabaseError
 from schemas.records.records import Records
 
-def find_record(site_id, region_id, records_user_id):
+from werkzeug.exceptions import InternalServerError
+
+def find_record(site_id: int, region_id: int, records_user_id: int) -> list:
+    """
+    Find records by site_id and region_id.
+
+    Arguments:
+        site_id: int,
+        region_id: int,
+        records_user_id: int
+
+    Returns:
+        list
+    """
     try:
-        logger.debug(f"finding records for {records_user_id} ...")
+        logger.debug("finding records for %d ..." % records_user_id)
         result = []
         
         records = (
             Records.select()
-            .where(Records.site_id == site_id, Records.region_id == region_id, Records.records_user_id == records_user_id)
+            .where(Records.site_id == site_id, Records.region_id == region_id)
             .dicts()
         )
+
         for record in records:
             result.append(record)
 
-        logger.info(f"Successfully found records for {records_user_id}")
+        logger.info("Successfully found records for %d" % records_user_id)
         return result
+
     except DatabaseError as err:
-        logger.error(f"failed to finding record for {records_user_id} check logs")
-        raise InternalServerError(err)
+        logger.error("failed to finding record for %d check logs" % records_user_id)
+        raise InternalServerError(err) from None

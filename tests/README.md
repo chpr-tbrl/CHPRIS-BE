@@ -13,8 +13,8 @@ curl --location --request POST 'http://localhost:9000/v1/signup' \
     "email": "example@mail.com",
     "password": "password",
     "occupation": "occupation",
-    "site": "site",
-    "region": "region"
+    "site_id": 1,
+    "region_id": 1
 }'
 ```
 
@@ -22,6 +22,8 @@ curl --location --request POST 'http://localhost:9000/v1/signup' \
 >
 > - `200` = Success
 > - `400` = Bad request
+> - `401` = Unauthorized
+> - `409` = Conflict
 > - `500` = Error occurred
 
 ### Login
@@ -41,6 +43,8 @@ curl --location --request POST 'http://localhost:9000/v1/login' \
 >
 > - `200` = Success
 > - `400` = Bad request
+> - `401` = Unauthorized
+> - `409` = Conflict
 > - `500` = Error occurred
 
 ### Fetch all users
@@ -48,7 +52,7 @@ curl --location --request POST 'http://localhost:9000/v1/login' \
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users' \
+curl --location --request GET 'http://localhost:9000/v1/admin/users' \
 --data-raw ''
 ```
 
@@ -62,7 +66,7 @@ curl --location --request GET 'http://localhost:9000/v1/users' \
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/records' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "records_name":"sample",
@@ -100,6 +104,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 >
 > - `200` = Success
 > - `400` = Bad request
+> - `401` = Unauthorized
 > - `500` = Error occurred
 
 ### Fetch records for user
@@ -107,13 +112,14 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/records' \
 --data-raw ''
 ```
 
 > Response
 >
 > - `200` = Success
+> - `401` = Unauthorized
 > - `500` = Error occurred
 
 ### Create new specimen_collection record
@@ -308,19 +314,4 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 > Response
 >
 > - `200` = Success
-> - `500` = Error occurred
-
-### Assign user roles
-
-> Request
-
-```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/roles/admin' \
---data-raw ''
-```
-
-> Response
->
-> - `200` = Success
-> - `401` = Invalid role
 > - `500` = Error occurred

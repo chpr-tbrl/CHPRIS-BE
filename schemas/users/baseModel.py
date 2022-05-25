@@ -1,10 +1,12 @@
-from error import InternalServerError
 from Configs import baseConfig
-from peewee import Model, MySQLDatabase
-from peewee import DatabaseError
-
 config = baseConfig()
 database = config["DATABASE"]
+
+from peewee import Model
+from peewee import MySQLDatabase
+from peewee import DatabaseError
+
+from werkzeug.exceptions import InternalServerError
 
 try:
     users_db = MySQLDatabase(

@@ -1,7 +1,6 @@
-from peewee import (
-    CharField,
-    DateTimeField
-)
+from peewee import CharField
+from peewee import DateTimeField
+
 from schemas.sites.baseModel import BaseModel
 from datetime import datetime
 

@@ -9,12 +9,9 @@ cookie_name = api['COOKIE_NAME']
 from flask import Blueprint, request, jsonify
 v1 = Blueprint("v1", __name__)
 
-import json
-import werkzeug
-
-from error import BadRequest, Forbidden, InternalServerError, Unauthorized, Conflict
 from security.cookie import Cookie
 from datetime import timedelta
+
 from schemas.users.baseModel import users_db
 from schemas.sites.baseModel import sites_db
 from schemas.records.baseModel import records_db
@@ -25,9 +22,7 @@ from models.update_sessions import update_session
 from models.create_users import create_user
 from models.change_states import change_state
 from models.find_sessions import find_session
-from models.get_users import get_all_users
 from models.create_records import create_record
-from models.get_records import get_all_records
 from models.find_records import find_record
 from models.create_specimen_collections import create_specimen_collection
 from models.find_specimen_collections import find_specimen_collection
@@ -40,6 +35,12 @@ from models.create_outcome_recorded import create_outcome_recorded
 from models.create_tb_treatment_outcomes import create_tb_treatment_outcome
 from models.find_tb_treatment_outcomes import find_tb_treatment_outcome
 from models.assign_user_roles import assign_role
+from models.find_users import find_user
+
+from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Conflict
 
 @v1.after_request
 def after_request(response):
@@ -50,6 +51,25 @@ def after_request(response):
 
 @v1.route("/signup", methods=["POST"])
 def signup():
+    """
+    Create a new user.
+
+    Body:
+        email: str,
+        password: str,
+        phone_number: str,
+        name: str,
+        occupation: str,
+        site_id: int,
+        region_id: int
+    
+    Response:
+        200: dict
+        400: str
+        401: str
+        409: str
+        500: str
+    """
     try:
         if not "email" in request.json or not request.json["email"]:
             logger.error("no email")
@@ -66,19 +86,19 @@ def signup():
         elif not "occupation" in request.json or not request.json["occupation"]:
             logger.error("no occupation")
             raise BadRequest()
-        elif not "site" in request.json or not request.json["site"]:
-            logger.error("no site")
+        elif not "site_id" in request.json or not request.json["site_id"]:
+            logger.error("no site_id")
             raise BadRequest()
-        elif not "region" in request.json or not request.json["region"]:
-            logger.error("no region")
+        elif not "region_id" in request.json or not request.json["region_id"]:
+            logger.error("no region_id")
             raise BadRequest()
 
         email = request.json["email"]
         password = request.json["password"]
         phone_number = request.json["phone_number"]
         name = request.json["name"]
-        site = request.json["site"]
-        region = request.json["region"]
+        site_id = request.json["site_id"]
+        region_id = request.json["region_id"]
         occupation = request.json["occupation"]
 
         user = create_user(
@@ -86,30 +106,49 @@ def signup():
             password, 
             phone_number,
             name,
-            region,
+            region_id,
             occupation,
-            site 
+            site_id 
         )
         change_state(user, "verified")
 
         res = jsonify(user)
 
         return res, 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+
+    except BadRequest as err:
         return str(err), 400
+
     except Unauthorized as err:
         return str(err), 401
+
     except Conflict as err:
         return str(err), 409
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
 @v1.route("/login", methods=["POST"])
 def login():
+    """
+    Authenticate a user.
+
+    Body:
+        email: str,
+        password: str
+    
+    Response:
+        200: dict
+        400: str
+        401: str
+        409: str
+        500: str
+    """
     try:
         if not "email" in request.json or not request.json["email"]:
             logger.error("no email")
@@ -143,82 +182,75 @@ def login():
         # )
 
         return res, 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+
+    except BadRequest as err:
         return str(err), 400
+
     except Unauthorized as err:
         return str(err), 401
+
     except Conflict as err:
         return str(err), 409
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+        
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users", methods=["GET"])
-def getAllUsers():
+@v1.route("/users/<int:user_id>/records", methods=["POST"])
+def createRecord(user_id):
+    """
+    Create a new record.
+
+    Parameters:
+        user_id: int
+
+    Body:
+        records_name: str,
+        records_age: int,
+        records_sex: str,
+        records_date_of_test_request: str,
+        records_address: str,
+        records_telephone: str,
+        records_telephone_2: str,
+        records_has_art_unique_code: str,
+        records_art_unique_code: str,
+        records_status: str,
+        records_ward_bed_number: str,
+        records_currently_pregnant: str,
+        records_symptoms_current_cough: str,
+        records_symptoms_fever: bool,
+        records_symptoms_night_sweats: bool,
+        records_symptoms_weight_loss: bool,
+        records_symptoms_none_of_the_above: bool,
+        records_patient_category_hospitalized: bool,
+        records_patient_category_child: bool,
+        records_patient_category_to_initiate_art: bool,
+        records_patient_category_on_art_symptomatic: bool,
+        records_patient_category_outpatient: bool,
+        records_patient_category_anc: bool,
+        records_patient_category_diabetes_clinic: bool,
+        records_patient_category_other: str,
+        records_reason_for_test_presumptive_tb: bool,
+        records_tb_treatment_history: str,
+        records_tb_treatment_history_contact_of_tb_patient: str
+    
+    Response:
+        200: str
+        400: str
+        401: str
+        500: str
+    """
     try:
-        # if not request.cookies.get(cookie_name):
-        #     logger.error("no cookie")
-        #     raise Unauthorized()
-        # elif not request.headers.get("User-Agent"):
-        #     logger.error("no user agent")
-        #     raise BadRequest()
-
-        # cookie = Cookie()
-        # e_cookie = request.cookies.get(cookie_name)
-        # d_cookie = cookie.decrypt(e_cookie)
-        # json_cookie = json.loads(d_cookie)
-
-        # sid = json_cookie["sid"]
-        # uid = json_cookie["uid"]
-        # user_cookie = json_cookie["cookie"]
-        # user_agent = request.headers.get("User-Agent")
-
-        # user_id = find_session(sid, uid, user_agent, user_cookie)
-        users_list = get_all_users()
-        # session = update_session(sid, user_id)
-
-        res = jsonify(users_list)
-        # cookie = Cookie()
-        # cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-        # e_cookie = cookie.encrypt(cookie_data)
-        # res.set_cookie(
-        #     cookie_name,
-        #     e_cookie,
-        #     max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-        #     secure=session["data"]["secure"],
-        #     httponly=session["data"]["httpOnly"],
-        #     samesite=session["data"]["sameSite"],
-        # )
-
-        return res, 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
-        return str(err), 400
-    except Unauthorized as err:
-        return str(err), 401
-    except Conflict as err:
-        return str(err), 409
-    except InternalServerError as err:
-        logger.exception(err)
-        return "internal server error", 500
-    except Exception as err:
-        logger.exception(err)
-        return "internal server error", 500
-
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["POST"])
-def createRecord(user_id, site_id, region_id):
-    try:
-
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
+        user = find_user(user_id=user_id)
 
         payload = (
-            siteId,
-            regionId,
-            userId,
+            user["site_id"],
+            user["region_id"],
+            user["id"],
             request.json["records_name"],
             request.json["records_age"],
             request.json["records_sex"],
@@ -251,37 +283,62 @@ def createRecord(user_id, site_id, region_id):
        
         result = create_record(*payload)
 
-        return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+        return result, 200
+
+    except BadRequest as err:
         return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+        
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records", methods=["GET"])
-def findRecord(user_id, site_id, region_id):
+@v1.route("/users/<int:user_id>/records", methods=["GET"])
+def findRecord(user_id):
+    """
+    Find records that belong to user's site.
+
+    Parameters:
+        user_id: int
+
+    Body:
+       None
+    
+    Response:
+        200: list
+        400: str
+        401: str
+        500: str
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
+        user = find_user(user_id=user_id)
 
         payload = (
-            siteId,
-            regionId,
-            userId
+            user["site_id"],
+            user["region_id"],
+            user["id"],
         )
        
         result = find_record(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+
+    except BadRequest as err:
         return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+        
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
@@ -315,7 +372,7 @@ def createSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
         result = create_specimen_collection(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -340,7 +397,7 @@ def findSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
         result = find_specimen_collection(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -380,7 +437,7 @@ def createLabRecord(user_id, site_id, region_id, record_id):
         result = create_lab(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -405,7 +462,7 @@ def findLabRecord(user_id, site_id, region_id, record_id):
         result = find_lab(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -435,7 +492,7 @@ def createFollowUpRecord(user_id, site_id, region_id, record_id):
         result = create_follow_up(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -460,7 +517,7 @@ def findFollowUpRecord(user_id, site_id, region_id, record_id):
         result = find_follow_up(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -489,7 +546,7 @@ def createOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
         result = create_outcome_recorded(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -514,7 +571,7 @@ def findOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
         result = find_outcome_recorded(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -542,7 +599,7 @@ def createTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
         result = create_tb_treatment_outcome(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -567,7 +624,7 @@ def findTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
         result = find_tb_treatment_outcome(*payload)
 
         return jsonify(result), 200
-    except (BadRequest, werkzeug.exceptions.BadRequest) as err:
+    except BadRequest as err:
         return str(err), 400
     except InternalServerError as err:
         logger.exception(err)
@@ -576,7 +633,7 @@ def findTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/roles/<role>", methods=["POST"])
+@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>", methods=["PUT"])
 def assign_user_role(user_id, role):
     try:
         userId = user_id

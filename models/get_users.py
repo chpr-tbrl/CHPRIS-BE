@@ -8,6 +8,13 @@ from schemas.users.users import Users
 
 def get_all_users():
     """
+    Fetch all users.
+
+    Arguments:
+        None
+
+    Returns:
+        list
     """
     try:
         logger.debug("fetching all user records ...")
@@ -22,14 +29,13 @@ def get_all_users():
                 "createdAt": user["createdAt"],
                 "email": user["email"],
                 "id": user["id"],
-                "last_login": user["last_login"],
                 "name": user["name"],
                 "occupation": user["occupation"],
                 "phone_number": user["phone_number"],
                 "type_of_user": user["type_of_user"],
                 "type_of_export": user["type_of_export"],
-                "region": user["region"],
-                "site": user["site"],
+                "region_id": user["region_id"],
+                "site_id": user["site_id"],
                 "state": user["state"]
             })
 

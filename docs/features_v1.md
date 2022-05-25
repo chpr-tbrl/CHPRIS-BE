@@ -17,7 +17,6 @@
 13. [Fetch outcome recorded records](#13-fetch-outcome-recorded-records)
 14. [Create tb treatment outcome records](#14-create-tb-treatment-outcome-records)
 15. [Fetch tb treatment outcome records](#15-fetch-tb-treatment-outcome-records)
-16. [Assign roles](#16-assign-roles)
 
 ## 1. Create an account
 
@@ -43,23 +42,23 @@ Here is an example. Running User management API locally on port 9000
 curl --location --request POST 'http://localhost:9000/v1/signup' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "phone_number":"+xxx-xxx-xxx",
-    "name": "username",
-    "email": "example@mail.com",
-    "password": "password",
-    "occupation": "occupation",
-    "site": "site",
-    "region": "region"
+    "phone_number":"",
+    "name": "",
+    "email": "",
+    "password": "",
+    "occupation": "",
+    "site_id": "",
+    "region_id": ""
 }'
 ```
 
-If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) is set on the user's agent valid for two hours. The cookie is used to track the user's seesion. Also the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response/body) should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a dict
 
 - uid
 
 ```bash
 {
-    "uid": "xxxxxxxxxxxxxx"
+    "uid": ""
 }
 ```
 
@@ -84,40 +83,36 @@ Here is an example. Running User management API locally on port 9000
 curl --location --request POST 'http://localhost:9000/v1/login' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email": "example@mail.com",
-    "password": "password"
+    "email": "",
+    "password": ""
 }'
 ```
 
-If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) is set on the user's agent valid for two hours. The cookie is used to track the user's seesion. Also the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response/body) should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a dict
 
 - uid
 
 ```bash
 {
-    "uid": "xxxxxx-xxxx-xxxx-xxxx-xxxxxx"
+    "uid": ""
 }
 ```
 
 ## 3. Fetch users
 
-The user has to provide the [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) set on their user agent during [Authentication](#2-authenticate-an-account).
-
-The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
 
 - [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
-- [Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) = [Authorization cookie](#2-authenticate-an-account)
 
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users' \
+curl --location --request GET 'http://localhost:9000/v1/admin/users' \
 --header 'Content-Type: application/json' \
---header 'Cookie: xxx-xxx-xxx-xxx-xxx-xxx' \
 --data-raw ''
 ```
 
-If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) is set on the user's agent valid for two hours. The cookie is used to track the user's seesion. Also the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response/body) should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
 
 - []
 
@@ -133,7 +128,9 @@ If successful a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Heade
         "phone_number": "",
         "region": "",
         "site": "",
-        "state": ""
+        "state": "",
+        "type_of_export": "",
+        "type_of_user": ""
     }
 ]
 ```
@@ -178,7 +175,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/records' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "records_name":"",
@@ -223,7 +220,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/records' \
 --data-raw ''
 ```
 

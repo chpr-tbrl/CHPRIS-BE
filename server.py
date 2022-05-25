@@ -15,7 +15,9 @@ api = config["API"]
 from flask import Flask
 from flask_cors import CORS
 
-from routes.user_management.v1 import v1
+from routes.data_collector.v1 import v1 as data_collector_api_v1
+from routes.admin.v1 import v1 as admin_v1
+
 from controllers.sync_database import create_database
 from controllers.sync_database import create_tables
 
@@ -25,7 +27,8 @@ CORS(app)
 create_database()
 create_tables()
 
-app.register_blueprint(v1, url_prefix="/v1")
+app.register_blueprint(data_collector_api_v1, url_prefix="/v1")
+app.register_blueprint(admin_v1, url_prefix="/v1/admin")
 
 if __name__ == "__main__":
     app.logger.info("Running on un-secure port: %s" % api["PORT"])
