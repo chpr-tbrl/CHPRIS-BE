@@ -292,7 +292,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/specimen_collections' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "specimen_collection_1_date":"",
@@ -321,7 +321,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/specimen_collections' \
 --data-raw ''
 ```
 
@@ -379,7 +379,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/labs' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "lab_date_specimen_collection_received":"",
@@ -411,7 +411,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/labs' \
 --data-raw ''
 ```
 
@@ -462,7 +462,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/follow_ups' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "follow_up_xray":"",
@@ -484,7 +484,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/follow_ups' \
 --data-raw ''
 ```
 
@@ -524,7 +524,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/outcome_recorded' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "outcome_recorded_started_tb_treatment_outcome":"",
@@ -545,7 +545,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/outcome_recorded' \
 --data-raw ''
 ```
 
@@ -584,7 +584,7 @@ The user also must configure their [header](https://developer.mozilla.org/en-US/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes' \
+curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/tb_treatment_outcomes' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "tb_treatment_outcome_result":"",
@@ -604,7 +604,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/records/<record_id>/tb_treatment_outcomes' \
 --data-raw ''
 ```
 
@@ -625,18 +625,3 @@ If successful, the response should have a [status](https://developer.mozilla.org
     }
 ]
 ```
-
-## 16. Assign roles
-
-The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
-
-- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
-
-Here is an example. Running User management API locally on port 9000
-
-```bash
-curl --location --request POST 'http://localhost:9000/v1/users/<user_id>/roles/<role>' \
---data-raw ''
-```
-
-If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.

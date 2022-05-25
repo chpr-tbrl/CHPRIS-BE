@@ -127,7 +127,7 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/records' \
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/specimen_collections' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/records/1/specimen_collections' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "specimen_collection_1_date":"2022-05-17",
@@ -149,6 +149,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 >
 > - `200` = Success
 > - `400` = Bad request
+> - `401` = Unauthorized
 > - `500` = Error occurred
 
 ### Fetch specimen_collection records for user
@@ -156,13 +157,14 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/specimen_collections' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/records/1/specimen_collections' \
 --data-raw ''
 ```
 
 > Response
 >
 > - `200` = Success
+> - `401` = Unauthorized
 > - `500` = Error occurred
 
 ### Create new lab record
@@ -170,7 +172,7 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/labs' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/records/1/labs' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "lab_date_specimen_collection_received":"2022-05-17",
@@ -202,7 +204,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/labs' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/records/1/labs' \
 --data-raw ''
 ```
 
@@ -216,7 +218,7 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/follow_ups' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/records/1/follow_ups' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "follow_up_xray":true,
@@ -238,7 +240,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/follow_ups' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/records/1/follow_ups' \
 --data-raw ''
 ```
 
@@ -252,7 +254,7 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/outcome_recorded' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/records/1/outcome_recorded' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "outcome_recorded_started_tb_treatment_outcome":"started_tb_treatment",
@@ -273,7 +275,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/outcome_recorded' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/records/1/outcome_recorded' \
 --data-raw ''
 ```
 
@@ -287,7 +289,7 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/tb_treatment_outcomes' \
+curl --location --request POST 'http://localhost:9000/v1/users/1/records/1/tb_treatment_outcomes' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "tb_treatment_outcome_result":"cured",
@@ -307,7 +309,7 @@ curl --location --request POST 'http://localhost:9000/v1/users/1/sites/1/regions
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/sites/1/regions/1/records/1/tb_treatment_outcomes' \
+curl --location --request GET 'http://localhost:9000/v1/users/1/records/1/tb_treatment_outcomes' \
 --data-raw ''
 ```
 

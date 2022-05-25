@@ -64,10 +64,10 @@ def signup():
         region_id: int
     
     Response:
-        200: dict
-        400: str
-        401: str
-        409: str
+        200: dict,
+        400: str,
+        401: str,
+        409: str,
         500: str
     """
     try:
@@ -143,10 +143,10 @@ def login():
         password: str
     
     Response:
-        200: dict
-        400: str
-        401: str
-        409: str
+        200: dict,
+        400: str,
+        401: str,
+        409: str,
         500: str
     """
     try:
@@ -239,9 +239,9 @@ def createRecord(user_id):
         records_tb_treatment_history_contact_of_tb_patient: str
     
     Response:
-        200: str
-        400: str
-        401: str
+        200: str,
+        400: str,
+        401: str,
         500: str
     """
     try:
@@ -311,9 +311,9 @@ def findRecord(user_id):
        None
     
     Response:
-        200: list
-        400: str
-        401: str
+        200: list,
+        400: str,
+        401: str,
         500: str
     """
     try:
@@ -343,18 +343,41 @@ def findRecord(user_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections", methods=["POST"])
-def createSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
-    try:
+@v1.route("/users/<int:user_id>/records/<int:record_id>/specimen_collections", methods=["POST"])
+def createSpecimenCollectionRecord(user_id, record_id):
+    """
+    Create a new specimen_collections record.
 
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        specimen_collection_records_id = record_id
+    Parameters:
+        user_id: int,
+        record_id: int
+
+    Body:
+        specimen_collection_1_date: str,
+        specimen_collection_1_specimen_collection_type: str,
+        specimen_collection_1_other: str,
+        specimen_collection_1_period: str,
+        specimen_collection_1_aspect: str,
+        specimen_collection_1_received_by: str,
+        specimen_collection_2_date: str,
+        specimen_collection_2_specimen_collection_type: str,
+        specimen_collection_2_other: str,
+        specimen_collection_2_period: str,
+        specimen_collection_2_aspect: str,
+        specimen_collection_2_received_by: str
+            
+    Response:
+        200: str,
+        400: str,
+        401: str,
+        500: str
+    """
+    try:
+        find_user(user_id=user_id)
 
         payload = (
-            specimen_collection_records_id,
-            userId,
+            record_id,
+            user_id,
             request.json["specimen_collection_1_date"],
             request.json["specimen_collection_1_specimen_collection_type"],
             request.json["specimen_collection_1_other"],
@@ -371,37 +394,61 @@ def createSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
        
         result = create_specimen_collection(*payload)
 
-        return jsonify(result), 200
+        return result, 200
+
     except BadRequest as err:
         return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+        
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/specimen_collections", methods=["GET"])
-def findSpecimenCollectionRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<user_id>/records/<record_id>/specimen_collections", methods=["GET"])
+def findSpecimenCollectionRecord(user_id, record_id):
+    """
+    Find specimen_collection records that belong to record_id.
+
+    Parameters:
+        user_id: int,
+        record_id: int
+
+    Body:
+       None
+    
+    Response:
+        200: list,
+        400: str,
+        401: str,
+        500: str
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        specimen_collection_records_id = record_id
+        find_user(user_id=user_id)
 
         payload = (
-            userId,
-            specimen_collection_records_id
+            record_id
         )
        
         result = find_specimen_collection(*payload)
 
         return jsonify(result), 200
+
     except BadRequest as err:
         return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+        
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
