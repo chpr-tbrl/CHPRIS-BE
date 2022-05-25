@@ -1,28 +1,32 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from error import InternalServerError
-
 from peewee import DatabaseError
+
 from schemas.records.outcome_recorded import Outcome_recorded
 
-def find_outcome_recorded(outcome_recorded_user_id, outcome_recorded_records_id):
+from datetime import date
+
+from werkzeug.exceptions import InternalServerError
+
+def find_outcome_recorded(outcome_recorded_records_id: int) -> list:
     """
     """
     try:
-        logger.debug(f"finding outcome_recorded records for {outcome_recorded_user_id} ...")
+        logger.debug("finding outcome_recorded records for %s ..." % outcome_recorded_records_id)
         result = []
         
         outcomes_recorded = (
             Outcome_recorded.select()
-            .where(Outcome_recorded.outcome_recorded_user_id == outcome_recorded_user_id, Outcome_recorded.outcome_recorded_records_id == outcome_recorded_records_id)
+            .where(Outcome_recorded.outcome_recorded_records_id == outcome_recorded_records_id, Outcome_recorded.outcome_recorded_date >= date.today())
             .dicts()
         )
         for outcome_recorded in outcomes_recorded:
             result.append(outcome_recorded)
 
-        logger.info(f"Successfully found outcome_recorded records for {outcome_recorded_user_id}")
+        logger.info("- Successfully found outcome_recorded records for %s" % outcome_recorded_records_id)
         return result
+        
     except DatabaseError as err:
-        logger.error(f"failed to finding outcome_recorded record for {outcome_recorded_user_id} check logs")
-        raise InternalServerError(err)
+        logger.error("failed to finding outcome_recorded record for %s check logs" % outcome_recorded_records_id)
+        raise InternalServerError(err) from None

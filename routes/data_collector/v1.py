@@ -410,7 +410,7 @@ def createSpecimenCollectionRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/records/<record_id>/specimen_collections", methods=["GET"])
+@v1.route("/users/<int:user_id>/records/<int:record_id>/specimen_collections", methods=["GET"])
 def findSpecimenCollectionRecord(user_id, record_id):
     """
     Find specimen_collection records that belong to record_id.
@@ -430,12 +430,8 @@ def findSpecimenCollectionRecord(user_id, record_id):
     """
     try:
         find_user(user_id=user_id)
-
-        payload = (
-            record_id
-        )
        
-        result = find_specimen_collection(*payload)
+        result = find_specimen_collection(specimen_collection_records_id=record_id)
 
         return jsonify(result), 200
 
@@ -453,17 +449,16 @@ def findSpecimenCollectionRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs", methods=["POST"])
-def createLabRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/labs", methods=["POST"])
+def createLabRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        lab_records_id = record_id
+        find_user(user_id=user_id)
 
         payload = (
-            lab_records_id,            
-            userId,
+            record_id,            
+            user_id,
             request.json["lab_date_specimen_collection_received"],
             request.json["lab_received_by"],
             request.json["lab_registration_number"],
@@ -483,52 +478,54 @@ def createLabRecord(user_id, site_id, region_id, record_id):
        
         result = create_lab(*payload)
 
-        return jsonify(result), 200
+        return result, 200
+
     except BadRequest as err:
         return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/labs", methods=["GET"])
-def findLabRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/labs", methods=["GET"])
+def findLabRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        lab_records_id = record_id
-
-        payload = (
-            userId,
-            lab_records_id
-        )
+        find_user(user_id=user_id)
        
-        result = find_lab(*payload)
+        result = find_lab(lab_records_id=record_id)
 
         return jsonify(result), 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
     
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups", methods=["POST"])
-def createFollowUpRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/follow_ups", methods=["POST"])
+def createFollowUpRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        follow_up_records_id = record_id
+        find_user(user_id=user_id)
 
         payload = (
-            follow_up_records_id,
-            userId,
+            record_id,
+            user_id,
             request.json["follow_up_xray"],
             request.json["follow_up_amoxicillin"],
             request.json["follow_up_other_antibiotic"],
@@ -538,52 +535,51 @@ def createFollowUpRecord(user_id, site_id, region_id, record_id):
        
         result = create_follow_up(*payload)
 
-        return jsonify(result), 200
+        return result, 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/follow_ups", methods=["GET"])
-def findFollowUpRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/follow_ups", methods=["GET"])
+def findFollowUpRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        follow_up_records_id = record_id
-
-        payload = (
-            userId,
-            follow_up_records_id
-        )
+        find_user(user_id=user_id)
        
-        result = find_follow_up(*payload)
+        result = find_follow_up(follow_up_records_id=record_id)
 
         return jsonify(result), 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded", methods=["POST"])
-def createOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/outcome_recorded", methods=["POST"])
+def createOutcomeRecoredRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        outcome_recorded_records_id = record_id
+        find_user(user_id=user_id)
 
         payload = (
-            outcome_recorded_records_id,
-            userId,
+            record_id,
+            user_id,
             request.json["outcome_recorded_started_tb_treatment_outcome"],
             request.json["outcome_recorded_tb_rx_number"],
             request.json["outcome_recorded_other"],
@@ -592,52 +588,51 @@ def createOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
        
         result = create_outcome_recorded(*payload)
 
-        return jsonify(result), 200
+        return result, 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/outcome_recorded", methods=["GET"])
-def findOutcomeRecoredRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/outcome_recorded", methods=["GET"])
+def findOutcomeRecoredRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        outcome_recorded_records_id = record_id
+        find_user(user_id=user_id)
 
-        payload = (
-            userId,
-            outcome_recorded_records_id
-        )
-       
-        result = find_outcome_recorded(*payload)
+        result = find_outcome_recorded(outcome_recorded_records_id=record_id)
 
         return jsonify(result), 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes", methods=["POST"])
-def createTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/tb_treatment_outcomes", methods=["POST"])
+def createTbTreatmentOutcomeRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        tb_treatment_outcome_records_id = record_id
+        find_user(user_id=user_id)
 
         payload = (
-            tb_treatment_outcome_records_id,
-            userId,
+            record_id,
+            user_id,
             request.json["tb_treatment_outcome_result"],
             request.json["tb_treatment_outcome_comments"],
             request.json["tb_treatment_outcome_close_patient_file"]
@@ -645,61 +640,37 @@ def createTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
        
         result = create_tb_treatment_outcome(*payload)
 
-        return jsonify(result), 200
+        return result, 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
+
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>/records/<record_id>/tb_treatment_outcomes", methods=["GET"])
-def findTbTreatmentOutcomeRecord(user_id, site_id, region_id, record_id):
+@v1.route("/users/<int:user_id>/records/<int:record_id>/tb_treatment_outcomes", methods=["GET"])
+def findTbTreatmentOutcomeRecord(user_id, record_id):
+    """
+    """
     try:
-        userId = user_id
-        siteId = site_id
-        regionId = region_id
-        tb_treatment_outcome_records_id = record_id
-
-        payload = (
-            userId,
-            tb_treatment_outcome_records_id
-        )
+        find_user(user_id=user_id)
        
-        result = find_tb_treatment_outcome(*payload)
+        result = find_tb_treatment_outcome(tb_treatment_outcome_records_id=record_id)
 
         return jsonify(result), 200
+
     except BadRequest as err:
         return str(err), 400
+
     except InternalServerError as err:
         logger.exception(err)
         return "internal server error", 500
-    except Exception as err:
-        logger.exception(err)
-        return "internal server error", 500
 
-@v1.route("/users/<user_id>/sites/<site_id>/regions/<region_id>", methods=["PUT"])
-def assign_user_role(user_id, role):
-    try:
-        userId = user_id
-
-        payload = (
-            userId,
-            role
-        )
-       
-        assign_role(*payload)
-
-        return "", 200
-    except BadRequest as err:
-        return "%s" % err, 400
-    except Unauthorized as err:
-        return "%s" % err, 401
-    except InternalServerError as err:
-        logger.exception(err)
-        return "internal server error", 500
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500

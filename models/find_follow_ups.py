@@ -1,28 +1,32 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from error import InternalServerError
-
 from peewee import DatabaseError
+
 from schemas.records.follow_up import Follow_ups
 
-def find_follow_up(follow_up_user_id, follow_up_records_id):
+from datetime import date
+
+from werkzeug.exceptions import InternalServerError
+
+def find_follow_up(follow_up_records_id: int) -> list:
     """
     """
     try:
-        logger.debug(f"finding lab records for {follow_up_user_id} ...")
+        logger.debug("finding lab records for %s ..." % follow_up_records_id)
         result = []
         
         follow_ups = (
             Follow_ups.select()
-            .where(Follow_ups.follow_up_user_id == follow_up_user_id, Follow_ups.follow_up_records_id == follow_up_records_id)
+            .where(Follow_ups.follow_up_records_id == follow_up_records_id, Follow_ups.follow_up_date >= date.today())
             .dicts()
         )
         for follow_up in follow_ups:
             result.append(follow_up)
 
-        logger.info(f"Successfully found follow_up records for {follow_up_user_id}")
+        logger.info("- Successfully found follow_up records for %s" % follow_up_records_id)
         return result
+
     except DatabaseError as err:
-        logger.error(f"failed to finding follow_ups record for {follow_up_user_id} check logs")
-        raise InternalServerError(err)
+        logger.error("failed to finding follow_ups record for %s check logs" % follow_up_records_id)
+        raise InternalServerError(err) from None
