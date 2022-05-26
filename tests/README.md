@@ -399,7 +399,7 @@ curl --location --request POST 'http://localhost:9000/v1/admin/regions/<region_i
 > - `409` = Conflict
 > - `500` = Error occurred
 
-### Fetch all regions
+### Fetch all sites
 
 > Request
 
