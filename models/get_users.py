@@ -1,10 +1,11 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from error import InternalServerError
-
 from peewee import DatabaseError
+
 from schemas.users.users import Users
+
+from werkzeug.exceptions import InternalServerError
 
 def get_all_users():
     """
@@ -41,6 +42,7 @@ def get_all_users():
 
         logger.info("- Successfully fetched all users")
         return result
+
     except DatabaseError as err:
         logger.error("failed to fetch all users check logs")
-        raise InternalServerError(err)
+        raise InternalServerError(err) from None

@@ -19,6 +19,7 @@ from schemas.records.baseModel import records_db
 
 from models.get_users import get_all_users
 from models.find_users import find_user
+from models.update_users import update_user
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -87,19 +88,75 @@ def getAllUsers():
         return res, 200
 
     except BadRequest as err:
-        logger.exception(err)
         return str(err), 400
 
     except Unauthorized as err:
-        logger.exception(err)
         return str(err), 401
 
     except Forbidden as err:
-        logger.exception(err)
         return str(err), 403
 
     except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
         logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/users/<int:user_id>", methods=["PUT"])
+def updateUser(user_id):
+    """
+    Update a user's account.
+
+    Body:
+        occupation: str,
+        phone_number: str,
+        region_id: int,
+        site_id: int,
+        state: str,
+        type_of_export: str,
+        type_of_user: str
+
+    Response:
+        200: str
+        400: str
+        401: str
+        409: str
+        403: str
+        500: str
+    """
+    try:
+        user = find_user(user_id=user_id)
+
+        payload = (
+            user["id"],
+            request.json["occupation"],
+            request.json["phone_number"],
+            request.json["region_id"],
+            request.json["site_id"],
+            request.json["state"],
+            request.json["type_of_export"],
+            request.json["type_of_user"]
+        )
+
+        result = update_user(*payload)
+
+        return result, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except Conflict as err:
         return str(err), 409
 
     except InternalServerError as err:

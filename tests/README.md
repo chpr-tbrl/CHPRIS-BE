@@ -317,3 +317,31 @@ curl --location --request GET 'http://localhost:9000/v1/users/1/records/1/tb_tre
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Update a user's account
+
+> Request
+
+```bash
+curl --location --request PUT 'http://localhost:9000/v1/admin/users/1' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "phone_number":"+xxx-xxx-xxx",
+    "name": "username",
+    "email": "example@mail.com",
+    "password": "password",
+    "occupation": "occupation",
+    "site_id": 1,
+    "region_id":1,
+    "state":"verified",
+    "type_of_export": null,
+    "type_of_user":"admin"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `401` = Unauthorized
+> - `500` = Error occurred

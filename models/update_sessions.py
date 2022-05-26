@@ -1,17 +1,21 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from error import Conflict, InternalServerError, Unauthorized
-
-from peewee import DatabaseError
-from datetime import datetime, timedelta
-from schemas.users.sessions import Sessions
-
 from Configs import baseConfig
 config = baseConfig()
 api = config["API"]
 secure = api["SECURE_COOKIE"]
 hour = eval(api["COOKIE_MAXAGE"])
+
+from peewee import DatabaseError
+
+from datetime import datetime, timedelta
+
+from schemas.users.sessions import Sessions
+
+from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import Unauthorized
 
 def update_session(sid: str, unique_identifier: str) -> dict:
     try:
@@ -65,6 +69,7 @@ def update_session(sid: str, unique_identifier: str) -> dict:
 
         logger.info("- SUCCESSFULLY UPDATED SESSION %s" % sid)
         return {"sid": sid, "uid": unique_identifier, "data": data}
+
     except DatabaseError as err:
         logger.error("FAILED UPDATING SESSION %s CHECK LOGS" % sid)
-        raise InternalServerError(err)
+        raise InternalServerError(err) from None

@@ -17,6 +17,7 @@
 13. [Fetch outcome recorded records](#13-fetch-outcome-recorded-records)
 14. [Create tb treatment outcome records](#14-create-tb-treatment-outcome-records)
 15. [Fetch tb treatment outcome records](#15-fetch-tb-treatment-outcome-records)
+16. [Update Users](#16-update-users)
 
 ## 1. Create an account
 
@@ -122,12 +123,11 @@ If successful, the response should have a [status](https://developer.mozilla.org
         "createdAt": "",
         "email": "",
         "id": "",
-        "last_login": "",
         "name": "",
         "occupation": "",
         "phone_number": "",
-        "region": "",
-        "site": "",
+        "region_id": "",
+        "site_id": "",
         "state": "",
         "type_of_export": "",
         "type_of_user": ""
@@ -625,3 +625,43 @@ If successful, the response should have a [status](https://developer.mozilla.org
     }
 ]
 ```
+
+## 16. Update Users
+
+The user has to provide the following in the [request body](https://developer.mozilla.org/en-US/docs/Web/API/Request/body):
+
+- phone_number
+- name
+- email
+- password
+- occupation
+- site_id
+- region_id
+- state
+- type_of_export
+- type_of_user
+
+The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request PUT 'http://localhost:9000/v1/admin/users/<user_id>' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "phone_number":"",
+    "name": "",
+    "email": "",
+    "password": "",
+    "occupation": "",
+    "site_id": "",
+    "region_id":"",
+    "state":"",
+    "type_of_export": "",
+    "type_of_user":""
+}'
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.
