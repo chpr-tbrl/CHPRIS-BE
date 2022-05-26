@@ -35,7 +35,9 @@
 
 ### Sites
 
-| Action                                               | Endpoint                   | Parameters | Request body                    |
-| :--------------------------------------------------- | :------------------------- | :--------- | :------------------------------ |
-| [Create regions](./features_v1.md#17-create-regions) | **POST** /v1/admin/regions | None       | <ul><li>name = STRING</li></ul> |
-| [Fetch regions](./features_v1.md#18-fetch-regions)   | **GET** /v1/admin/regions  | None       | None                            |
+| Action                                               | Endpoint                                     | Parameters                            | Request body                    |
+| :--------------------------------------------------- | :------------------------------------------- | :------------------------------------ | :------------------------------ |
+| [Create regions](./features_v1.md#17-create-regions) | **POST** /v1/admin/regions                   | None                                  | <ul><li>name = STRING</li></ul> |
+| [Fetch regions](./features_v1.md#18-fetch-regions)   | **GET** /v1/admin/regions                    | None                                  | None                            |
+| [Create sites](./features_v1.md#19-create-sites)     | **POST** /v1/admin/regions/<region_id>/sites | <ul><li>region_id = INTEGER</li></ul> | <ul><li>name = STRING</li></ul> |
+| [Fetch sites](./features_v1.md#20-fetch-sites)       | **GET** /v1/admin/regions/<region_id>/sites  | <ul><li>region_id = INTEGER</li></ul> | None                            |

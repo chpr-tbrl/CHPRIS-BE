@@ -7,7 +7,7 @@ from schemas.users.users import Users
 
 from werkzeug.exceptions import InternalServerError
 
-def get_all_users():
+def get_all_users() -> list:
     """
     Fetch all users.
 

@@ -379,3 +379,36 @@ curl --location --request GET 'http://localhost:9000/v1/admin/regions' \
 >
 > - `200` = Success
 > - `500` = Error occurred
+
+### Create new site
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/admin/regions/<region_id>/sites' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "site"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `409` = Conflict
+> - `500` = Error occurred
+
+### Fetch all regions
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/admin/regions/<region_id>/sites' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred

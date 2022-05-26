@@ -7,7 +7,7 @@ from schemas.sites.regions import Regions
 
 from werkzeug.exceptions import InternalServerError
 
-def get_all_regions():
+def get_all_regions() -> list:
     """
     Fetch all regions.
 
@@ -21,12 +21,12 @@ def get_all_regions():
         logger.debug("fetching all region records ...")
         result = []
         
-        users = (
+        regions = (
             Regions.select()
             .dicts()
         )
-        for user in users:
-            result.append(user)
+        for region in regions:
+            result.append(region)
 
         logger.info("- Successfully fetched all regions")
         return result

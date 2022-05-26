@@ -11,3 +11,6 @@ class Sites(BaseModel):
     name = CharField(null=True)
     region_id = ForeignKeyField(Regions)
     createdAt = DateTimeField(null=True, default=datetime.now)
+
+    class Meta:
+        indexes = ((('name', 'region_id'), True),)

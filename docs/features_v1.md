@@ -20,6 +20,8 @@
 16. [Update Users](#16-update-users)
 17. [Create regions](#17-create-regions)
 18. [Fetch regions](#18-fetch-regions)
+19. [Create sites](#19-create-sites)
+20. [Fetch sites](#20-fetch-sites)
 
 ## 1. Create an account
 
@@ -715,6 +717,56 @@ If successful, the response should have a [status](https://developer.mozilla.org
         "createdAt": "",
         "id": "",
         "name": ""
+    }
+]
+```
+
+## 19. Create sites
+
+The user has to provide the following in the [request body](https://developer.mozilla.org/en-US/docs/Web/API/Request/body):
+
+- name
+
+The user also must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/admin/regions/<region_id>/sites' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name":""
+}'
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200`.
+
+## 20. Fetch sites
+
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/admin/regions/<region_id>/sites' \
+--data-raw ''
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+
+- []
+
+```bash
+[
+    {
+        "createdAt": "",
+        "id": "",
+        "name": "",
+        "region_id":""
     }
 ]
 ```

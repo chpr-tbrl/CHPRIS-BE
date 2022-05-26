@@ -51,6 +51,7 @@ def create_session(unique_identifier: str, user_agent: str) -> dict:
             "- SUCCESSFULLY CREATED SESSION %s FOR %s" % (str(session), unique_identifier) 
         )
         return {"sid": str(session), "uid": unique_identifier, "data": data}
+
     except DatabaseError as err:
         logger.error("FAILED TO CREATE SESSION FOR %s CHECK LOGS" % unique_identifier)
-        raise InternalServerError(err)
+        raise InternalServerError(err) from None
