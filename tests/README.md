@@ -346,3 +346,36 @@ curl --location --request PUT 'http://localhost:9000/v1/admin/users/1' \
 > - `400` = Bad request
 > - `401` = Unauthorized
 > - `500` = Error occurred
+
+### Create new region
+
+> Request
+
+```bash
+curl --location --request POST 'http://localhost:9000/v1/admin/regions' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "region"
+}'
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `409` = Conflict
+> - `500` = Error occurred
+
+### Fetch all regions
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/admin/regions' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `500` = Error occurred

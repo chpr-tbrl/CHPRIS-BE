@@ -20,6 +20,8 @@ from schemas.records.baseModel import records_db
 from models.get_users import get_all_users
 from models.find_users import find_user
 from models.update_users import update_user
+from models.create_regions import create_region
+from models.get_regions import get_all_regions
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -157,6 +159,76 @@ def updateUser(user_id):
 
     except Forbidden as err:
         return str(err), 403
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/regions", methods=["POST"])
+def createRegion():
+    """
+    Create a new region.
+
+    Body:
+        name: str,
+
+    Response:
+        200: str
+        400: str
+        500: str
+    """
+    try:
+        name = request.json["name"]
+
+        result = create_region(name=name)
+
+        return result, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/regions", methods=["GET"])
+def getRegions():
+    """
+    Get all regions.
+
+    Body:
+        None
+
+    Response:
+        200: list,
+        400: str,       
+        401: str,
+        500: str
+    """
+    try:        
+        result = get_all_regions()
+
+        return jsonify(result), 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
 
     except Conflict as err:
         return str(err), 409

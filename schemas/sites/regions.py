@@ -5,5 +5,5 @@ from schemas.sites.baseModel import BaseModel
 from datetime import datetime
 
 class Regions(BaseModel):
-    name = CharField(null=True)
+    name = CharField(null=True, unique=True)
     createdAt = DateTimeField(null=True, default=datetime.now)
