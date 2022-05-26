@@ -119,7 +119,8 @@ def updateUser(user_id):
         site_id: int,
         state: str,
         type_of_export: str,
-        type_of_user: str
+        type_of_user: str,
+        exportable_range: str
 
     Response:
         200: str
@@ -140,7 +141,8 @@ def updateUser(user_id):
             request.json["site_id"],
             request.json["state"],
             request.json["type_of_export"],
-            request.json["type_of_user"]
+            request.json["type_of_user"],
+            request.json["exportable_range"]
         )
 
         result = update_user(*payload)

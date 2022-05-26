@@ -35,6 +35,7 @@ def get_all_users():
                 "phone_number": user["phone_number"],
                 "type_of_user": user["type_of_user"],
                 "type_of_export": user["type_of_export"],
+                "exportable_range": user["exportable_range"],
                 "region_id": user["region_id"],
                 "site_id": user["site_id"],
                 "state": user["state"]

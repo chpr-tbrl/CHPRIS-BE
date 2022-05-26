@@ -130,7 +130,8 @@ If successful, the response should have a [status](https://developer.mozilla.org
         "site_id": "",
         "state": "",
         "type_of_export": "",
-        "type_of_user": ""
+        "type_of_user": "",
+        "exportable_range": ""
     }
 ]
 ```
@@ -660,7 +661,8 @@ curl --location --request PUT 'http://localhost:9000/v1/admin/users/<user_id>' \
     "region_id":"",
     "state":"",
     "type_of_export": "",
-    "type_of_user":""
+    "type_of_user":"",
+    "exportable_range":""
 }'
 ```
 

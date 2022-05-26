@@ -5,8 +5,6 @@ from peewee import DatabaseError
 
 from schemas.records.specimen_collection import Specimen_collections
 
-from datetime import date
-
 from werkzeug.exceptions import InternalServerError
 
 def find_specimen_collection(specimen_collection_records_id: int) -> list:
@@ -25,7 +23,7 @@ def find_specimen_collection(specimen_collection_records_id: int) -> list:
         
         specimen_collections = (
             Specimen_collections.select()
-            .where(Specimen_collections.specimen_collection_records_id == specimen_collection_records_id, Specimen_collections.specimen_collection_date >= date.today())
+            .where(Specimen_collections.specimen_collection_records_id == specimen_collection_records_id)
             .dicts()
         )
         for specimen_collection in specimen_collections:

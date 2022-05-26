@@ -15,6 +15,7 @@ class Users(BaseModel):
     state = CharField(default="pending")
     type_of_user = CharField(default="data_collection")
     type_of_export = TextField(null=True)
+    exportable_range = IntegerField(null=True)
     region_id = IntegerField()
     site_id = IntegerField()
     createdAt = DateTimeField(null=True, default=datetime.now)

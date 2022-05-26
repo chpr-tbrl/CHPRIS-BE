@@ -5,8 +5,6 @@ from peewee import DatabaseError
 
 from schemas.records.follow_up import Follow_ups
 
-from datetime import date
-
 from werkzeug.exceptions import InternalServerError
 
 def find_follow_up(follow_up_records_id: int) -> list:
@@ -18,7 +16,7 @@ def find_follow_up(follow_up_records_id: int) -> list:
         
         follow_ups = (
             Follow_ups.select()
-            .where(Follow_ups.follow_up_records_id == follow_up_records_id, Follow_ups.follow_up_date >= date.today())
+            .where(Follow_ups.follow_up_records_id == follow_up_records_id)
             .dicts()
         )
         for follow_up in follow_ups:

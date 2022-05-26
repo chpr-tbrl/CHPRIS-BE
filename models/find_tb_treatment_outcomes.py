@@ -5,8 +5,6 @@ from peewee import DatabaseError
 
 from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
 
-from datetime import date
-
 from werkzeug.exceptions import InternalServerError
 
 def find_tb_treatment_outcome(tb_treatment_outcome_records_id: int) -> list:
@@ -18,7 +16,7 @@ def find_tb_treatment_outcome(tb_treatment_outcome_records_id: int) -> list:
         
         tb_treatment_outcomes = (
             Tb_treatment_outcomes.select()
-            .where(Tb_treatment_outcomes.tb_treatment_outcome_records_id == tb_treatment_outcome_records_id, Tb_treatment_outcomes.tb_treatment_outcome_date >= date.today())
+            .where(Tb_treatment_outcomes.tb_treatment_outcome_records_id == tb_treatment_outcome_records_id)
             .dicts()
         )
         for tb_treatment_outcome in tb_treatment_outcomes:

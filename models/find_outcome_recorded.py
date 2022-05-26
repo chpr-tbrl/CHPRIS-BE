@@ -5,8 +5,6 @@ from peewee import DatabaseError
 
 from schemas.records.outcome_recorded import Outcome_recorded
 
-from datetime import date
-
 from werkzeug.exceptions import InternalServerError
 
 def find_outcome_recorded(outcome_recorded_records_id: int) -> list:
@@ -18,7 +16,7 @@ def find_outcome_recorded(outcome_recorded_records_id: int) -> list:
         
         outcomes_recorded = (
             Outcome_recorded.select()
-            .where(Outcome_recorded.outcome_recorded_records_id == outcome_recorded_records_id, Outcome_recorded.outcome_recorded_date >= date.today())
+            .where(Outcome_recorded.outcome_recorded_records_id == outcome_recorded_records_id)
             .dicts()
         )
         for outcome_recorded in outcomes_recorded:

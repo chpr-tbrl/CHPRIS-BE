@@ -8,7 +8,7 @@ from schemas.users.users import Users
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Unauthorized
 
-def update_user(id: int, occupation: str, phone_number: str, region_id: int, site_id: int, state: str, type_of_export: str, type_of_user: str) -> str:
+def update_user(id: int, occupation: str, phone_number: str, region_id: int, site_id: int, state: str, type_of_export: str, type_of_user: str, exportable_range: int) -> str:
     """
     Update a user's account.
 
@@ -20,7 +20,8 @@ def update_user(id: int, occupation: str, phone_number: str, region_id: int, sit
         site_id: int,
         state: str,
         type_of_export: str,
-        type_of_user: str
+        type_of_user: str,
+        exportable_range: str
 
     Returns:
         str
@@ -32,7 +33,7 @@ def update_user(id: int, occupation: str, phone_number: str, region_id: int, sit
 
         logger.debug("Updating user %d record ..." % id)
         
-        user = Users.update(occupation=occupation , phone_number=phone_number , region_id=region_id , site_id=site_id , state=state , type_of_export=type_of_export , type_of_user=type_of_user).where(Users.id == id)
+        user = Users.update(occupation=occupation , phone_number=phone_number , region_id=region_id , site_id=site_id , state=state , type_of_export=type_of_export , type_of_user=type_of_user, exportable_range=exportable_range).where(Users.id == id)
         user.execute()
 
         logger.info("- Successfully updated user %s" % id)

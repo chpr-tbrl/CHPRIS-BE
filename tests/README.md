@@ -335,7 +335,8 @@ curl --location --request PUT 'http://localhost:9000/v1/admin/users/1' \
     "region_id":1,
     "state":"verified",
     "type_of_export": null,
-    "type_of_user":"admin"
+    "type_of_user":"admin",
+    "exportable_range":1
 }'
 ```
 

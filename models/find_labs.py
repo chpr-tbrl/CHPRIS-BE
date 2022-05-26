@@ -5,8 +5,6 @@ from peewee import DatabaseError
 
 from schemas.records.lab import Labs
 
-from datetime import date
-
 from werkzeug.exceptions import InternalServerError
 
 def find_lab(lab_records_id):
@@ -18,7 +16,7 @@ def find_lab(lab_records_id):
         
         labs = (
             Labs.select()
-            .where(Labs.lab_records_id == lab_records_id, Labs.lab_date >= date.today())
+            .where(Labs.lab_records_id == lab_records_id)
             .dicts()
         )
         for lab in labs:
