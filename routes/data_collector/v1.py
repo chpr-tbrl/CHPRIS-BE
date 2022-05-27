@@ -673,3 +673,41 @@ def findTbTreatmentOutcomeRecord(user_id, record_id):
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
+
+@v1.route("/users/<int:user_id>", methods=["GET"])
+def findAUser(user_id):
+    """
+    """
+    try:
+        user = find_user(user_id=user_id)
+       
+        result = {
+            "createdAt": user["createdAt"],
+            "email": user["email"],
+            "id": user["id"],
+            "name": user["name"],
+            "occupation": user["occupation"],
+            "phone_number": user["phone_number"],
+            "type_of_user": user["type_of_user"],
+            "type_of_export": user["type_of_export"],
+            "exportable_range": user["exportable_range"],
+            "region_id": user["region_id"],
+            "site_id": user["site_id"],
+            "state": user["state"]
+        }
+
+        return jsonify(result), 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500

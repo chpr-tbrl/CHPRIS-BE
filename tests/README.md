@@ -385,7 +385,7 @@ curl --location --request GET 'http://localhost:9000/v1/admin/regions' \
 > Request
 
 ```bash
-curl --location --request POST 'http://localhost:9000/v1/admin/regions/<region_id>/sites' \
+curl --location --request POST 'http://localhost:9000/v1/admin/regions/1/sites' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": "site"
@@ -404,11 +404,27 @@ curl --location --request POST 'http://localhost:9000/v1/admin/regions/<region_i
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/admin/regions/<region_id>/sites' \
+curl --location --request GET 'http://localhost:9000/v1/admin/regions/1/sites' \
 --data-raw ''
 ```
 
 > Response
 >
 > - `200` = Success
+> - `500` = Error occurred
+
+### Fetch a user
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `401` = Unauthorized
 > - `500` = Error occurred

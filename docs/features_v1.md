@@ -22,6 +22,7 @@
 18. [Fetch regions](#18-fetch-regions)
 19. [Create sites](#19-create-sites)
 20. [Fetch sites](#20-fetch-sites)
+21. [Fetch Users](#21-fetch-a-user)
 
 ## 1. Create an account
 
@@ -767,6 +768,42 @@ If successful, the response should have a [status](https://developer.mozilla.org
         "id": "",
         "name": "",
         "region_id":""
+    }
+]
+```
+
+## 21. Fetch a user
+
+The user must configure their [header](https://developer.mozilla.org/en-US/docs/Glossary/Representation_header) to:
+
+- [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) = application/json
+
+Here is an example. Running User management API locally on port 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>' \
+--data-raw ''
+```
+
+If successful, the response should have a [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) of `200` and the body should contain a list
+
+- []
+
+```bash
+[
+    {
+        "createdAt": "",
+        "email": "",
+        "id": "",
+        "name": "",
+        "occupation": "",
+        "phone_number": "",
+        "region_id": "",
+        "site_id": "",
+        "state": "",
+        "type_of_export": "",
+        "type_of_user": "",
+        "exportable_range": ""
     }
 ]
 ```
