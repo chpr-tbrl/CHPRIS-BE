@@ -13,6 +13,7 @@ config = baseConfig()
 api = config["API"]
 
 from flask import Flask
+from flask import send_from_directory
 from flask_cors import CORS
 
 from routes.data_collector.v1 import v1 as data_collector_api_v1
@@ -29,6 +30,10 @@ create_tables()
 
 app.register_blueprint(data_collector_api_v1, url_prefix="/v1")
 app.register_blueprint(admin_v1, url_prefix="/v1/admin")
+
+@app.route("/downloads/<path:path>")
+def downloads(path):
+    return send_from_directory("datasets", path)
 
 if __name__ == "__main__":
     app.logger.info("Running on un-secure port: %s" % api["PORT"])

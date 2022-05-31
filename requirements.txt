@@ -13,6 +13,7 @@ peewee==3.14.10
 peewee-plus==1.1.0
 protobuf==3.20.1
 pycryptodome==3.14.1
+python-dateutil==2.8.2
 six==1.16.0
 Werkzeug==2.1.2
 zipp==3.8.0
