@@ -7,6 +7,8 @@ from datetime import datetime
 
 from schemas.records.records import Records
 
+from models.purge_exports import purge_export
+
 from werkzeug.exceptions import InternalServerError
 
 def data_export(start_date:str, end_date:str, region_id:int = None, site_id:int = None) -> str:
@@ -74,6 +76,9 @@ def data_export(start_date:str, end_date:str, region_id:int = None, site_id:int 
                 writer.writerow(row)
         
         logger.info("- Export complete")
+
+        purge_export(max_days=7)
+
         return "%s/%s" % ("/downloads", export_file)
 
     except Exception as error:
