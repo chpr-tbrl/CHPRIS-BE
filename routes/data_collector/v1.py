@@ -740,10 +740,11 @@ def dataExport(user_id, types):
         start_date = request.args.get("start_date")
         end_date = request.args.get("end_date")
         month_range = date.today().month - parse(start_date).month
-        logger.info("requesting %d month(s) data" % month_range)
+
+        logger.info("requesting %d month(s) data" % (month_range+1))
 
         logger.debug("checking exportable_range ...")
-        if month_range+1 > user['exportable_range']:
+        if (month_range+1) > user['exportable_range']:
             logger.error("Not allowed to export. Exportable_range exceeded")
             raise Forbidden()
 

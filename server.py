@@ -33,6 +33,7 @@ app.register_blueprint(admin_v1, url_prefix="/v1/admin")
 
 @app.route("/downloads/<path:path>")
 def downloads(path):
+    app.logger.debug("Requesting %s download ..." % path)
     return send_from_directory("datasets", path)
 
 if __name__ == "__main__":
