@@ -717,8 +717,8 @@ def findAUser(user_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/exports/<string:types>", methods=["GET"])
-def dataExport(user_id, types):
+@v1.route("/users/<int:user_id>/exports/<string:format>", methods=["GET"])
+def dataExport(user_id, format):
     """
     """
     try:        
@@ -733,15 +733,13 @@ def dataExport(user_id, types):
         elif not user['type_of_export']:
             logger.error("Not allowed to export. No exportation type")
             raise Forbidden()
-        elif not types in user['type_of_export'].split(","):
-            logger.error("Not allowed to export to %s" % types)
+        elif not format in user['type_of_export'].split(","):
+            logger.error("Not allowed to export to %s" % format)
             raise Forbidden()
 
         start_date = request.args.get("start_date")
         end_date = request.args.get("end_date")
         month_range = date.today().month - parse(start_date).month
-
-        logger.info("requesting %d month(s) data" % (month_range+1))
 
         logger.debug("checking exportable_range ...")
         if (month_range+1) > user['exportable_range']:
@@ -751,8 +749,12 @@ def dataExport(user_id, types):
         region_id = user['region_id']
         site_id = user['site_id']
 
-        start_date = parse(start_date) + relativedelta(hours=23, minutes=59, seconds=59)
+        start_date = parse(start_date)
         end_date = parse(end_date) + relativedelta(hours=23, minutes=59, seconds=59)
+        req_range = end_date.month - start_date.month
+                
+        logger.info("requesting %d month(s) data" % (req_range+1))
+
         download_path = data_export(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id)
 
         return download_path, 200

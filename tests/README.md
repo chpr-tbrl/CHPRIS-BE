@@ -428,3 +428,20 @@ curl --location --request GET 'http://localhost:9000/v1/users/1' \
 > - `400` = Bad request
 > - `401` = Unauthorized
 > - `500` = Error occurred
+
+### Export records
+
+> Request
+
+```bash
+curl --location --request GET 'http://localhost:9000/v1/users/1/exports/csv?start_date=2022-05-02&end_date=2022-05-31' \
+--data-raw ''
+```
+
+> Response
+>
+> - `200` = Success
+> - `400` = Bad request
+> - `401` = Unauthorized
+> - `403` = Forbidden
+> - `500` = Error occurred
