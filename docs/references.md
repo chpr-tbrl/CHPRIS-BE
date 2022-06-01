@@ -45,6 +45,6 @@
 
 ### Exports
 
-| Action                                               | Endpoint                                                               | Parameters                                                           | Request body |
-| :--------------------------------------------------- | :--------------------------------------------------------------------- | :------------------------------------------------------------------- | :----------- |
-| [Export records](./features_v1.md#22-export-records) | **GET** /v1/users/<user_id>/exports/<format>?start_date=""&end_date="" | <ul><li>user_id = INTEGER</li></ul><ul><li>format = STRING</li></ul> | None         |
+| Action                                               | Endpoint                                                                | Parameters                                                           | Request body |
+| :--------------------------------------------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------- | :----------- |
+| [Export records](./features_v1.md#22-export-records) | **GET** /v1/users/<user*id>/exports/<format*>?start_date=""&end_date="" | <ul><li>user_id = INTEGER</li></ul><ul><li>format = STRING</li></ul> | None         |
