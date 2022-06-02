@@ -11,7 +11,7 @@ from models.purge_exports import purge_export
 
 from werkzeug.exceptions import InternalServerError
 
-def data_export(start_date:str, end_date:str, region_id:int = None, site_id:int = None) -> str:
+def data_export(start_date:str, end_date:str, region_id:str = None, site_id:str = None) -> str:
     """
     """
     try:
@@ -62,11 +62,26 @@ def data_export(start_date:str, end_date:str, region_id:int = None, site_id:int 
         export_filepath = os.path.abspath(os.path.join('datasets', export_file))
         
         logger.debug("Gathering data ...")
-        records = Records.select().where(
-            Records.records_date.between(start_date, end_date),
-            Records.region_id == region_id,
-            Records.site_id == site_id
-            ).dicts()
+        if region_id == "all" and site_id == "all":
+            records = Records.select().where(
+                        Records.records_date.between(start_date, end_date)
+                        ).dicts()        
+        elif region_id == "all":
+            records = Records.select().where(
+                        Records.records_date.between(start_date, end_date),
+                        Records.site_id == site_id
+                        ).dicts()       
+        elif site_id == "all":
+            records = Records.select().where(
+                        Records.records_date.between(start_date, end_date),
+                        Records.region_id == region_id
+                        ).dicts()        
+        else:
+            records = Records.select().where(
+                        Records.records_date.between(start_date, end_date),
+                        Records.region_id == region_id,
+                        Records.site_id == site_id
+                        ).dicts()
 
         logger.debug("exporting data please wait ...")
         with open(export_filepath, 'w') as fh:

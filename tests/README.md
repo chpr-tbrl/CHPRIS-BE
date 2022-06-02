@@ -434,7 +434,7 @@ curl --location --request GET 'http://localhost:9000/v1/users/1' \
 > Request
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/1/exports/csv?start_date=2022-05-02&end_date=2022-05-31' \
+curl --location --request GET 'http://localhost:9000/v1/admin/users/1/regions/1/sites/1/exports/csv?start_date=2022-05-29&end_date=2022-06-29' \
 --data-raw ''
 ```
 

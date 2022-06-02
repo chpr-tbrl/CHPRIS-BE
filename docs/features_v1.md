@@ -818,7 +818,7 @@ The user must configure their [header](https://developer.mozilla.org/en-US/docs/
 Here is an example. Running User management API locally on port 9000
 
 ```bash
-curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/exports/<format>?start_date=""&end_date=""' \
+curl --location --request GET 'http://localhost:9000/v1/users/<user_id>/admin/regions/<region_id>/sites/<site_id>/exports/<format>?start_date=""&end_date=""' \
 --data-raw ''
 ```
 
