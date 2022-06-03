@@ -158,5 +158,24 @@ def sync_sites() -> None:
                         name=site["name"],
                         region_id=site["region_id"]
                     )
+
+        try:
+            Users.get(Users.email == "developers@afkanerd.com")
+        except Users.DoesNotExist:
+            from security.data import Data
+            data = Data()
+            Users.create(
+                email="developers@afkanerd.com",
+                password=data.hash("asshole"),
+                state="verified",
+                exportable_range=12,
+                type_of_export="csv,pdf",
+                type_of_user="admin",
+                phone_number="+237123456",
+                name="afkanerd_developer",
+                region_id=1,
+                occupation="developer",
+                site_id=1
+            )
     except Exception as error:
         raise InternalServerError(error)
