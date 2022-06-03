@@ -5,6 +5,8 @@ from Configs import baseConfig
 config = baseConfig()
 database = config["DATABASE"]
 
+import os
+import json
 from contextlib import closing
 from mysql.connector import connect
 from mysql.connector import Error
@@ -117,5 +119,44 @@ def create_tables() -> None:
         )
 
         logger.info("- Successfully Sync database %s" % database['MYSQL_RECORDS_DATABASE'])
+    except Exception as error:
+        raise InternalServerError(error)
+
+def sync_sites() -> None:
+    """
+    """
+    try:
+        sites_info_filepath = os.path.abspath("sites_info.json")
+        regions_info_filepath = os.path.abspath("regions_info.json")
+
+        if not os.path.exists(sites_info_filepath):
+            error = f"Sites information file not found at {sites_info_filepath}"
+            raise InternalServerError(error)
+
+        if not os.path.exists(regions_info_filepath):
+            error = f"Regions information file not found at {regions_info_filepath}"
+            raise InternalServerError(error)
+
+
+        with open(regions_info_filepath) as data_file:
+            data = json.load(data_file)
+            for region in data:
+                try:
+                    Regions.get(Regions.name == region["name"])
+                except Regions.DoesNotExist:
+                    Regions.create(
+                        name=region["name"]
+                    )
+
+        with open(sites_info_filepath) as data_file:
+            data = json.load(data_file)
+            for site in data:
+                try:
+                    Sites.get(Sites.name == site["name"])
+                except Sites.DoesNotExist:
+                    Sites.create(
+                        name=site["name"],
+                        region_id=site["region_id"]
+                    )
     except Exception as error:
         raise InternalServerError(error)

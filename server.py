@@ -21,12 +21,14 @@ from routes.admin.v1 import v1 as admin_v1
 
 from controllers.sync_database import create_database
 from controllers.sync_database import create_tables
+from controllers.sync_database import sync_sites
 
 app = Flask(__name__)
 CORS(app)
 
 create_database()
 create_tables()
+sync_sites()
 
 app.register_blueprint(data_collector_api_v1, url_prefix="/v1")
 app.register_blueprint(admin_v1, url_prefix="/v1/admin")
