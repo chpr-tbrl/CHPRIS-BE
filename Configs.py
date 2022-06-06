@@ -23,5 +23,6 @@ def baseConfig() -> dict:
     return {
         "DATABASE": config["DATABASE"],
         "API": config["API"],
-        "SSL_API": config["SSL_API"]
+        "SSL_API": config["SSL_API"],
+        "SUPER_ADMIN": config["SUPER_ADMIN"]
     }

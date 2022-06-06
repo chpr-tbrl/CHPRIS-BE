@@ -10,10 +10,12 @@ import json
 from contextlib import closing
 from mysql.connector import connect
 from mysql.connector import Error
+from datetime import datetime
 
 from schemas.users.baseModel import users_db
 from schemas.users.users import Users
 from schemas.users.sessions import Sessions
+from schemas.users.users_sites import Users_sites
 
 from schemas.sites.baseModel import sites_db
 from schemas.sites.sites import Sites
@@ -87,7 +89,8 @@ def create_tables() -> None:
         users_db.create_tables(
             [
                 Users, 
-                Sessions
+                Sessions,
+                Users_sites
             ]
         )
 
@@ -122,60 +125,32 @@ def create_tables() -> None:
     except Exception as error:
         raise InternalServerError(error)
 
-def sync_sites() -> None:
+def create_super_admin() -> None:
     """
     """
     try:
-        sites_info_filepath = os.path.abspath("sites_info.json")
-        regions_info_filepath = os.path.abspath("regions_info.json")
-
-        if not os.path.exists(sites_info_filepath):
-            error = f"Sites information file not found at {sites_info_filepath}"
-            raise InternalServerError(error)
-
-        if not os.path.exists(regions_info_filepath):
-            error = f"Regions information file not found at {regions_info_filepath}"
-            raise InternalServerError(error)
-
-
-        with open(regions_info_filepath) as data_file:
-            data = json.load(data_file)
-            for region in data:
-                try:
-                    Regions.get(Regions.name == region["name"])
-                except Regions.DoesNotExist:
-                    Regions.create(
-                        name=region["name"]
-                    )
-
-        with open(sites_info_filepath) as data_file:
-            data = json.load(data_file)
-            for site in data:
-                try:
-                    Sites.get(Sites.name == site["name"])
-                except Sites.DoesNotExist:
-                    Sites.create(
-                        name=site["name"],
-                        region_id=site["region_id"]
-                    )
-
+        super_admin = config["SUPER_ADMIN"]
+        
+        logger.debug("Creating super admin ...")
+    
         try:
-            Users.get(Users.email == "developers@afkanerd.com")
+            Users.get(Users.email == super_admin["EMAIL"])
         except Users.DoesNotExist:
             from security.data import Data
             data = Data()
             Users.create(
-                email="developers@afkanerd.com",
-                password=data.hash("asshole"),
-                state="verified",
-                exportable_range=12,
-                type_of_export="csv,pdf",
-                type_of_user="admin",
-                phone_number="+237123456",
-                name="afkanerd_developer",
-                region_id=1,
-                occupation="developer",
-                site_id=1
+                email = super_admin["EMAIL"], 
+                name = super_admin["NAME"],
+                phone_number = super_admin["PHONE_NUMBER"],
+                occupation = super_admin["OCCUPATION"],
+                password_hash = data.hash(super_admin["PASSWORD"]),
+                account_status = "approved",
+                account_type = "super_admin",
+                account_approved_date = datetime.now(),
+                permitted_export_types = ["csv", "pdf"],
+                permitted_export_range = 12,
+                permitted_decrypted_data = True,
+                permitted_approve_accounts = True
             )
     except Exception as error:
         raise InternalServerError(error)

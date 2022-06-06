@@ -1,21 +1,25 @@
 from peewee import CharField
 from peewee import DateTimeField
-from peewee import TextField
 from peewee import IntegerField
+from peewee import DateField
+from peewee import BooleanField
+from playhouse.mysql_ext import JSONField
 
 from schemas.users.baseModel import BaseModel
 from datetime import datetime
 
 class Users(BaseModel):
     email = CharField(unique=True)
-    password = CharField()
-    phone_number = CharField(null=True)
-    name = CharField(null=True)
-    occupation = CharField(null=True)
-    state = CharField(default="pending")
-    type_of_user = CharField(default="data_collection")
-    type_of_export = TextField(null=True)
-    exportable_range = IntegerField(null=True)
-    region_id = IntegerField()
-    site_id = IntegerField()
-    createdAt = DateTimeField(null=True, default=datetime.now)
+    name = CharField()
+    phone_number = CharField()
+    occupation = CharField()
+    password_hash = CharField()
+    account_status = CharField(default="pending")
+    account_type = CharField(default="data_collector")
+    account_request_date = DateField(default=datetime.now)
+    account_approved_date = DateField(null=True)
+    permitted_export_types = JSONField(default=[])
+    permitted_export_range = IntegerField(default=1)
+    permitted_decrypted_data = BooleanField(default=False)
+    permitted_approve_accounts = BooleanField(default=False)
+    createdAt = DateTimeField(default=datetime.now)
