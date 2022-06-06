@@ -28,7 +28,7 @@ def verify_user(email: str, password: str) -> dict:
         hash_password = data.hash(password)
         users = (
             Users.select()
-            .where(Users.email == email, Users.password == hash_password, Users.state == "verified")
+            .where(Users.email == email, Users.password_hash == hash_password, Users.account_status == "approved")
             .dicts()
         )
         result = []

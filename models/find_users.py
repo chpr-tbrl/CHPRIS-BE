@@ -4,6 +4,7 @@ logger = logging.getLogger(__name__)
 from peewee import DatabaseError
 
 from schemas.users.users import Users
+from schemas.users.users_sites import Users_sites
 
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
@@ -24,14 +25,36 @@ def find_user(user_id: int) -> dict:
         
         users = (
             Users.select()
-            .where(Users.id == user_id, Users.state == "verified")
+            .where(Users.id == user_id, Users.account_status == "approved")
             .dicts()
         )
 
         result = []
         for user in users:
-            result.append(user)
+            logger.debug("Fetching all sites for user '%s' ..." % user["id"])
+            sites = Users_sites.select(Users_sites.site_id).where(Users_sites.user_id == user["id"]).dicts()
+            site_arr = []
 
+            for site in sites.iterator():
+                site_arr.append(site["site_id"])
+
+            result.append({
+                "id": user["id"],
+                "email": user["email"],
+                "name": user["name"],
+                "phone_number": user["phone_number"],
+                "occupation": user["occupation"],
+                "account_status": user["account_status"],
+                "account_type": user["account_type"],
+                "account_request_date": user["account_request_date"],
+                "account_approved_date": user["account_approved_date"],
+                "permitted_export_types": user["permitted_export_types"],
+                "permitted_export_range": user["permitted_export_range"],
+                "permitted_decrypted_data": user["permitted_decrypted_data"],
+                "permitted_approve_accounts": user["permitted_approve_accounts"],
+                "sites": site_arr
+            })
+            
         # check for duplicates
         if len(result) > 1:
             logger.error("Multiple users %d found" % user_id)

@@ -20,7 +20,7 @@ from models.verify_users import verify_user
 from models.create_sessions import create_session
 from models.update_sessions import update_session
 from models.create_users import create_user
-from models.change_states import change_state
+from models.change_account_status import update_account_status
 from models.find_sessions import find_session
 from models.create_records import create_record
 from models.find_records import find_record
@@ -89,16 +89,12 @@ def signup():
         elif not "site_id" in request.json or not request.json["site_id"]:
             logger.error("no site_id")
             raise BadRequest()
-        elif not "region_id" in request.json or not request.json["region_id"]:
-            logger.error("no region_id")
-            raise BadRequest()
 
         email = request.json["email"]
         password = request.json["password"]
         phone_number = request.json["phone_number"]
         name = request.json["name"]
         site_id = request.json["site_id"]
-        region_id = request.json["region_id"]
         occupation = request.json["occupation"]
 
         user = create_user(
@@ -106,11 +102,10 @@ def signup():
             password, 
             phone_number,
             name,
-            region_id,
             occupation,
             site_id 
         )
-        change_state(user, "verified")
+        update_account_status(user, "approved")
 
         res = jsonify(user)
 
@@ -682,22 +677,7 @@ def findAUser(user_id):
     try:
         user = find_user(user_id=user_id)
        
-        result = {
-            "createdAt": user["createdAt"],
-            "email": user["email"],
-            "id": user["id"],
-            "name": user["name"],
-            "occupation": user["occupation"],
-            "phone_number": user["phone_number"],
-            "type_of_user": user["type_of_user"],
-            "type_of_export": user["type_of_export"],
-            "exportable_range": user["exportable_range"],
-            "region_id": user["region_id"],
-            "site_id": user["site_id"],
-            "state": user["state"]
-        }
-
-        return jsonify(result), 200
+        return jsonify(user), 200
 
     except BadRequest as err:
         return str(err), 400

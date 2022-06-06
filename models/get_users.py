@@ -1,9 +1,11 @@
 import logging
+
 logger = logging.getLogger(__name__)
 
 from peewee import DatabaseError
 
 from schemas.users.users import Users
+from schemas.users.users_sites import Users_sites
 
 from werkzeug.exceptions import InternalServerError
 
@@ -21,24 +23,30 @@ def get_all_users() -> list:
         logger.debug("fetching all user records ...")
         result = []
         
-        users = (
-            Users.select()
-            .dicts()
-        )
-        for user in users:
+        users = Users.select().dicts()
+
+        for user in users.iterator():
+            logger.debug("Fetching all sites for user '%s' ..." % user["id"])
+            sites = Users_sites.select(Users_sites.site_id).where(Users_sites.user_id == user["id"]).dicts()
+            site_arr = []
+
+            for site in sites.iterator():
+                site_arr.append(site["site_id"])
+
             result.append({
-                "createdAt": user["createdAt"],
                 "email": user["email"],
-                "id": user["id"],
                 "name": user["name"],
-                "occupation": user["occupation"],
                 "phone_number": user["phone_number"],
-                "type_of_user": user["type_of_user"],
-                "type_of_export": user["type_of_export"],
-                "exportable_range": user["exportable_range"],
-                "region_id": user["region_id"],
-                "site_id": user["site_id"],
-                "state": user["state"]
+                "occupation": user["occupation"],
+                "account_status": user["account_status"],
+                "account_type": user["account_type"],
+                "account_request_date": user["account_request_date"],
+                "account_approved_date": user["account_approved_date"],
+                "permitted_export_types": user["permitted_export_types"],
+                "permitted_export_range": user["permitted_export_range"],
+                "permitted_decrypted_data": user["permitted_decrypted_data"],
+                "permitted_approve_accounts": user["permitted_approve_accounts"],
+                "sites": site_arr
             })
 
         logger.info("- Successfully fetched all users")

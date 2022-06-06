@@ -6,11 +6,12 @@ from security.data import Data
 from peewee import DatabaseError
 
 from schemas.users.users import Users
+from schemas.users.users_sites import Users_sites
 
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
 
-def create_user(email: str, password: str, phone_number: str, name: str, region_id: int, occupation: str, site_id: int) -> str:
+def create_user(email: str, password: str, phone_number: str, name: str, occupation: str, site_id: int) -> str:
     """
     Add user to database.
 
@@ -19,7 +20,6 @@ def create_user(email: str, password: str, phone_number: str, name: str, region_
         password: str,
         phone_number: str,
         name: str,
-        region_id: int,
         occupation: str,
         site_id: int
 
@@ -37,13 +37,18 @@ def create_user(email: str, password: str, phone_number: str, name: str, region_
 
             user = Users.create(
                 email=email,
-                password=password_hash,
+                password_hash=password_hash,
                 phone_number=phone_number,
                 name=name,
-                region_id=region_id,
-                occupation=occupation,
+                occupation=occupation
+            )
+
+            logger.debug("adding user '%s' to site '%d' ..." % (email, site_id))
+            Users_sites.create(
+                user_id=user.id,
                 site_id=site_id
             )
+
             logger.info("- User '%s' successfully created" % email)
             return str(user)
         else:
