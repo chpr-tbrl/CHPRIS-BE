@@ -34,6 +34,7 @@ def get_all_users() -> list:
                 site_arr.append(site["site_id"])
 
             result.append({
+                "id": user["id"],
                 "email": user["email"],
                 "name": user["name"],
                 "phone_number": user["phone_number"],
