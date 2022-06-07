@@ -203,13 +203,14 @@ def login():
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/records", methods=["POST"])
-def createRecord():
+@v1.route("/regions/<int:region_id>/sites/<int:site_id>/records", methods=["POST"])
+def createRecord(region_id, site_id):
     """
     Create a new record.
 
     Parameters:
-        None
+        region_id: int,
+        site_id: int
 
     Body:
         records_name: str,
@@ -270,8 +271,8 @@ def createRecord():
         user = find_user(user_id=user_id)
 
         payload = (
-            user["site_id"],
-            user["region_id"],
+            site_id,
+            region_id,
             user["id"],
             request.json["records_name"],
             request.json["records_age"],
@@ -305,7 +306,7 @@ def createRecord():
        
         create_record(*payload)
 
-        res = ""
+        res = jsonify("")
 
         session = update_session(sid, user_id)
         cookie = Cookie()
@@ -375,13 +376,17 @@ def findRecord():
         
         user = find_user(user_id=user_id)
 
-        payload = (
-            user["site_id"],
-            user["region_id"],
-            user["id"],
-        )
-       
-        result = find_record(*payload)
+        result = []
+
+        for site in user["users_sites"]:
+            payload = (
+                site["id"],
+                site["region"]["id"],
+                user["id"],
+            )
+        
+            for record in find_record(*payload):
+                result.append(record)
 
         res = jsonify(result)
 

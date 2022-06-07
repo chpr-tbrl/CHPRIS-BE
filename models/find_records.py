@@ -31,10 +31,10 @@ def find_record(site_id: int, region_id: int, records_user_id: int) -> list:
             .dicts()
         )
 
-        for record in records:
+        for record in records.iterator():
             result.append(record)
 
-        logger.info("- Successfully found records for %d" % records_user_id)
+        logger.info("- Successfully found records with site_id = %s & region_id = %s requested by user_id = %s" % (site_id, region_id, records_user_id))
         return result
 
     except DatabaseError as err:
