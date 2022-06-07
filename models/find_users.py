@@ -6,11 +6,14 @@ from peewee import DatabaseError
 from schemas.users.users import Users
 from schemas.users.users_sites import Users_sites
 
+from models.find_sites import find_site
+from models.find_regions import find_region
+
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import Unauthorized
 
-def find_user(user_id: int) -> dict:
+def find_user(user_id: str) -> dict:
     """
     Find a user.
 
@@ -21,7 +24,7 @@ def find_user(user_id: int) -> dict:
         dict
     """
     try:
-        logger.debug("finding user %d ..." % user_id)
+        logger.debug("finding user %s ..." % user_id)
         
         users = (
             Users.select()
@@ -32,11 +35,20 @@ def find_user(user_id: int) -> dict:
         result = []
         for user in users:
             logger.debug("Fetching all sites for user '%s' ..." % user["id"])
-            sites = Users_sites.select(Users_sites.site_id).where(Users_sites.user_id == user["id"]).dicts()
+            user_sites = Users_sites.select(Users_sites.site_id).where(Users_sites.user_id == user["id"]).dicts()
             site_arr = []
 
-            for site in sites.iterator():
-                site_arr.append(site["site_id"])
+            for user_site in user_sites.iterator():
+                site = find_site(site_id=user_site["site_id"])
+                region = find_region(region_id=site["region_id"])
+                site_arr.append({
+                    "id": site["id"],
+                    "name": site["name"],
+                    "region": {
+                        "id": region["id"],
+                        "name": region["name"]
+                    }
+                })
 
             result.append({
                 "id": user["id"],
@@ -57,7 +69,7 @@ def find_user(user_id: int) -> dict:
 
         # check for duplicates
         if len(result) > 1:
-            logger.error("Multiple users %d found" % user_id)
+            logger.error("Multiple users %s found" % user_id)
             raise Conflict()
 
         # check for no user
@@ -65,10 +77,10 @@ def find_user(user_id: int) -> dict:
             logger.error("No user found")
             raise Unauthorized()
 
-        logger.info("- User %d found" % user_id)
+        logger.info("- User %s found" % user_id)
 
         return result[0]
 
     except DatabaseError as err:
-        logger.error("failed to find user %d check logs" % user_id)
+        logger.error("failed to find user %s check logs" % user_id)
         raise InternalServerError(err) from None

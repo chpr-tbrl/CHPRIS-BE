@@ -7,7 +7,8 @@ from peewee import DatabaseError
 
 from schemas.users.users import Users
 
-from werkzeug.exceptions import Conflict
+from models.find_users import find_user
+
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Unauthorized
 
@@ -26,29 +27,17 @@ def verify_user(email: str, password: str) -> dict:
         logger.debug("verifying user %s ..." % email)
         data = Data()
         hash_password = data.hash(password)
-        users = (
-            Users.select()
-            .where(Users.email == email, Users.password_hash == hash_password, Users.account_status == "approved")
-            .dicts()
-        )
-        result = []
-        for user in users:
-            result.append(user)
-
-        # check for duplicates
-        if len(result) > 1:
-            logger.error("Multiple users %s found" % email)
-            raise Conflict()
-
-        # check for no user
-        if len(result) < 1:
+        
+        try:
+            user = Users.get(Users.email == email, Users.password_hash == hash_password, Users.account_status == "approved")
+        except Users.DoesNotExist:
             logger.error("No user found")
             raise Unauthorized()
+        else:
+            result = find_user(user.id)
 
-        logger.info("- User %s successfully verified" % email)
-        return {
-            "uid": result[0]["id"]
-        }
+            logger.info("- User %s successfully verified" % email)
+            return result
         
     except DatabaseError as err:
         logger.error("verifying user %s failed check logs" % email)
