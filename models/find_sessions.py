@@ -10,7 +10,7 @@ from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Unauthorized
 from werkzeug.exceptions import Conflict
 
-def find_session(sid: str, unique_identifier: str, user_agent: str, cookie: dict) -> str:
+def find_session(sid: str, unique_identifier: str, user_agent: str, cookie: dict) -> int:
     """
     """
     try:
@@ -56,7 +56,7 @@ def find_session(sid: str, unique_identifier: str, user_agent: str, cookie: dict
             raise Unauthorized()
 
         logger.info("SESSION %s FOUND" % sid)
-        return str(result[0]["unique_identifier"])
+        return int(result[0]["unique_identifier"])
 
     except DatabaseError as err:
         logger.error("FAILED FINDING SESSION %s CHECK LOGS" % sid)

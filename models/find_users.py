@@ -13,7 +13,7 @@ from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import Unauthorized
 
-def find_user(user_id: str) -> dict:
+def find_user(user_id: int) -> dict:
     """
     Find a user.
 

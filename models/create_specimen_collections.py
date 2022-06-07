@@ -34,7 +34,7 @@ def create_specimen_collection(specimen_collection_records_id: int, specimen_col
         str
     """
     try:
-        logger.debug("creating specimen_collection record for %d ..." % specimen_collection_user_id)
+        logger.debug("creating specimen_collection record for %s ..." % specimen_collection_user_id)
         
         specimen_collection = Specimen_collections.create(
             specimen_collection_records_id=specimen_collection_records_id,

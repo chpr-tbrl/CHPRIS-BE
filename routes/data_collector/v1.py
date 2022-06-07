@@ -204,7 +204,7 @@ def login():
         return "internal server error", 500
 
 @v1.route("/regions/<int:region_id>/sites/<int:site_id>/records", methods=["POST"])
-def createRecord(region_id, site_id):
+def createRecord(region_id: int, site_id: int) -> None:
     """
     Create a new record.
 
@@ -243,7 +243,7 @@ def createRecord(region_id, site_id):
         records_tb_treatment_history_contact_of_tb_patient: str
     
     Response:
-        200: str,
+        200: None,
         400: str,
         401: str,
         500: str
@@ -268,12 +268,10 @@ def createRecord(region_id, site_id):
 
         user_id = find_session(sid, uid, user_agent, user_cookie)
 
-        user = find_user(user_id=user_id)
-
         payload = (
             site_id,
             region_id,
-            user["id"],
+            user_id,
             request.json["records_name"],
             request.json["records_age"],
             request.json["records_sex"],
@@ -306,7 +304,7 @@ def createRecord(region_id, site_id):
        
         create_record(*payload)
 
-        res = jsonify("")
+        res = jsonify()
 
         session = update_session(sid, user_id)
         cookie = Cookie()
@@ -338,7 +336,7 @@ def createRecord(region_id, site_id):
         return "internal server error", 500
 
 @v1.route("/records", methods=["GET"])
-def findRecord():
+def findRecord() -> list:
     """
     Find records that belong to user's site.
 
@@ -419,13 +417,12 @@ def findRecord():
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/specimen_collections", methods=["POST"])
-def createSpecimenCollectionRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/specimen_collections", methods=["POST"])
+def createSpecimenCollectionRecord(record_id: int) -> None:
     """
     Create a new specimen_collections record.
 
     Parameters:
-        user_id: int,
         record_id: int
 
     Body:
@@ -443,13 +440,30 @@ def createSpecimenCollectionRecord(user_id, record_id):
         specimen_collection_2_received_by: str
             
     Response:
-        200: str,
+        200: None,
         400: str,
         401: str,
         500: str
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
 
         payload = (
             record_id,
@@ -468,9 +482,24 @@ def createSpecimenCollectionRecord(user_id, record_id):
             request.json["specimen_collection_2_received_by"],
         )
        
-        result = create_specimen_collection(*payload)
+        create_specimen_collection(*payload)
 
-        return result, 200
+        res = jsonify()
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -486,13 +515,12 @@ def createSpecimenCollectionRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/specimen_collections", methods=["GET"])
-def findSpecimenCollectionRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/specimen_collections", methods=["GET"])
+def findSpecimenCollectionRecord(record_id: int) -> list:
     """
     Find specimen_collection records that belong to record_id.
 
     Parameters:
-        user_id: int,
         record_id: int
 
     Body:
@@ -505,12 +533,44 @@ def findSpecimenCollectionRecord(user_id, record_id):
         500: str
     """
     try:
-        find_user(user_id=user_id)
-       
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
+               
         result = find_specimen_collection(specimen_collection_records_id=record_id)
 
-        return jsonify(result), 200
+        res = jsonify(result)
 
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
+        
     except BadRequest as err:
         return str(err), 400
 
