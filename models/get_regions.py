@@ -25,7 +25,7 @@ def get_all_regions() -> list:
             Regions.select()
             .dicts()
         )
-        for region in regions:
+        for region in regions.iterator():
             result.append(region)
 
         logger.info("- Successfully fetched all regions")

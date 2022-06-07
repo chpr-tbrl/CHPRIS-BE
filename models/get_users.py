@@ -46,7 +46,7 @@ def get_all_users() -> list:
                 "permitted_export_range": user["permitted_export_range"],
                 "permitted_decrypted_data": user["permitted_decrypted_data"],
                 "permitted_approve_accounts": user["permitted_approve_accounts"],
-                "sites": site_arr
+                "users_sites": site_arr
             })
 
         logger.info("- Successfully fetched all users")

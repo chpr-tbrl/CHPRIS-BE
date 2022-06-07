@@ -24,9 +24,7 @@ from models.get_users import get_all_users
 from models.find_users import find_user
 from models.update_users import update_user
 from models.create_regions import create_region
-from models.get_regions import get_all_regions
 from models.create_sites import create_site
-from models.get_sites import get_all_sites
 from models.data_exports import data_export
 
 from werkzeug.exceptions import BadRequest
@@ -214,42 +212,6 @@ def createRegion():
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/regions", methods=["GET"])
-def getRegions():
-    """
-    Get all regions.
-
-    Body:
-        None
-
-    Response:
-        200: list,
-        400: str,       
-        401: str,
-        500: str
-    """
-    try:        
-        result = get_all_regions()
-
-        return jsonify(result), 200
-
-    except BadRequest as err:
-        return str(err), 400
-
-    except Unauthorized as err:
-        return str(err), 401
-
-    except Conflict as err:
-        return str(err), 409
-
-    except InternalServerError as err:
-        logger.exception(err)
-        return "internal server error", 500
-
-    except Exception as err:
-        logger.exception(err)
-        return "internal server error", 500
-
 @v1.route("/regions/<int:region_id>/sites", methods=["POST"])
 def createSite(region_id):
     """
@@ -275,45 +237,6 @@ def createSite(region_id):
 
     except BadRequest as err:
         return str(err), 400
-
-    except Conflict as err:
-        return str(err), 409
-
-    except InternalServerError as err:
-        logger.exception(err)
-        return "internal server error", 500
-
-    except Exception as err:
-        logger.exception(err)
-        return "internal server error", 500
-
-@v1.route("/regions/<int:region_id>/sites", methods=["GET"])
-def getSites(region_id):
-    """
-    Get all sites for a region.
-
-    Parameters:
-        region_id: int
-
-    Body:
-        None
-
-    Response:
-        200: list,
-        400: str,       
-        401: str,
-        500: str
-    """
-    try:        
-        result = get_all_sites(region_id= region_id)
-
-        return jsonify(result), 200
-
-    except BadRequest as err:
-        return str(err), 400
-
-    except Unauthorized as err:
-        return str(err), 401
 
     except Conflict as err:
         return str(err), 409

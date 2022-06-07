@@ -35,6 +35,8 @@ from models.create_outcome_recorded import create_outcome_recorded
 from models.create_tb_treatment_outcomes import create_tb_treatment_outcome
 from models.find_tb_treatment_outcomes import find_tb_treatment_outcome
 from models.find_users import find_user
+from models.get_regions import get_all_regions
+from models.get_sites import get_all_sites
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -692,3 +694,79 @@ def findAUser(user_id):
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
+
+@v1.route("/regions", methods=["GET"])
+def getRegions():
+    """
+    Get all regions.
+
+    Body:
+        None
+
+    Response:
+        200: list,
+        400: str,       
+        401: str,
+        500: str
+    """
+    try:        
+        result = get_all_regions()
+
+        return jsonify(result), 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/regions/<int:region_id>/sites", methods=["GET"])
+def getSites(region_id):
+    """
+    Get all sites for a region.
+
+    Parameters:
+        region_id: int
+
+    Body:
+        None
+
+    Response:
+        200: list,
+        400: str,       
+        401: str,
+        500: str
+    """
+    try:        
+        result = get_all_sites(region_id= region_id)
+
+        return jsonify(result), 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+

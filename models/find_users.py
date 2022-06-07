@@ -52,9 +52,9 @@ def find_user(user_id: int) -> dict:
                 "permitted_export_range": user["permitted_export_range"],
                 "permitted_decrypted_data": user["permitted_decrypted_data"],
                 "permitted_approve_accounts": user["permitted_approve_accounts"],
-                "sites": site_arr
+                "users_sites": site_arr
             })
-            
+
         # check for duplicates
         if len(result) > 1:
             logger.error("Multiple users %d found" % user_id)

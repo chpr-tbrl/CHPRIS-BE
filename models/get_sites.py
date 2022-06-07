@@ -25,7 +25,7 @@ def get_all_sites(region_id: int) -> list:
             Sites.select().where(Sites.region_id == region_id)
             .dicts()
         )
-        for site in sites:
+        for site in sites.iterator():
             result.append(site)
 
         logger.info("- Successfully fetched all sites")
