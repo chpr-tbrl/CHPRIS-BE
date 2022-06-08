@@ -570,7 +570,7 @@ def findSpecimenCollectionRecord(record_id: int) -> list:
         )
 
         return res, 200
-        
+
     except BadRequest as err:
         return str(err), 400
 
@@ -585,12 +585,29 @@ def findSpecimenCollectionRecord(record_id: int) -> list:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/labs", methods=["POST"])
-def createLabRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/labs", methods=["POST"])
+def createLabRecord(record_id: int) -> None:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
 
         payload = (
             record_id,            
@@ -612,9 +629,24 @@ def createLabRecord(user_id, record_id):
             request.json["lab_urine_lf_lam_done_by"],
         )
        
-        result = create_lab(*payload)
+        create_lab(*payload)
 
-        return result, 200
+        res = jsonify()
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -630,16 +662,48 @@ def createLabRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/labs", methods=["GET"])
-def findLabRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/labs", methods=["GET"])
+def findLabRecord(record_id: int) -> list:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
        
         result = find_lab(lab_records_id=record_id)
 
-        return jsonify(result), 200
+        res = jsonify(result)
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -652,12 +716,29 @@ def findLabRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
     
-@v1.route("/users/<int:user_id>/records/<int:record_id>/follow_ups", methods=["POST"])
-def createFollowUpRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/follow_ups", methods=["POST"])
+def createFollowUpRecord(record_id: int) -> None:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
 
         payload = (
             record_id,
@@ -669,9 +750,24 @@ def createFollowUpRecord(user_id, record_id):
             request.json["follow_up_comments"]
         )
        
-        result = create_follow_up(*payload)
+        create_follow_up(*payload)
 
-        return result, 200
+        res = jsonify()
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -684,16 +780,48 @@ def createFollowUpRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/follow_ups", methods=["GET"])
-def findFollowUpRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/follow_ups", methods=["GET"])
+def findFollowUpRecord(record_id: int) -> list:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
        
         result = find_follow_up(follow_up_records_id=record_id)
 
-        return jsonify(result), 200
+        res = jsonify(result)
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -706,12 +834,29 @@ def findFollowUpRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/outcome_recorded", methods=["POST"])
-def createOutcomeRecoredRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/outcome_recorded", methods=["POST"])
+def createOutcomeRecoredRecord(record_id: int) -> None:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
 
         payload = (
             record_id,
@@ -722,9 +867,24 @@ def createOutcomeRecoredRecord(user_id, record_id):
             request.json["outcome_recorded_comments"]
         )
        
-        result = create_outcome_recorded(*payload)
+        create_outcome_recorded(*payload)
 
-        return result, 200
+        res = jsonify()
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -737,16 +897,48 @@ def createOutcomeRecoredRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/outcome_recorded", methods=["GET"])
-def findOutcomeRecoredRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/outcome_recorded", methods=["GET"])
+def findOutcomeRecoredRecord(record_id: int) -> list:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
 
         result = find_outcome_recorded(outcome_recorded_records_id=record_id)
 
-        return jsonify(result), 200
+        res = jsonify(result)
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -759,13 +951,30 @@ def findOutcomeRecoredRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/tb_treatment_outcomes", methods=["POST"])
-def createTbTreatmentOutcomeRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/tb_treatment_outcomes", methods=["POST"])
+def createTbTreatmentOutcomeRecord(record_id: int) -> None:
     """
     """
     try:
-        find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
 
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)
+        
         payload = (
             record_id,
             user_id,
@@ -774,9 +983,24 @@ def createTbTreatmentOutcomeRecord(user_id, record_id):
             request.json["tb_treatment_outcome_close_patient_file"]
         )
        
-        result = create_tb_treatment_outcome(*payload)
+        create_tb_treatment_outcome(*payload)
 
-        return result, 200
+        res = jsonify()
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -789,16 +1013,48 @@ def createTbTreatmentOutcomeRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/records/<int:record_id>/tb_treatment_outcomes", methods=["GET"])
-def findTbTreatmentOutcomeRecord(user_id, record_id):
+@v1.route("/records/<int:record_id>/tb_treatment_outcomes", methods=["GET"])
+def findTbTreatmentOutcomeRecord(record_id: int) -> list:
     """
     """
     try:
-        find_user(user_id=user_id)
-       
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie)       
+
         result = find_tb_treatment_outcome(tb_treatment_outcome_records_id=record_id)
 
-        return jsonify(result), 200
+        res = jsonify(result)
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -811,14 +1067,48 @@ def findTbTreatmentOutcomeRecord(user_id, record_id):
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>", methods=["GET"])
-def findAUser(user_id):
+@v1.route("/profile", methods=["GET"])
+def findAUser() -> dict:
     """
     """
     try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie) 
+
         user = find_user(user_id=user_id)
        
-        return jsonify(user), 200
+        res = jsonify(user)
+
+        session = update_session(sid, user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -835,7 +1125,7 @@ def findAUser(user_id):
         return "internal server error", 500
 
 @v1.route("/regions", methods=["GET"])
-def getRegions():
+def getRegions() -> list:
     """
     Get all regions.
 
@@ -871,7 +1161,7 @@ def getRegions():
         return "internal server error", 500
 
 @v1.route("/regions/<int:region_id>/sites", methods=["GET"])
-def getSites(region_id):
+def getSites(region_id) -> list:
     """
     Get all sites for a region.
 
