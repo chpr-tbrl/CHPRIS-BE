@@ -87,7 +87,7 @@ def data_export(start_date:str, end_date:str, region_id:str = None, site_id:str 
         with open(export_filepath, 'w') as fh:
             writer = csv.DictWriter(fh, fieldnames=field_names)
             writer.writeheader()        
-            for row in records:
+            for row in records.iterator():
                 writer.writerow(row)
         
         logger.info("- Export complete")

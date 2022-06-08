@@ -13,7 +13,7 @@ from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import Unauthorized
 
-def find_user(user_id: int) -> dict:
+def find_user(user_id: int, no_sites: bool = None) -> dict:
     """
     Find a user.
 
@@ -38,34 +38,51 @@ def find_user(user_id: int) -> dict:
             user_sites = Users_sites.select(Users_sites.site_id).where(Users_sites.user_id == user["id"]).dicts()
             site_arr = []
 
-            for user_site in user_sites.iterator():
-                site = find_site(site_id=user_site["site_id"])
-                region = find_region(region_id=site["region_id"])
-                site_arr.append({
-                    "id": site["id"],
-                    "name": site["name"],
-                    "region": {
-                        "id": region["id"],
-                        "name": region["name"]
-                    }
+            if no_sites:
+                result.append({
+                    "id": user["id"],
+                    "email": user["email"],
+                    "name": user["name"],
+                    "phone_number": user["phone_number"],
+                    "occupation": user["occupation"],
+                    "account_status": user["account_status"],
+                    "account_type": user["account_type"],
+                    "account_request_date": user["account_request_date"],
+                    "account_approved_date": user["account_approved_date"],
+                    "permitted_export_types": user["permitted_export_types"],
+                    "permitted_export_range": user["permitted_export_range"],
+                    "permitted_decrypted_data": user["permitted_decrypted_data"],
+                    "permitted_approve_accounts": user["permitted_approve_accounts"]
                 })
+            else:
+                for user_site in user_sites.iterator():
+                    site = find_site(site_id=user_site["site_id"])
+                    region = find_region(region_id=site["region_id"])
+                    site_arr.append({
+                        "id": site["id"],
+                        "name": site["name"],
+                        "region": {
+                            "id": region["id"],
+                            "name": region["name"]
+                        }
+                    })
 
-            result.append({
-                "id": user["id"],
-                "email": user["email"],
-                "name": user["name"],
-                "phone_number": user["phone_number"],
-                "occupation": user["occupation"],
-                "account_status": user["account_status"],
-                "account_type": user["account_type"],
-                "account_request_date": user["account_request_date"],
-                "account_approved_date": user["account_approved_date"],
-                "permitted_export_types": user["permitted_export_types"],
-                "permitted_export_range": user["permitted_export_range"],
-                "permitted_decrypted_data": user["permitted_decrypted_data"],
-                "permitted_approve_accounts": user["permitted_approve_accounts"],
-                "users_sites": site_arr
-            })
+                result.append({
+                    "id": user["id"],
+                    "email": user["email"],
+                    "name": user["name"],
+                    "phone_number": user["phone_number"],
+                    "occupation": user["occupation"],
+                    "account_status": user["account_status"],
+                    "account_type": user["account_type"],
+                    "account_request_date": user["account_request_date"],
+                    "account_approved_date": user["account_approved_date"],
+                    "permitted_export_types": user["permitted_export_types"],
+                    "permitted_export_range": user["permitted_export_range"],
+                    "permitted_decrypted_data": user["permitted_decrypted_data"],
+                    "permitted_approve_accounts": user["permitted_approve_accounts"],
+                    "users_sites": site_arr
+                })
 
         # check for duplicates
         if len(result) > 1:

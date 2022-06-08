@@ -13,7 +13,11 @@ from flask import Blueprint, request, jsonify
 v1 = Blueprint("v1", __name__)
 
 from security.cookie import Cookie
-from datetime import datetime, timedelta
+
+from datetime import timedelta
+from datetime import date
+from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
 
 # database connectors
 from schemas.users.baseModel import users_db
@@ -42,6 +46,7 @@ from models.find_tb_treatment_outcomes import find_tb_treatment_outcome
 from models.find_users import find_user
 from models.get_regions import get_all_regions
 from models.get_sites import get_all_sites
+from models.data_exports import data_export
 
 # exceptions
 from werkzeug.exceptions import BadRequest
@@ -58,7 +63,7 @@ def after_request(response):
     return response
 
 @v1.route("/signup", methods=["POST"])
-def signup():
+def signup() -> None:
     """
     Create a new user.
 
@@ -69,10 +74,9 @@ def signup():
         name: str,
         occupation: str,
         site_id: int,
-        region_id: int
     
     Response:
-        200: dict,
+        200: None,
         400: str,
         401: str,
         409: str,
@@ -115,9 +119,7 @@ def signup():
         )
         update_account_status(user, "approved")
 
-        res = jsonify(user)
-
-        return res, 200
+        return "", 200
 
     except BadRequest as err:
         return str(err), 400
@@ -137,7 +139,7 @@ def signup():
         return "internal server error", 500
 
 @v1.route("/login", methods=["POST"])
-def login():
+def login() -> dict:
     """
     Authenticate a user.
 
@@ -1199,3 +1201,77 @@ def getSites(region_id) -> list:
         logger.exception(err)
         return "internal server error", 500
 
+@v1.route("/regions/<string:region_id>/sites/<string:site_id>/exports/<string:format>", methods=["GET"])
+def dataExport(region_id: str, site_id: str, format: str) -> str:
+    """
+    """
+    try:        
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        user_id = find_session(sid, uid, user_agent, user_cookie) 
+        
+        user = find_user(user_id=user_id, no_sites=True)
+
+        if user['permitted_export_range'] < 1:
+            logger.error("Not allowed to export. permitted_export_range < 1")
+            raise Forbidden()
+        elif len(user['permitted_export_types']) < 1:
+            logger.error("Not allowed to export. No permitted_export_types")
+            raise Forbidden()
+        elif not format in user['permitted_export_types']:
+            logger.error("Not allowed to export %s" % format)
+            raise Forbidden()
+
+        start_date = request.args.get("start_date")
+        end_date = request.args.get("end_date")
+        month_range = date.today().month - parse(start_date).month
+
+        logger.debug("checking permitted_export_range ...")
+        if (month_range+1) > user['permitted_export_range']:
+            logger.error("Not allowed to export. Permitted_export_range exceeded")
+            raise Forbidden()
+
+        start_date = parse(start_date)
+        end_date = parse(end_date) + relativedelta(hours=23, minutes=59, seconds=59)
+        req_range = end_date.month - start_date.month
+                
+        logger.info("requesting %d month(s) data" % (req_range+1))
+        
+        download_path = data_export(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id)
+
+        return download_path, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
