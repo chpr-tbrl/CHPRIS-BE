@@ -11,13 +11,14 @@ from models.find_sites import find_site
 from models.find_regions import find_region
 
 from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import Unauthorized
 
-def get_all_users() -> list:
+def get_all_users(account_status: str = None) -> list:
     """
     Fetch all users.
 
     Arguments:
-        None
+        account_status: str
 
     Returns:
         list
@@ -26,7 +27,14 @@ def get_all_users() -> list:
         logger.debug("fetching all user records ...")
         result = []
         
-        users = Users.select().dicts()
+        if account_status:
+            if not account_status in ["pending"]:
+                logger.error("invalid account_status '%s'" % account_status)
+                raise Unauthorized()       
+            else:          
+                users = Users.select().where(Users.account_status == account_status).dicts()
+        else:
+            users = Users.select().dicts()
 
         for user in users.iterator():
             logger.debug("Fetching all sites for user '%s' ..." % user["id"])

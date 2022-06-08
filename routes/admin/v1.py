@@ -27,6 +27,7 @@ from models.find_users import find_user
 from models.update_users import update_user
 from models.create_regions import create_region
 from models.create_sites import create_site
+from models.change_account_status import update_account_status
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -80,7 +81,9 @@ def getAllUsers() -> list:
         # check permission
         check_permission(user_id=user_id, scope=["admin", "super_admin"])
     
-        users_list = get_all_users()
+        account_status = request.args.get("account_status")
+
+        users_list = get_all_users(account_status=account_status)
 
         res = jsonify(users_list)
 
@@ -119,7 +122,7 @@ def getAllUsers() -> list:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>", methods=["PUT"])
+@v1.route("/users/<int:user_id>", methods=["POST","PUT"])
 def updateUser(user_id: int) -> None:
     """
     Update a user's account.
@@ -142,62 +145,112 @@ def updateUser(user_id: int) -> None:
         500: str
     """
     try:
-        if not request.cookies.get(cookie_name):
-            logger.error("no cookie")
-            raise Unauthorized()
-        elif not request.headers.get("User-Agent"):
-            logger.error("no user agent")
-            raise BadRequest()
-    
-        cookie = Cookie()
-        e_cookie = request.cookies.get(cookie_name)
-        d_cookie = cookie.decrypt(e_cookie)
-        json_cookie = json.loads(d_cookie)
-
-        sid = json_cookie["sid"]
-        uid = json_cookie["uid"]
-        user_cookie = json_cookie["cookie"]
-        user_agent = request.headers.get("User-Agent")
-
-        admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+        # update account
+        if request.method == "PUT":
+            if not request.cookies.get(cookie_name):
+                logger.error("no cookie")
+                raise Unauthorized()
+            elif not request.headers.get("User-Agent"):
+                logger.error("no user agent")
+                raise BadRequest()
         
-        # check permission
-        account_type = check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
-        
-        user = find_user(user_id=user_id, no_sites=True)
+            cookie = Cookie()
+            e_cookie = request.cookies.get(cookie_name)
+            d_cookie = cookie.decrypt(e_cookie)
+            json_cookie = json.loads(d_cookie)
 
-        if user["account_type"] == "super_admin" and account_type == "admin":
-            logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))
-            raise Forbidden()
+            sid = json_cookie["sid"]
+            uid = json_cookie["uid"]
+            user_cookie = json_cookie["cookie"]
+            user_agent = request.headers.get("User-Agent")
 
-        payload = (
-            user["id"],
-            request.json["account_status"],
-            request.json["permitted_export_types"],
-            request.json["account_type"],
-            request.json["permitted_export_range"],
-            request.json["permitted_approve_accounts"],
-            request.json["permitted_decrypted_data"]
-        )
+            admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+            
+            # check permission
+            account_type = check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
+            
+            user = find_user(user_id=user_id, no_sites=True)
 
-        update_user(*payload)
+            if user["account_type"] == "super_admin" and account_type == "admin":
+                logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))
+                raise Forbidden()
 
-        res = jsonify()
+            payload = (
+                user["id"],
+                request.json["account_status"],
+                request.json["permitted_export_types"],
+                request.json["account_type"],
+                request.json["permitted_export_range"],
+                request.json["permitted_approve_accounts"],
+                request.json["permitted_decrypted_data"]
+            )
 
-        session = update_session(sid, admin_user_id)
-        cookie = Cookie()
-        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-        e_cookie = cookie.encrypt(cookie_data)
-        res.set_cookie(
-            cookie_name,
-            e_cookie,
-            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-            secure=session["data"]["secure"],
-            httponly=session["data"]["httpOnly"],
-            samesite=session["data"]["sameSite"],
-        )
-        
-        return res, 200
+            update_user(*payload)
+
+            res = jsonify()
+
+            session = update_session(sid, admin_user_id)
+            cookie = Cookie()
+            cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+            
+            return res, 200
+
+        # change account_status
+        elif request.method == "POST":
+            if not request.cookies.get(cookie_name):
+                logger.error("no cookie")
+                raise Unauthorized()
+            elif not request.headers.get("User-Agent"):
+                logger.error("no user agent")
+                raise BadRequest()
+            elif not "account_status" in request.json or not request.json["account_status"]:
+                logger.error("no account_status")
+                raise BadRequest()
+
+            cookie = Cookie()
+            e_cookie = request.cookies.get(cookie_name)
+            d_cookie = cookie.decrypt(e_cookie)
+            json_cookie = json.loads(d_cookie)
+
+            sid = json_cookie["sid"]
+            uid = json_cookie["uid"]
+            user_cookie = json_cookie["cookie"]
+            user_agent = request.headers.get("User-Agent")
+
+            admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+            
+            # check permission
+            check_permission(user_id=admin_user_id, scope=["admin", "super_admin"], permitted_approve_accounts=True)
+
+            account_status = request.json["account_status"]
+
+            update_account_status(user_id=user_id, account_status=account_status)
+
+            res = jsonify()
+
+            session = update_session(sid, admin_user_id)
+            cookie = Cookie()
+            cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+            
+            return res, 200
 
     except BadRequest as err:
         return str(err), 400
@@ -218,7 +271,7 @@ def updateUser(user_id: int) -> None:
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
-
+        
 @v1.route("/regions", methods=["POST"])
 def createRegion() -> None:
     """
