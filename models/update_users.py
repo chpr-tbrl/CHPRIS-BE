@@ -8,36 +8,34 @@ from schemas.users.users import Users
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Unauthorized
 
-def update_user(id: int, occupation: str, phone_number: str, region_id: int, site_id: int, state: str, type_of_export: str, type_of_user: str, exportable_range: int) -> str:
+def update_user(id: int, account_status: str, permitted_export_types: str, account_type: str, permitted_export_range: int, permitted_approve_accounts: bool, permitted_decrypted_data: bool) -> int:
     """
     Update a user's account.
 
     Arguments:
         id: int,
-        occupation: str,
-        phone_number: str,
-        region_id: int,
-        site_id: int,
-        state: str,
-        type_of_export: str,
-        type_of_user: str,
-        exportable_range: str
+        account_status: str,
+        permitted_export_types: str,
+        account_type: str,
+        permitted_export_range: str,
+        permitted_approve_accounts: bool,
+        permitted_decrypted_data: bool
 
     Returns:
-        str
+        int
     """
     try:
-        if not state in ["pending", "verified", "suspended"]:
-            logger.error("invalid state '%s'" % state)
-            raise Unauthorized()   
+        if not account_status in ["pending", "approved", "suspended"]:
+            logger.error("invalid account_status '%s'" % account_status)
+            raise Unauthorized()               
 
         logger.debug("Updating user %d record ..." % id)
         
-        user = Users.update(occupation=occupation , phone_number=phone_number , region_id=region_id , site_id=site_id , state=state , type_of_export=type_of_export , type_of_user=type_of_user, exportable_range=exportable_range).where(Users.id == id)
+        user = Users.update(account_status=account_status, permitted_export_types=permitted_export_types, account_type=account_type, permitted_export_range=permitted_export_range, permitted_approve_accounts=permitted_approve_accounts, permitted_decrypted_data=permitted_decrypted_data).where(Users.id == id)
         user.execute()
 
         logger.info("- Successfully updated user %s" % id)
-        return str(id)
+        return id
 
     except DatabaseError as err:
         logger.error("failed to update users %d check logs" % id)

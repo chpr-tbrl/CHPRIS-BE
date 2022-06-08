@@ -120,7 +120,7 @@ def getAllUsers() -> list:
         return "internal server error", 500
 
 @v1.route("/users/<int:user_id>", methods=["PUT"])
-def updateUser(user_id):
+def updateUser(user_id: int) -> None:
     """
     Update a user's account.
     
@@ -128,17 +128,13 @@ def updateUser(user_id):
         user_id: int
 
     Body:
-        occupation: str,
-        phone_number: str,
-        region_id: int,
-        site_id: int,
-        state: str,
-        type_of_export: str,
-        type_of_user: str,
-        exportable_range: str
+        account_status: str,
+        permitted_export_types: list,
+        account_type: str,
+        permitted_export_range: int,
 
     Response:
-        200: str
+        200: None
         400: str
         401: str
         409: str
@@ -146,23 +142,62 @@ def updateUser(user_id):
         500: str
     """
     try:
-        user = find_user(user_id=user_id)
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+    
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+        
+        # check permission
+        account_type = check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
+        
+        user = find_user(user_id=user_id, no_sites=True)
+
+        if user["account_type"] == "super_admin" and account_type == "admin":
+            logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))
+            raise Forbidden()
 
         payload = (
             user["id"],
-            request.json["occupation"],
-            request.json["phone_number"],
-            request.json["region_id"],
-            request.json["site_id"],
-            request.json["state"],
-            request.json["type_of_export"],
-            request.json["type_of_user"],
-            request.json["exportable_range"]
+            request.json["account_status"],
+            request.json["permitted_export_types"],
+            request.json["account_type"],
+            request.json["permitted_export_range"],
+            request.json["permitted_approve_accounts"],
+            request.json["permitted_decrypted_data"]
         )
 
-        result = update_user(*payload)
+        update_user(*payload)
 
-        return result, 200
+        res = jsonify()
+
+        session = update_session(sid, admin_user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+        
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400

@@ -9,7 +9,7 @@ from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Unauthorized
 from werkzeug.exceptions import Forbidden
 
-def check_permission(user_id: int, scope: list) -> bool:
+def check_permission(user_id: int, scope: list) -> str:
     """
     Check a user's scope.
 
@@ -18,7 +18,7 @@ def check_permission(user_id: int, scope: list) -> bool:
         scope: list
     
     Returns:
-        bool
+        str
     """
     try:
         logger.debug("checking permissions for user %s ..." % user_id)
@@ -33,7 +33,7 @@ def check_permission(user_id: int, scope: list) -> bool:
                 logger.error("account_type = %s is not allowed to access the request resource" % user.account_type)
                 raise Forbidden()
             else:
-                return True
+                return user.account_type
 
     except DatabaseError as err:
         logger.error("failed to find user %s check logs" % user_id)
