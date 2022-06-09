@@ -109,7 +109,7 @@ def signup() -> None:
         site_id = request.json["site_id"]
         occupation = request.json["occupation"]
 
-        user = create_user(
+        create_user(
             email, 
             password, 
             phone_number,
