@@ -24,7 +24,12 @@ from controllers.sync_database import create_tables
 from controllers.sync_database import create_super_admin
 
 app = Flask(__name__)
-CORS(app)
+
+CORS(
+    app,
+    origins=api["ORIGINS"],
+    supports_credentials=True,
+)
 
 create_database()
 create_tables()

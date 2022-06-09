@@ -3,6 +3,7 @@ default.ini
 logs/
 datasets/
 __pycache__/
+.vscode/
 *.py[cod]
 *$py.class
 
