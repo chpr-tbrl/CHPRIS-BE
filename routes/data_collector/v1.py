@@ -117,7 +117,6 @@ def signup() -> None:
             occupation,
             site_id 
         )
-        update_account_status(user, "approved")
 
         return "", 200
 
