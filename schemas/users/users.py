@@ -22,4 +22,5 @@ class Users(BaseModel):
     permitted_export_range = IntegerField(default=1)
     permitted_decrypted_data = BooleanField(default=False)
     permitted_approve_accounts = BooleanField(default=False)
+    iv = CharField()
     createdAt = DateTimeField(default=datetime.now)

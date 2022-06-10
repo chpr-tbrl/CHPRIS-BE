@@ -36,11 +36,12 @@ def create_user(email: str, password: str, phone_number: str, name: str, occupat
             password_hash = data.hash(password)
 
             user = Users.create(
-                email=email,
-                password_hash=password_hash,
-                phone_number=phone_number,
-                name=name,
-                occupation=occupation
+                email= email,
+                password_hash= password_hash,
+                phone_number= data.encrypt(phone_number)["e_data"],
+                name= data.encrypt(name)["e_data"],
+                occupation= data.encrypt(occupation)["e_data"],
+                iv = data.iv
             )
 
             logger.debug("adding user '%s' to site '%d' ..." % (email, site_id))

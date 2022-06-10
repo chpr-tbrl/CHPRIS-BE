@@ -169,7 +169,7 @@ def updateUser(user_id: int) -> None:
             # check permission
             account_type = check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
             
-            user = find_user(user_id=user_id, no_sites=True)
+            user = find_user(user_id=user_id, no_sites=True, update=True)
 
             if user["account_type"] == "super_admin" and account_type == "admin":
                 logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))

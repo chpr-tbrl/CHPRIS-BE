@@ -35,7 +35,8 @@ class Data:
         self.key_bytes = 32
         self.key = e_key.encode("utf8")[:self.key_bytes] if not key else key.encode("utf8")[:self.key_bytes]
         self.salt = salt.encode("utf-8")
-        self.iv = Random.new().read(AES.block_size)
+        self.iv_bytes = Random.new().read(AES.block_size)
+        self.iv = b64encode(self.iv_bytes).decode('utf-8')
 
         if not len(self.key) == self.key_bytes:
             raise InternalServerError("Invalid encryption key length. Key >= %d bytes" % self.key_bytes)
@@ -52,11 +53,12 @@ class Data:
             dict
         """
         logger.debug("starting data encryption ...")
-        cipher = AES.new(self.key, AES.MODE_CBC, self.iv if not iv else iv)
+        cipher = AES.new(self.key, AES.MODE_CBC, self.iv_bytes if not iv else iv)
         data_bytes = data.encode()
         ct_bytes = cipher.encrypt(pad(data_bytes, AES.block_size))
+        ct_iv = b64encode(cipher.iv).decode('utf-8')
         ct = b64encode(ct_bytes).decode('utf-8')
-        result = {'iv':self.iv, 'e_data':ct}
+        result = {'iv':ct_iv, 'e_data':ct}
 
         logger.info("- Successfully encryted data")
         return result
@@ -74,10 +76,10 @@ class Data:
         """
         try:
             logger.debug("starting data encryption ...")
-            # iv = b64decode(iv)
+            iv_bytes = b64decode(iv)
             ct = b64decode(data)
-            cipher = AES.new(self.key, AES.MODE_CBC, iv)
-            pt = unpad(cipher.decrypt(ct), AES.block_size)
+            cipher = AES.new(self.key, AES.MODE_CBC, iv_bytes)
+            pt = unpad(cipher.decrypt(ct), AES.block_size).decode("utf-8")
 
             logger.info("- Successfully decryted data")
             return pt

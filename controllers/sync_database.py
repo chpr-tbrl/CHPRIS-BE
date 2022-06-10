@@ -5,8 +5,6 @@ from Configs import baseConfig
 config = baseConfig()
 database = config["DATABASE"]
 
-import os
-import json
 from contextlib import closing
 from mysql.connector import connect
 from mysql.connector import Error
@@ -70,6 +68,7 @@ def create_database() -> None:
 
     except Error as error:
         raise InternalServerError(error)
+
     except Exception as error:
         raise InternalServerError(error)
 
@@ -122,6 +121,7 @@ def create_tables() -> None:
         )
 
         logger.info("- Successfully Sync database %s" % database['MYSQL_RECORDS_DATABASE'])
+
     except Exception as error:
         raise InternalServerError(error)
 
@@ -140,9 +140,9 @@ def create_super_admin() -> None:
             data = Data()
             Users.create(
                 email = super_admin["EMAIL"], 
-                name = super_admin["NAME"],
-                phone_number = super_admin["PHONE_NUMBER"],
-                occupation = super_admin["OCCUPATION"],
+                name = data.encrypt(super_admin["NAME"])["e_data"],
+                phone_number = data.encrypt(super_admin["PHONE_NUMBER"])["e_data"],
+                occupation = data.encrypt(super_admin["OCCUPATION"])["e_data"],
                 password_hash = data.hash(super_admin["PASSWORD"]),
                 account_status = "approved",
                 account_type = "super_admin",
@@ -150,7 +150,9 @@ def create_super_admin() -> None:
                 permitted_export_types = ["csv", "pdf"],
                 permitted_export_range = 12,
                 permitted_decrypted_data = True,
-                permitted_approve_accounts = True
+                permitted_approve_accounts = True,
+                iv = data.iv
             )
+            
     except Exception as error:
         raise InternalServerError(error)

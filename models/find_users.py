@@ -3,6 +3,8 @@ logger = logging.getLogger(__name__)
 
 from peewee import DatabaseError
 
+from security.data import Data
+
 from schemas.users.users import Users
 from schemas.users.users_sites import Users_sites
 
@@ -13,7 +15,7 @@ from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import Unauthorized
 
-def find_user(user_id: int, no_sites: bool = None) -> dict:
+def find_user(user_id: int, no_sites: bool = False, update: bool = False) -> dict:
     """
     Find a user.
 
@@ -26,25 +28,35 @@ def find_user(user_id: int, no_sites: bool = None) -> dict:
     try:
         logger.debug("finding user %s ..." % user_id)
         
-        users = (
-            Users.select()
-            .where(Users.id == user_id, Users.account_status == "approved")
-            .dicts()
-        )
+        data = Data()
+
+        if update:
+            users = (
+                Users.select()
+                .where(Users.id == user_id)
+                .dicts()
+            )
+        else:
+            users = (
+                Users.select()
+                .where(Users.id == user_id, Users.account_status == "approved")
+                .dicts()
+            )
 
         result = []
         for user in users:
             logger.debug("Fetching all sites for user '%s' ..." % user["id"])
             user_sites = Users_sites.select(Users_sites.site_id).where(Users_sites.user_id == user["id"]).dicts()
             site_arr = []
-
+            
+            iv = user["iv"]
             if no_sites:
                 result.append({
                     "id": user["id"],
                     "email": user["email"],
-                    "name": user["name"],
-                    "phone_number": user["phone_number"],
-                    "occupation": user["occupation"],
+                    "name": data.decrypt(user["name"], iv),
+                    "phone_number": data.decrypt(user["phone_number"], iv),
+                    "occupation": data.decrypt(user["occupation"], iv),
                     "account_status": user["account_status"],
                     "account_type": user["account_type"],
                     "account_request_date": user["account_request_date"],
@@ -70,9 +82,9 @@ def find_user(user_id: int, no_sites: bool = None) -> dict:
                 result.append({
                     "id": user["id"],
                     "email": user["email"],
-                    "name": user["name"],
-                    "phone_number": user["phone_number"],
-                    "occupation": user["occupation"],
+                    "name": data.decrypt(user["name"], iv),
+                    "phone_number": data.decrypt(user["phone_number"], iv),
+                    "occupation": data.decrypt(user["occupation"], iv),
                     "account_status": user["account_status"],
                     "account_type": user["account_type"],
                     "account_request_date": user["account_request_date"],

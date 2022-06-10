@@ -42,3 +42,4 @@ class Records(BaseModel):
     records_reason_for_test_presumptive_tb = BooleanField(null=True)
     records_tb_treatment_history = CharField()
     records_tb_treatment_history_contact_of_tb_patient = CharField(null=True)
+    iv = CharField()
