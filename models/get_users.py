@@ -1,6 +1,9 @@
 import logging
+from security import data
 
 logger = logging.getLogger(__name__)
+
+from security.data import Data
 
 from peewee import DatabaseError
 
@@ -54,12 +57,14 @@ def get_all_users(account_status: str = None) -> list:
                     }
                 })
 
+            iv = user["iv"]
+            data = Data()
             result.append({
                 "id": user["id"],
                 "email": user["email"],
-                "name": user["name"],
-                "phone_number": user["phone_number"],
-                "occupation": user["occupation"],
+                "name": data.decrypt(user["name"], iv),
+                "phone_number": data.decrypt(user["phone_number"], iv),
+                "occupation": data.decrypt(user["occupation"], iv),
                 "account_status": user["account_status"],
                 "account_type": user["account_type"],
                 "account_request_date": user["account_request_date"],

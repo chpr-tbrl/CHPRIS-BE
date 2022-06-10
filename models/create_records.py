@@ -1,6 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
+from security.data import Data
+
 from peewee import DatabaseError
 from peewee import OperationalError
 
@@ -52,21 +54,22 @@ def create_record(site_id: int, region_id: int, records_user_id: int, records_na
     try:
         logger.debug("creating record for %d ..." % records_user_id)
         
+        data = Data()
         record = Records.create(
             site_id=site_id,
             region_id=region_id,
             records_user_id=records_user_id,
-            records_name=records_name,
+            records_name= data.encrypt(records_name),
             records_age=records_age,
             records_sex=records_sex,
             records_date_of_test_request=records_date_of_test_request,
-            records_address=records_address,
-            records_telephone=records_telephone,
-            records_telephone_2=records_telephone_2,
+            records_address= data.encrypt(records_address),
+            records_telephone= data.encrypt(records_telephone),
+            records_telephone_2= data.encrypt(records_telephone_2),
             records_has_art_unique_code=records_has_art_unique_code,
-            records_art_unique_code=records_art_unique_code,
+            records_art_unique_code= data.encrypt(records_art_unique_code),
             records_status=records_status,
-            records_ward_bed_number=records_ward_bed_number,
+            records_ward_bed_number= data.encrypt(records_ward_bed_number),
             records_currently_pregnant=records_currently_pregnant,
             records_symptoms_current_cough=records_symptoms_current_cough,
             records_symptoms_fever=records_symptoms_fever,
@@ -83,7 +86,8 @@ def create_record(site_id: int, region_id: int, records_user_id: int, records_na
             records_patient_category_other=records_patient_category_other,
             records_reason_for_test_presumptive_tb=records_reason_for_test_presumptive_tb,
             records_tb_treatment_history=records_tb_treatment_history,
-            records_tb_treatment_history_contact_of_tb_patient=records_tb_treatment_history_contact_of_tb_patient
+            records_tb_treatment_history_contact_of_tb_patient= data.encrypt(records_tb_treatment_history_contact_of_tb_patient),
+            iv = data.iv
         )
 
         logger.info("- Record %s successfully created" % record)
