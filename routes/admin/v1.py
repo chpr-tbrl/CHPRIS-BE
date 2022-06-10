@@ -174,6 +174,9 @@ def updateUser(user_id: int) -> None:
             if user["account_type"] == "super_admin" and account_type == "admin":
                 logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))
                 raise Forbidden()
+            elif user["account_type"] == "admin" and account_type == "admin":
+                logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))
+                raise Forbidden()
 
             payload = (
                 user["id"],

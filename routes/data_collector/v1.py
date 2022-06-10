@@ -382,8 +382,9 @@ def findRecord() -> list:
                 site["id"],
                 site["region"]["id"],
                 user["id"],
+                user["permitted_decrypted_data"]
             )
-        
+
             for record in find_record(*payload):
                 result.append(record)
 
@@ -1236,6 +1237,8 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
             logger.error("Not allowed to export %s" % format)
             raise Forbidden()
 
+        permitted_decrypted_data= user["permitted_decrypted_data"]
+
         start_date = request.args.get("start_date")
         end_date = request.args.get("end_date")
         month_range = date.today().month - parse(start_date).month
@@ -1251,7 +1254,7 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
                 
         logger.info("requesting %d month(s) data" % (req_range+1))
         
-        download_path = data_export(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id)
+        download_path = data_export(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
 
         return download_path, 200
 
