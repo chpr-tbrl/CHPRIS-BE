@@ -54,14 +54,21 @@ class Data:
         """
         logger.debug("starting data encryption ...")
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv_bytes if not iv else iv)
-        data_bytes = data.encode()
-        ct_bytes = cipher.encrypt(pad(data_bytes, AES.block_size))
-        ct_iv = b64encode(cipher.iv).decode('utf-8')
-        ct = b64encode(ct_bytes).decode('utf-8')
-        result = {'iv':ct_iv, 'e_data':ct}
 
-        logger.info("- Successfully encryted data")
-        return result
+        if not data:
+            result = {'e_data':None}
+
+            logger.info("- Nothing to encrypt")
+            return result        
+        else:
+            data_bytes = data.encode()
+            ct_bytes = cipher.encrypt(pad(data_bytes, AES.block_size))
+            ct_iv = b64encode(cipher.iv).decode('utf-8')
+            ct = b64encode(ct_bytes).decode('utf-8')
+            result = {'iv':ct_iv, 'e_data':ct}
+
+            logger.info("- Successfully encryted data")
+            return result
 
     def decrypt(self, data: str, iv: str) -> str:
         """
@@ -76,13 +83,17 @@ class Data:
         """
         try:
             logger.debug("starting data encryption ...")
-            iv_bytes = b64decode(iv)
-            ct = b64decode(data)
-            cipher = AES.new(self.key, AES.MODE_CBC, iv_bytes)
-            pt = unpad(cipher.decrypt(ct), AES.block_size).decode("utf-8")
+            if not data:
+                logger.info("- Nothing to decrypt")
+                return None    
+            else:
+                iv_bytes = b64decode(iv)
+                ct = b64decode(data)
+                cipher = AES.new(self.key, AES.MODE_CBC, iv_bytes)
+                pt = unpad(cipher.decrypt(ct), AES.block_size).decode("utf-8")
 
-            logger.info("- Successfully decryted data")
-            return pt
+                logger.info("- Successfully decryted data")
+                return pt
         except (ValueError, KeyError) as error:
             logger.error(error)
             raise Unauthorized()

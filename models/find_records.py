@@ -32,7 +32,8 @@ def find_record(site_id: int, region_id: int, records_user_id: int, permitted_de
                 Records.record_id,
                 Records.records_name,
                 Records.records_date,
-                Records.records_date_of_test_request
+                Records.records_date_of_test_request,
+                Records.iv
             )
             .where(Records.site_id == site_id, Records.region_id == region_id, Records.records_date >= date.today())
             .dicts()
@@ -49,7 +50,12 @@ def find_record(site_id: int, region_id: int, records_user_id: int, permitted_de
                     "records_date_of_test_request" : record["records_date_of_test_request"]
                 })
             else:
-                result.append(record)
+                result.append({
+                    "record_id" : record["record_id"],
+                    "records_name" : record["records_name"],
+                    "records_date" : record["records_date"],
+                    "records_date_of_test_request" : record["records_date_of_test_request"]
+                })
 
         logger.info("- Successfully found records with site_id = %s & region_id = %s requested by user_id = %s" % (site_id, region_id, records_user_id))
         return result
