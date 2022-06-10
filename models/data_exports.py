@@ -48,7 +48,8 @@ def data_export(start_date:str, end_date:str, region_id:str = None, site_id:str 
             'records_patient_category_other',
             'records_reason_for_test_presumptive_tb',
             'records_tb_treatment_history',
-            'records_tb_treatment_history_contact_of_tb_patient'
+            'records_tb_treatment_history_contact_of_tb_patient',
+            'iv'
         ]
 
 
