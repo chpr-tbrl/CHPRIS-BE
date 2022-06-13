@@ -381,6 +381,10 @@ def createSite(region_id: int) -> None:
         elif not "name" in request.json or not request.json["name"]:
             logger.error("no name")
             raise BadRequest()
+        elif not "site_code" in request.json or not request.json["site_code"]:
+            logger.error("no site_code")
+            raise BadRequest()
+
 
         cookie = Cookie()
         e_cookie = request.cookies.get(cookie_name)
@@ -398,8 +402,9 @@ def createSite(region_id: int) -> None:
         check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
+        site_code = request.json["site_code"]
 
-        create_site(name=name, region_id=region_id)
+        create_site(name=name, region_id=region_id, site_code=site_code)
 
         res = jsonify()
 

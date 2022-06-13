@@ -8,13 +8,14 @@ from schemas.sites.sites import Sites
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
 
-def create_site(name: str, region_id: int) -> str:
+def create_site(name: str, region_id: int, site_code: str) -> str:
     """
     Add site to database.
 
     Arguments:
         name: str,
-        region_id: int
+        region_id: int,
+        site_code: str
 
     Returns:
         str
@@ -25,12 +26,12 @@ def create_site(name: str, region_id: int) -> str:
         except Sites.DoesNotExist:
             logger.debug("creating site '%s' ..." % name)
 
-            site = Sites.create(name=name, region_id=region_id)
+            site = Sites.create(name=name, region_id=region_id, site_code=site_code)
 
             logger.info("- Site '%s' successfully created" % name)
             return str(site)
         else:
-            logger.error("Site '%s' with region_id=%s exist" % (name, region_id))
+            logger.error("Site '%s' with region_id=%s exist or site_code '%s' with region_id=%s exist" % (name, region_id, site_code, region_id))
             raise Conflict()
 
     except DatabaseError as err:
