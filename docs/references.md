@@ -19,6 +19,7 @@
 | [Change Account Status]()                        | **POST** /v1/admin/users/<user_id>             | <ul><li>user_id = INTEGER</li></ul> | <ul><li>account_status = STRING</li></ul>                                                                                                                                                                                                       |
 | [Fetch a User](./features_v1.md#21-fetch-a-user) | **GET** /v1/profile                            | None                                | None                                                                                                                                                                                                                                            |
 | [Add users_sites]()                              | **POST** /v1/admin/users/<user_id>/sites       | <ul><li>user_id = INTEGER</li></ul> | ARRAY                                                                                                                                                                                                                                           |
+| [Remove users_sites]()                           | **DELETE** /v1/admin/users/<user_id>/sites     | <ul><li>user_id = INTEGER</li></ul> | ARRAY                                                                                                                                                                                                                                           |
 
 ### Records
 

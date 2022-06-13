@@ -29,6 +29,7 @@ from models.create_regions import create_region
 from models.create_sites import create_site
 from models.change_account_status import update_account_status
 from models.add_users_sites import add_user_site
+from models.remove_users_sites import remove_user_site
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -276,7 +277,7 @@ def updateUser(user_id: int) -> None:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>/sites", methods=["POST"])
+@v1.route("/users/<int:user_id>/sites", methods=["POST", "DELETE"])
 def addUserSites(user_id: int) -> None:
     """
     Add a user's sites.
@@ -323,7 +324,10 @@ def addUserSites(user_id: int) -> None:
 
         user_sites = request.json
 
-        add_user_site(users_sites=user_sites, user_id=user_id)
+        if request.method == "POST":
+            add_user_site(users_sites=user_sites, user_id=user_id)
+        else:
+            remove_user_site(users_sites=user_sites, user_id=user_id)
 
         res = jsonify()
 
