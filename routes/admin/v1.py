@@ -28,6 +28,7 @@ from models.update_users import update_user
 from models.create_regions import create_region
 from models.create_sites import create_site
 from models.change_account_status import update_account_status
+from models.add_users_sites import add_user_site
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -254,6 +255,92 @@ def updateUser(user_id: int) -> None:
             )
             
             return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/users/<int:user_id>/sites", methods=["POST"])
+def addUserSites(user_id: int) -> None:
+    """
+    Add a user's sites.
+    
+    Parameters:
+        user_id: int
+
+    Body:
+       []
+
+    Response:
+        200: None
+        400: str
+        401: str
+        409: str
+        403: str
+        500: str
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+        elif not isinstance(request.json, list):
+            logger.error("no request body must be an array")
+            raise BadRequest()
+    
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+        
+        # check permission
+        check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
+
+        user_sites = request.json
+
+        add_user_site(users_sites=user_sites, user_id=user_id)
+
+        res = jsonify()
+
+        session = update_session(sid, admin_user_id)
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+        
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400

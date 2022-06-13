@@ -11,3 +11,6 @@ class Users_sites(BaseModel):
     user_id = ForeignKeyField(Users)
     site_id = IntegerField()
     createdAt = DateTimeField(default=datetime.now)
+
+    class Meta:
+        indexes = ((('user_id', 'site_id'), True),)
