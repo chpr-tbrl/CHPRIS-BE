@@ -69,17 +69,17 @@ def data_export(start_date:str, end_date:str, permitted_decrypted_data: bool, re
                 Records.records_date.between(start_date, end_date)
                 ).dicts()        
         elif region_id == "all":
-             records = Records.select().where(
+            records = Records.select().where(
                 Records.records_date.between(start_date, end_date), 
                 Records.site_id == site_id
                 ).dicts()       
         elif site_id == "all":
-             records = Records.select().where(
+            records = Records.select().where(
                 Records.records_date.between(start_date, end_date), 
                 Records.region_id == region_id
                 ).dicts()        
         else:
-            Records.select().where(
+            records = Records.select().where(
                 Records.records_date.between(start_date, end_date),
                 Records.region_id == region_id,
                 Records.site_id == site_id
