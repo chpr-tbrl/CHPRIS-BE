@@ -18,7 +18,8 @@ def find_record(site_id: int, region_id: int, records_user_id: int, permitted_de
     Arguments:
         site_id: int,
         region_id: int,
-        records_user_id: int
+        records_user_id: int,
+        permitted_decrypted_data; bool
 
     Returns:
         list
@@ -32,6 +33,7 @@ def find_record(site_id: int, region_id: int, records_user_id: int, permitted_de
                 Records.record_id,
                 Records.records_name,
                 Records.records_date,
+                Records.records_sex,
                 Records.records_date_of_test_request,
                 Records.iv
             )
@@ -47,6 +49,7 @@ def find_record(site_id: int, region_id: int, records_user_id: int, permitted_de
                     "record_id" : record["record_id"],
                     "records_name" : data.decrypt(record["records_name"], iv),
                     "records_date" : record["records_date"],
+                    "records_sex" : record["records_sex"],
                     "records_date_of_test_request" : record["records_date_of_test_request"]
                 })
             else:
@@ -54,6 +57,7 @@ def find_record(site_id: int, region_id: int, records_user_id: int, permitted_de
                     "record_id" : record["record_id"],
                     "records_name" : record["records_name"],
                     "records_date" : record["records_date"],
+                    "records_sex" : record["records_sex"],
                     "records_date_of_test_request" : record["records_date_of_test_request"]
                 })
 
