@@ -9,7 +9,11 @@ config = baseConfig()
 api = config["API"]
 cookie_name = api['COOKIE_NAME']
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint
+from flask import Response
+from flask import request
+from flask import jsonify
+
 v1 = Blueprint("v1", __name__)
 
 from security.cookie import Cookie
@@ -25,28 +29,13 @@ from schemas.sites.baseModel import sites_db
 from schemas.records.baseModel import records_db
 
 # models
-from models.verify_users import verify_user
-from models.create_sessions import create_session
-from models.update_sessions import update_session
-from models.create_users import create_user
-from models.change_account_status import update_account_status
-from models.find_sessions import find_session
-from models.create_records import create_record
-from models.find_records import find_record
-from models.create_specimen_collections import create_specimen_collection
-from models.find_specimen_collections import find_specimen_collection
-from models.create_labs import create_lab
-from models.find_labs import find_lab
-from models.create_follow_ups import create_follow_up
-from models.find_follow_ups import find_follow_up
-from models.find_outcome_recorded import find_outcome_recorded
-from models.create_outcome_recorded import create_outcome_recorded
-from models.create_tb_treatment_outcomes import create_tb_treatment_outcome
-from models.find_tb_treatment_outcomes import find_tb_treatment_outcome
-from models.find_users import find_user
-from models.get_regions import get_all_regions
-from models.get_sites import get_all_sites
-from models.data_exports import data_export
+from models.users import User_Model
+from models.sites import Site_Model
+from models.records import Record_Model
+from models.sessions import Session_Model
+from models.exports import Export_Model
+
+# from models.data_exports import data_export
 
 # exceptions
 from werkzeug.exceptions import BadRequest
@@ -109,13 +98,15 @@ def signup() -> None:
         site_id = request.json["site_id"]
         occupation = request.json["occupation"]
 
-        create_user(
-            email, 
-            password, 
-            phone_number,
-            name,
-            occupation,
-            site_id 
+        User = User_Model()
+
+        User.create(
+            email=email, 
+            password=password, 
+            phone_number=phone_number,
+            name=name,
+            occupation=occupation,
+            site_id=site_id 
         )
 
         return "", 200
@@ -168,10 +159,15 @@ def login() -> dict:
         password = request.json["password"]
         user_agent = request.headers.get("User-Agent")
 
-        user = verify_user(email, password)
-        session = create_session(user["id"], user_agent)
+        User = User_Model()
+
+        user = User.authenticate(email=email, password=password)
 
         res = jsonify(user)
+
+        Session = Session_Model()
+
+        session = Session.create(unique_identifier=user["id"], user_agent=user_agent)
 
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
@@ -267,7 +263,9 @@ def createRecord(region_id: int, site_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
         payload = (
             site_id,
@@ -303,11 +301,14 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_tb_treatment_history_contact_of_tb_patient"]
         )
        
-        create_record(*payload)
+        Record = Record_Model()
+
+        Record.create_record(*payload)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -371,9 +372,13 @@ def findRecord() -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
         
-        user = find_user(user_id=user_id)
+        User = User_Model()
+
+        user = User.fetch_user(user_id=user_id)
 
         result = []
 
@@ -385,12 +390,15 @@ def findRecord() -> list:
                 user["permitted_decrypted_data"]
             )
 
-            for record in find_record(*payload):
+            Record = Record_Model()
+
+            for record in Record.fetch_record(*payload):
                 result.append(record)
 
         res = jsonify(result)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -465,7 +473,9 @@ def createSpecimenCollectionRecord(record_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
         payload = (
             record_id,
@@ -483,12 +493,15 @@ def createSpecimenCollectionRecord(record_id: int) -> None:
             request.json["specimen_collection_2_aspect"],
             request.json["specimen_collection_2_received_by"],
         )
+
+        Record = Record_Model()
        
-        create_specimen_collection(*payload)
+        Record.create_specimen_collection(*payload)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -552,13 +565,18 @@ def findSpecimenCollectionRecord(record_id: int) -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
                
-        result = find_specimen_collection(specimen_collection_records_id=record_id)
+        Record = Record_Model()
+
+        result = Record.fetch_specimen_collection(specimen_collection_records_id=record_id)
 
         res = jsonify(result)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -609,7 +627,9 @@ def createLabRecord(record_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
         payload = (
             record_id,            
@@ -631,11 +651,14 @@ def createLabRecord(record_id: int) -> None:
             request.json["lab_urine_lf_lam_done_by"],
         )
        
-        create_lab(*payload)
+        Record = Record_Model()
+
+        Record.create_lab(*payload)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -686,13 +709,18 @@ def findLabRecord(record_id: int) -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
        
-        result = find_lab(lab_records_id=record_id)
+        Record = Record_Model()
+
+        result = Record.fetch_lab(lab_records_id=record_id)
 
         res = jsonify(result)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -740,7 +768,9 @@ def createFollowUpRecord(record_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
         payload = (
             record_id,
@@ -751,12 +781,15 @@ def createFollowUpRecord(record_id: int) -> None:
             request.json["follow_up_schedule_date"],
             request.json["follow_up_comments"]
         )
-       
-        create_follow_up(*payload)
+
+        Record = Record_Model()
+
+        Record.create_follow_up(*payload)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -804,13 +837,18 @@ def findFollowUpRecord(record_id: int) -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
-       
-        result = find_follow_up(follow_up_records_id=record_id)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+    
+        Record = Record_Model()
+
+        result = Record.fetch_follow_up(follow_up_records_id=record_id)
 
         res = jsonify(result)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -858,7 +896,9 @@ def createOutcomeRecoredRecord(record_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
         payload = (
             record_id,
@@ -869,11 +909,14 @@ def createOutcomeRecoredRecord(record_id: int) -> None:
             request.json["outcome_recorded_comments"]
         )
        
-        create_outcome_recorded(*payload)
+        Record = Record_Model()
+
+        Record.create_outcome_recorded(*payload)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -921,13 +964,18 @@ def findOutcomeRecoredRecord(record_id: int) -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
 
-        result = find_outcome_recorded(outcome_recorded_records_id=record_id)
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        Record = Record_Model()
+
+        result = Record.fetch_outcome_recorded(outcome_recorded_records_id=record_id)
 
         res = jsonify(result)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -975,7 +1023,9 @@ def createTbTreatmentOutcomeRecord(record_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
         
         payload = (
             record_id,
@@ -985,11 +1035,14 @@ def createTbTreatmentOutcomeRecord(record_id: int) -> None:
             request.json["tb_treatment_outcome_close_patient_file"]
         )
        
-        create_tb_treatment_outcome(*payload)
+        Record = Record_Model()
+
+        Record.create_tb_treatment_outcome(*payload)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -1037,13 +1090,18 @@ def findTbTreatmentOutcomeRecord(record_id: int) -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie)       
+        Session = Session_Model()
 
-        result = find_tb_treatment_outcome(tb_treatment_outcome_records_id=record_id)
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)       
+
+        Record = Record_Model()
+
+        result = Record.fetch_tb_treatment_outcome(tb_treatment_outcome_records_id=record_id)
 
         res = jsonify(result)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -1091,13 +1149,18 @@ def findAUser() -> dict:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie) 
+        Session = Session_Model()
 
-        user = find_user(user_id=user_id)
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        User = User_Model()
+
+        user = User.fetch_user(user_id=user_id)
        
         res = jsonify(user)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -1140,8 +1203,10 @@ def getRegions() -> list:
         401: str,
         500: str
     """
-    try:        
-        result = get_all_regions()
+    try:       
+        Site = Site_Model()
+
+        result = Site.fetch_regions()
 
         return jsonify(result), 200
 
@@ -1180,7 +1245,9 @@ def getSites(region_id) -> list:
         500: str
     """
     try:        
-        result = get_all_sites(region_id= region_id)
+        Site = Site_Model()
+
+        result = Site.fetch_sites(region_id= region_id)
 
         return jsonify(result), 200
 
@@ -1223,9 +1290,13 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie) 
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        User = User_Model()
         
-        user = find_user(user_id=user_id, no_sites=True)
+        user = User.fetch_user(user_id=user_id, no_sites=True)
 
         if user['permitted_export_range'] < 1:
             logger.error("Not allowed to export. permitted_export_range < 1")
@@ -1253,10 +1324,28 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
         req_range = end_date.month - start_date.month
                 
         logger.info("requesting %d month(s) data" % (req_range+1))
-        
-        download_path = data_export(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
 
-        return download_path, 200
+        Export = Export_Model()
+        
+        download_path = Export.records(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
+
+        res = Response(download_path)
+
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400

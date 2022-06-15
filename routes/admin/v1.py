@@ -19,17 +19,9 @@ from schemas.users.baseModel import users_db
 from schemas.sites.baseModel import sites_db
 from schemas.records.baseModel import records_db
 
-from models.find_sessions import find_session
-from models.update_sessions import update_session
-from models.check_permissions import check_permission
-from models.get_users import get_all_users
-from models.find_users import find_user
-from models.update_users import update_user
-from models.create_regions import create_region
-from models.create_sites import create_site
-from models.change_account_status import update_account_status
-from models.add_users_sites import add_user_site
-from models.remove_users_sites import remove_user_site
+from models.users import User_Model
+from models.sites import Site_Model
+from models.sessions import Session_Model
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import InternalServerError
@@ -78,18 +70,22 @@ def getAllUsers() -> list:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie) 
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
         
-        # check permission
-        check_permission(user_id=user_id, scope=["admin", "super_admin"])
+        User = User_Model()
+
+        User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
     
         account_status = request.args.get("account_status")
 
-        users_list = get_all_users(account_status=account_status)
+        users_list = User.fetch_users(account_status=account_status)
 
         res = jsonify(users_list)
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -165,14 +161,19 @@ def updateUser(user_id: int) -> None:
             uid = json_cookie["uid"]
             user_cookie = json_cookie["cookie"]
             user_agent = request.headers.get("User-Agent")
+            
+            Session = Session_Model()
 
-            admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+            admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
 
-            user = find_user(user_id=user_id)
+            User = User_Model()
+
+            user = User.fetch_user(user_id=user_id)
 
             res = jsonify(user)
 
-            session = update_session(sid, admin_user_id)
+            session = Session.update(sid=sid, unique_identifier=admin_user_id)
+
             cookie = Cookie()
             cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
             e_cookie = cookie.encrypt(cookie_data)
@@ -205,13 +206,16 @@ def updateUser(user_id: int) -> None:
             uid = json_cookie["uid"]
             user_cookie = json_cookie["cookie"]
             user_agent = request.headers.get("User-Agent")
+            
+            Session = Session_Model()
 
-            admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+            admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
             
-            # check permission
-            account_type = check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
+            User = User_Model()
+
+            account_type = User.check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
             
-            user = find_user(user_id=user_id, no_sites=True, update=True)
+            user = User.fetch_user(user_id=user_id, no_sites=True)
 
             if user["account_type"] == "super_admin" and account_type == "admin":
                 logger.error("'%s' cannot update '%s' account_type" % (account_type, user["account_type"]))
@@ -230,11 +234,14 @@ def updateUser(user_id: int) -> None:
                 request.json["permitted_decrypted_data"]
             )
 
-            update_user(*payload)
+            User = User_Model()
+
+            User.update(*payload)
 
             res = jsonify()
 
-            session = update_session(sid, admin_user_id)
+            session = Session.update(sid=sid, unique_identifier=admin_user_id)
+
             cookie = Cookie()
             cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
             e_cookie = cookie.encrypt(cookie_data)
@@ -270,19 +277,23 @@ def updateUser(user_id: int) -> None:
             uid = json_cookie["uid"]
             user_cookie = json_cookie["cookie"]
             user_agent = request.headers.get("User-Agent")
-
-            admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
             
-            # check permission
-            check_permission(user_id=admin_user_id, scope=["admin", "super_admin"], permitted_approve_accounts=True)
+            Session = Session_Model()
+
+            admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+            
+            User = User_Model()
+
+            User.check_permission(user_id=admin_user_id, scope=["admin", "super_admin"], permitted_approve_accounts=True)
 
             account_status = request.json["account_status"]
 
-            update_account_status(user_id=user_id, account_status=account_status)
+            User.update_account_status(user_id=user_id, account_status=account_status)
 
             res = jsonify()
 
-            session = update_session(sid, admin_user_id)
+            session = Session.update(sid=sid, unique_identifier=admin_user_id)
+
             cookie = Cookie()
             cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
             e_cookie = cookie.encrypt(cookie_data)
@@ -357,21 +368,25 @@ def addUserSites(user_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+        Session = Session_Model()
+
+        admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
         
-        # check permission
-        check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
+        User = User_Model()
+
+        User.check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
 
         user_sites = request.json
 
         if request.method == "POST":
-            add_user_site(users_sites=user_sites, user_id=user_id)
+            User.add_site(users_sites=user_sites, user_id=user_id)
         else:
-            remove_user_site(users_sites=user_sites, user_id=user_id)
+            User.remove_site(users_sites=user_sites, user_id=user_id)
 
         res = jsonify()
 
-        session = update_session(sid, admin_user_id)
+        session = Session.update(sid=sid, unique_identifier=admin_user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -440,18 +455,24 @@ def createRegion() -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie) 
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
         
-        # check permission
-        check_permission(user_id=user_id, scope=["admin", "super_admin"])
+        User = User_Model()
+
+        User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
 
-        create_region(name=name)
+        Site = Site_Model()
+
+        Site.create_region(name=name)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
@@ -527,19 +548,25 @@ def createSite(region_id: int) -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        user_id = find_session(sid, uid, user_agent, user_cookie) 
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
         
-        # check permission
-        check_permission(user_id=user_id, scope=["admin", "super_admin"])
+        User = User_Model()
+
+        User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
         site_code = request.json["site_code"]
 
-        create_site(name=name, region_id=region_id, site_code=site_code)
+        Site = Site_Model()
+
+        Site.create_site(name=name, region_id=region_id, site_code=site_code)
 
         res = jsonify()
 
-        session = update_session(sid, user_id)
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
         cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
