@@ -73,6 +73,7 @@ def find_user(user_id: int, no_sites: bool = False, update: bool = False) -> dic
                     site_arr.append({
                         "id": site["id"],
                         "name": site["name"],
+                        "site_code": site["site_code"],
                         "region": {
                             "id": region["id"],
                             "name": region["name"]

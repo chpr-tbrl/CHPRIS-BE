@@ -51,6 +51,7 @@ def get_all_users(account_status: str = None) -> list:
                 site_arr.append({
                     "id": site["id"],
                     "name": site["name"],
+                    "site_code": site["site_code"],
                     "region": {
                         "id": region["id"],
                         "name": region["name"]
