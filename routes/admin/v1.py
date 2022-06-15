@@ -124,7 +124,7 @@ def getAllUsers() -> list:
         logger.exception(err)
         return "internal server error", 500
 
-@v1.route("/users/<int:user_id>", methods=["POST","PUT"])
+@v1.route("/users/<int:user_id>", methods=["GET", "POST","PUT"])
 def updateUser(user_id: int) -> None:
     """
     Update a user's account.
@@ -147,8 +147,48 @@ def updateUser(user_id: int) -> None:
         500: str
     """
     try:
+        # Fetch account
+        if request.method == "GET":
+            if not request.cookies.get(cookie_name):
+                logger.error("no cookie")
+                raise Unauthorized()
+            elif not request.headers.get("User-Agent"):
+                logger.error("no user agent")
+                raise BadRequest()
+        
+            cookie = Cookie()
+            e_cookie = request.cookies.get(cookie_name)
+            d_cookie = cookie.decrypt(e_cookie)
+            json_cookie = json.loads(d_cookie)
+
+            sid = json_cookie["sid"]
+            uid = json_cookie["uid"]
+            user_cookie = json_cookie["cookie"]
+            user_agent = request.headers.get("User-Agent")
+
+            admin_user_id = find_session(sid, uid, user_agent, user_cookie) 
+
+            user = find_user(user_id=user_id)
+
+            res = jsonify(user)
+
+            session = update_session(sid, admin_user_id)
+            cookie = Cookie()
+            cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+            
+            return res, 200
+           
         # update account
-        if request.method == "PUT":
+        elif request.method == "PUT":
             if not request.cookies.get(cookie_name):
                 logger.error("no cookie")
                 raise Unauthorized()
