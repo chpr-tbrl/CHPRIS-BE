@@ -1189,6 +1189,108 @@ def findAUser() -> dict:
         logger.exception(err)
         return "internal server error", 500
 
+@v1.route("/users", methods=["PUT", "POST"])
+def updateProfile() -> None:
+    """
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        User = User_Model()
+
+        if request.method == "PUT":
+            if not "phone_number" in request.json or not request.json["phone_number"]:
+                logger.error("no phone_number")
+                raise BadRequest()
+            elif not "name" in request.json or not request.json["name"]:
+                logger.error("no name")
+                raise BadRequest()
+            elif not "occupation" in request.json or not request.json["occupation"]:
+                logger.error("no occupation")
+                raise BadRequest()
+
+            phone_number = request.json["phone_number"]
+            name = request.json["name"]
+            occupation = request.json["occupation"]
+
+            User.update_profile(
+                id=user_id,
+                phone_number=phone_number,
+                name=name,
+                occupation=occupation
+            )
+
+        elif request.method == "POST":
+            if not "current_password" in request.json or not request.json["current_password"]:
+                logger.error("no current_password")
+                raise BadRequest()
+            elif not "new_password" in request.json or not request.json["new_password"]:
+                logger.error("no new_password")
+                raise BadRequest()
+
+            current_password = request.json["current_password"]
+            new_password = request.json["new_password"]
+
+            User.update_password(
+                id=user_id,
+                current_password=current_password,
+                new_password=new_password
+            )
+       
+        res = Response()
+
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
 @v1.route("/regions", methods=["GET"])
 def getRegions() -> list:
     """

@@ -478,6 +478,82 @@ class User_Model:
             logger.error("removing users_sites failed check logs")
             raise InternalServerError(err) from None
 
+    def update_profile(self, id: int, phone_number: str, name: str, occupation: str) -> int:
+        """
+        Update a user's profile information.
+
+        Arguments:
+            id: int,
+            phone_number: str,
+            name: str,
+            occupation: str
+
+        Returns:
+            int
+        """
+        try:
+            logger.debug("Updating user %d record ..." % id)
+
+            data = self.Data()
+            
+            user = self.Users.update(
+                phone_number=data.encrypt(phone_number)["e_data"],
+                name=data.encrypt(name)["e_data"],
+                occupation=data.encrypt(occupation)["e_data"],
+                iv=data.iv
+            ).where(self.Users.id == id)
+
+            user.execute()
+
+            logger.info("- Successfully updated user %s" % id)
+            return id
+
+        except DatabaseError as err:
+            logger.error("failed to update user %d. Check logs" % id)
+            raise InternalServerError(err) from None
+
+    def update_password(self, id: int, current_password: str, new_password: str) -> int:
+        """
+        Update a user's password.
+
+        Arguments:
+            id: int,
+            current_password: str,
+            new_password: str
+
+        Returns:
+            int
+        """
+        try:
+            user = self.Users.select(
+                self.Users.password_hash
+            ).where(
+                self.Users.id == id
+                ).dicts()
+
+            password = user[0]["password_hash"]
+
+            logger.debug("Updating user %d password ..." % id)
+
+            data = self.Data()
+
+            if password != data.hash(current_password):
+                logger.error("Wrong password")
+                raise Forbidden()
+            
+            upd_user = self.Users.update(
+                password_hash=data.hash(new_password)
+            ).where(self.Users.id == id)
+
+            upd_user.execute()
+
+            logger.info("- Successfully updated user %s password" % id)
+            return id
+
+        except DatabaseError as err:
+            logger.error("failed to update user %d  password. Check logs" % id)
+            raise InternalServerError(err) from None
+
 
 
 

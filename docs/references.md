@@ -1,54 +1,797 @@
-# References
+# CHPR-IS API References
 
-## APIv1 end-points
+Manage Users, Sites and Records endpoints
 
-### Authentication
+## Endpoints
 
-| Action                                                                | Endpoint            | Parameters | Request body                                                                                                                                                         |
-| :-------------------------------------------------------------------- | :------------------ | :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Create an account](./features_v1.md#1-create-an-account)             | **POST** /v1/signup | None       | <ul><li>phone_number = STRING</li><li>name = STRING</li><li>email = STRING</li><li>password = STRING</li><li>occupation = STRING</li><li>site_id = INTEGER</li></ul> |
-| [Authenticate an account](./features_v1.md#2-authenticate-an-account) | **POST** /v1/login  | None       | <ul><li>email = STRING</li><li>password = STRING</li></ul>                                                                                                           |
+- [Users](#users)
+  1. [Signup](#1-signup)
+  1. [Login](#2-login)
+  1. [Fetch profile](#3-fetch-profile)
+  1. [Update profile](#4-update-profile)
+  1. [Fetch all users](#5-fetch-all-users)
+  1. [Fetch a user](#6-fetch-a-user)
+  1. [Update a user](#7-update-a-user)
+  1. [Update account status](#8-update-account-status)
+  1. [Update password](#9-update-password)
+  1. [Add sites](#10-add-sites)
+  1. [Remove sites](#11-remove-sites)
+- [Sites](#sites)
+  1. [Create site](#1-create-site)
+  1. [Fetch all sites](#2-fetch-all-sites)
+  1. [Create region](#3-create-region)
+  1. [Fetch all regions](#4-fetch-all-regions)
+- [Records](#records)
+  1. [Create record](#1-create-record)
+  1. [Fetch records](#2-fetch-records)
+  1. [Create specimen collection](#3-create-specimen-collection)
+  1. [Fetch specimen collections](#4-fetch-specimen-collections)
+  1. [Create lab](#5-create-lab)
+  1. [Fetch labs](#6-fetch-labs)
+  1. [Create follow up](#7-create-follow-up)
+  1. [Fetch follow ups](#8-fetch-follow-ups)
+  1. [Create outcome recorded](#9-create-outcome-recorded)
+  1. [Fetch outcome recorded](#10-fetch-outcome-recorded)
+  1. [Create tb treatment outcome](#11-create-tb-treatment-outcome)
+  1. [Fetch tb treatment outcomes](#12-fetch-tb-treatment-outcomes)
+- [Exports](#exports)
+  1. [Export data](#1-export-data)
 
-### Users
+---
 
-| Action                                           | Endpoint                                       | Parameters                          | Request body                                                                                                                                                                                                                                    |
-| :----------------------------------------------- | :--------------------------------------------- | :---------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Fetch Users](./features_v1.md#3-fetch-users)    | **GET** /v1/admin/users                        | None                                | None                                                                                                                                                                                                                                            |
-| [Fetch Pending Accounts]()                       | **GET** /v1/admin/users?account_status=pending | None                                | None                                                                                                                                                                                                                                            |
-| [Update Users](./features_v1.md#16-update-users) | **PUT** /v1/admin/users/<user_id>              | <ul><li>user_id = INTEGER</li></ul> | <ul><li>account_status = STRING</li><li>permitted_export_types = ARRAY</li><li>account_type = STRING</li><li>permitted_export_range = INTEGER</li><li>permitted_approve_accounts = BOOLEAN</li><li>permitted_decrypted_data = BOOLEAN</li></ul> |
-| [Change Account Status]()                        | **POST** /v1/admin/users/<user_id>             | <ul><li>user_id = INTEGER</li></ul> | <ul><li>account_status = STRING</li></ul>                                                                                                                                                                                                       |
-| [Fetch a User](./features_v1.md#21-fetch-a-user) | **GET** /v1/profile                            | None                                | None                                                                                                                                                                                                                                            |
-| [Add users_sites]()                              | **POST** /v1/admin/users/<user_id>/sites       | <ul><li>user_id = INTEGER</li></ul> | ARRAY                                                                                                                                                                                                                                           |
-| [Remove users_sites]()                           | **DELETE** /v1/admin/users/<user_id>/sites     | <ul><li>user_id = INTEGER</li></ul> | ARRAY                                                                                                                                                                                                                                           |
+## Users
 
-### Records
+Users endpoints
 
-| Action                                                                                         | Endpoint                                                 | Parameters                                                      | Request body                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| :--------------------------------------------------------------------------------------------- | :------------------------------------------------------- | :-------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Create records](./features_v1.md#4-create-records)                                            | **POST** /v1/regions/<region_id>/sites/<site_id>/records | <ul><li>region_id = INTEGER</li><li>site_id = INTEGER</li></ul> | <ul><li>records_name = STRING</li><li>records_age = INTEGER</li><li>records_sex = STRING</li><li>records_date_of_test_request = DATE</li><li>records_address = STRING</li><li>records_telephone = STRING</li><li>records_telephone_2 = STRING</li><li>records_has_art_unique_code = STRING</li><li>records_art_unique_code = STRING</li><li>records_status = STRING</li><li>records_ward_bed_number = STRING</li><li>records_currently_pregnant = STRING</li><li>records_symptoms_current_cough = BOOLEAN</li><li>records_symptoms_fever = BOOLEAN</li><li>records_symptoms_night_sweats = BOOLEAN</li><li>records_symptoms_weight_loss = BOOLEAN</li><li>records_symptoms_none_of_the_above = BOOLEAN</li><li>records_patient_category_hospitalized = BOOLEAN</li><li>records_patient_category_child = BOOLEAN</li><li>records_patient_category_to_initiate_art = BOOLEAN</li><li>records_patient_category_on_art_symptomatic = BOOLEAN</li><li>records_patient_category_outpatient = BOOLEAN</li><li>records_patient_category_anc = BOOLEAN</li><li>records_patient_category_diabetes_clinic = BOOLEAN</li><li>records_patient_category_other = STRING</li><li>records_reason_for_test_presumptive_tb = BOOLEAN</li><li>records_tb_treatment_history = STRING</li><li>records_tb_treatment_history_contact_of_tb_patient = STRING</li></ul> |
-| [Fetch records](./features_v1.md#5-fetch-records)                                              | **GET** /v1/records                                      | None                                                            | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| [Create specimen collection records](./features_v1.md#6-create-specimen-collection-records)    | **POST** /v1/records/<record_id>/specimen_collections    | <ul><li>record_id = INTEGER</li></ul>                           | <ul><li>specimen_collection_1_date = DATE</li><li>specimen_collection_1_specimen_collection_type = STRING</li><li>specimen_collection_1_other = STRING</li><li>specimen_collection_1_period = STRING</li><li>specimen_collection_1_aspect = STRING</li><li>specimen_collection_1_received_by = STRING</li><li>specimen_collection_2_date = DATE</li><li>specimen_collection_2_specimen_collection_type = STRING</li><li>specimen_collection_2_other = STRING</li><li>specimen_collection_2_period = STRING</li><li>specimen_collection_2_aspect = STRING</li><li>specimen_collection_2_received_by = STRING</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| [Fetch specimen collection records](./features_v1.md#7-fetch-specimen-collection-records)      | **GET** /v1/records/<record_id>/specimen_collections     | <ul><li>record_id = INTEGER</li></ul>                           | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| [Create lab records](./features_v1.md#8-create-lab-records)                                    | **POST** /v1/records/<record_id>/labs                    | <ul><li>record_id = INTEGER</li></ul>                           | <ul><li>lab_date_specimen_collection_received = DATE</li><li>lab_received_by = STRING</li><li>lab_registration_number = STRING</li><li>lab_smear_microscopy_result_result_1 = STRING</li><li>lab_smear_microscopy_result_result_2 = STRING</li><li>lab_smear_microscopy_result_date = DATE</li><li>lab_smear_microscopy_result_done_by = STRING</li><li>lab_xpert_mtb_rif_assay_result = STRING</li><li>lab_xpert_mtb_rif_assay_grades = STRING</li><li>lab_xpert_mtb_rif_assay_rif_result = STRING</li><li>lab_xpert_mtb_rif_assay_date = DATE</li><li>lab_xpert_mtb_rif_assay_done_by = STRING</li><li>lab_urine_lf_lam_result = STRING</li><li>lab_urine_lf_lam_date = DATE</li><li>lab_urine_lf_lam_done_by = STRING</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| [Fetch lab records](./features_v1.md#9-fetch-lab-records)                                      | **GET** /v1/records/<record_id>/labs                     | <ul><li>record_id = INTEGER</li></ul>                           | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| [Create follow up records](./features_v1.md#10-create-follow-up-records)                       | **POST** /v1/records/<record_id>/follow_ups              | <ul><li>record_id = INTEGER</li></ul>                           | <ul><li>follow_up_xray = BOOLEAN</li><li>follow_up_amoxicillin = BOOLEAN</li><li>follow_up_other_antibiotic = STRING</li><li>follow_up_schedule_date = DATE</li><li>follow_up_comments = STRING</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| [Fetch follow up records](./features_v1.md#11-fetch-follow-up-records)                         | **GET** /v1/records/<record_id>/follow_ups               | <ul><li>record_id = INTEGER</li></ul>                           | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| [Create outcome recorded records](./features_v1.md#12-create-outcome-recorded-records)         | **POST** /v1/records/<record_id>/outcome_recorded        | <ul><li>record_id = INTEGER</li></ul>                           | <ul><li>outcome_recorded_started_tb_treatment_outcome = STRING</li><li>outcome_recorded_tb_rx_number = STRING</li><li>outcome_recorded_other = STRING</li><li>outcome_recorded_comments = STRING</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| [Fetch outcome recorded records](./features_v1.md#13-fetch-outcome-recorded-records)           | **GET** /v1/records/<record_id>/outcome_recorded         | <ul><li>record_id = INTEGER</li></ul>                           | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| [Create tb treatment outcome records](./features_v1.md#14-create-tb-treatment-outcome-records) | **POST** /v1/records/<record_id>/tb_treatment_outcomes   | <ul><li>record_id = INTEGER</li></ul>                           | <ul><li>tb_treatment_outcome_result = STRING</li><li>tb_treatment_outcome_comments = STRING</li><li>tb_treatment_outcome_close_patient_file = BOOLEAN</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| [Fetch tb treatment outcome records](./features_v1.md#15-fetch-tb-treatment-outcome-records)   | **GET** /v1/records/<record_id>/tb_treatment_outcomes    | <ul><li>record_id = INTEGER</li></ul>                           | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+### 1. Signup
 
-### Sites
+Create a new user's account.
 
-| Action                                               | Endpoint                                     | Parameters                            | Request body                                               |
-| :--------------------------------------------------- | :------------------------------------------- | :------------------------------------ | :--------------------------------------------------------- |
-| [Create regions](./features_v1.md#17-create-regions) | **POST** /v1/admin/regions                   | None                                  | <ul><li>name = STRING</li></ul>                            |
-| [Fetch regions](./features_v1.md#18-fetch-regions)   | **GET** /v1/regions                          | None                                  | None                                                       |
-| [Create sites](./features_v1.md#19-create-sites)     | **POST** /v1/admin/regions/<region_id>/sites | <ul><li>region_id = INTEGER</li></ul> | <ul><li>name = STRING</li><li>site_code = STRING</li></ul> |
-| [Fetch sites](./features_v1.md#20-fetch-sites)       | **GET** /v1/regions/<region_id>/sites        | <ul><li>region_id = INTEGER</li></ul> | None                                                       |
+**_Responses:_**
 
-### Exports
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
 
-| Action                                               | Endpoint                                                                                                    | Parameters                                                           | Request body |
-| :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------- | :----------- |
-| [Export records](./features_v1.md#22-export-records) | **GET** /v1/regions/<region_id>/sites/<site_id>/exports/<export_type>?start_date=yy-mm-dd&end_date=yy-mm-dd | <ul><li>user_id = INTEGER</li></ul><ul><li>format = STRING</li></ul> | None         |
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/signup
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number":"string",
+    "name": "string",
+    "email": "string",
+    "password": "string",
+    "occupation": "string",
+    "site_id": "integer"
+}
+```
+
+### 2. Login
+
+Login to user's account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/login
+```
+
+**_Body:_**
+
+```js
+{
+    "email": "string",
+    "password": "string"
+}
+```
+
+### 3. Fetch profile
+
+Fetch currently authenticated user's account information.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/profile
+```
+
+### 4. Update profile
+
+Update currently authenticated user's account information.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/users
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number":"string",
+    "name": "string",
+    "occupation": "string"
+}
+```
+
+### 5. Fetch all users
+
+Fetch all users' account information. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users
+```
+
+### 6. Fetch a user
+
+Fetch a user's account information. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users/{{user_id}}
+```
+
+### 7. Update a user
+
+Update a user's account information. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users/{{user_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "account_status":"string",
+    "permitted_export_types": "array",
+    "account_type": "string",
+    "permitted_export_range": "integer",
+    "permitted_approve_accounts": "boolean",
+    "permitted_decrypted_data": "boolean"
+}
+```
+
+### 8. Update account status
+
+Update a user's account status. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users/{{user_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "account_status":"string"
+}
+```
+
+### 9. Update password
+
+Update a user's password.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/users
+```
+
+**_Body:_**
+
+```js
+{
+    "current_password":"string",
+    "new_password":"string"
+}
+```
+
+### 10. Add sites
+
+Add a list of sites to a user's account. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users/{{user_id}}/sites
+```
+
+**_Body:_**
+
+```js
+[];
+```
+
+### 11. Remove sites
+
+Remove a list of sites to a user's account. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: DELETE
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users/{{user_id}}/sites
+```
+
+**_Body:_**
+
+```js
+[];
+```
+
+## Sites
+
+Sites endpoints
+
+### 1. Create site
+
+Add a new site to the database. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/regions/{{region_id}}/sites
+```
+
+**_Body:_**
+
+```js
+{
+    "name": "string",
+    "site_code": "string"
+}
+```
+
+### 2. Fetch all sites
+
+Fetch all sites.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/regions/{{region_id}}/sites
+```
+
+### 3. Create region
+
+Add a new region to the database. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/regions
+```
+
+**_Body:_**
+
+```js
+{
+    "name": "string"
+}
+```
+
+### 4. Fetch all regions
+
+Fetch all regions from database.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/regions
+```
+
+## Records
+
+Records endpoints
+
+### 1. Create record
+
+Create a new record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records
+```
+
+**_Body:_**
+
+```js
+{
+    "records_name":"string",
+    "records_age":"integer",
+    "records_sex":"string",
+    "records_date_of_test_request":"date",
+    "records_address":"string",
+    "records_telephone":"string",
+    "records_telephone_2":"string",
+    "records_has_art_unique_code":"string",
+    "records_art_unique_code":"string",
+    "records_status":"string",
+    "records_ward_bed_number":"string",
+    "records_currently_pregnant":"string",
+    "records_symptoms_current_cough":"boolean",
+    "records_symptoms_fever":"boolean",
+    "records_symptoms_night_sweats":"boolean",
+    "records_symptoms_weight_loss":"boolean",
+    "records_symptoms_none_of_the_above":"boolean",
+    "records_patient_category_hospitalized":"boolean",
+    "records_patient_category_child":"boolean",
+    "records_patient_category_to_initiate_art":"boolean",
+    "records_patient_category_on_art_symptomatic":"boolean",
+    "records_patient_category_outpatient":"boolean",
+    "records_patient_category_anc":"boolean",
+    "records_patient_category_diabetes_clinic":"boolean",
+    "records_patient_category_other":"string",
+    "records_reason_for_test_presumptive_tb":"boolean",
+    "records_tb_treatment_history":"string",
+    "records_tb_treatment_history_contact_of_tb_patient":"string"
+}
+```
+
+### 2. Fetch records
+
+Fetch all records a user is permitted to access.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records
+```
+
+### 3. Create specimen collection
+
+Create a new specimen collection for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/specimen_collections
+```
+
+**_Body:_**
+
+```js
+{
+    "specimen_collection_1_date":"date",
+    "specimen_collection_1_specimen_collection_type":"string",
+    "specimen_collection_1_other":"string",
+    "specimen_collection_1_period":"string",
+    "specimen_collection_1_aspect":"string",
+    "specimen_collection_1_received_by":"string",
+    "specimen_collection_2_date":"string",
+    "specimen_collection_2_specimen_collection_type":"string",
+    "specimen_collection_2_other":"string",
+    "specimen_collection_2_period":"string",
+    "specimen_collection_2_aspect":"string",
+    "specimen_collection_2_received_by":"string"
+}
+```
+
+### 4. Fetch specimen collections
+
+Fetch specimen collections for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/specimen_collections
+```
+
+### 5. Create lab
+
+Create a new labs for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/labs
+```
+
+**_Body:_**
+
+```js
+{
+    "lab_date_specimen_collection_received":"date",
+    "lab_received_by":"string",
+    "lab_registration_number":"string",
+    "lab_smear_microscopy_result_result_1":"string",
+    "lab_smear_microscopy_result_result_2":"string",
+    "lab_smear_microscopy_result_date":"string",
+    "lab_smear_microscopy_result_done_by":"string",
+    "lab_xpert_mtb_rif_assay_result":"string",
+    "lab_xpert_mtb_rif_assay_grades":"string",
+    "lab_xpert_mtb_rif_assay_rif_result":"string",
+    "lab_xpert_mtb_rif_assay_date":"string",
+    "lab_xpert_mtb_rif_assay_done_by":"string",
+    "lab_urine_lf_lam_result":"string",
+    "lab_urine_lf_lam_date":"string",
+    "lab_urine_lf_lam_done_by":"string"
+}
+```
+
+### 6. Fetch labs
+
+Fetch labs for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/labs
+```
+
+### 7. Create follow up
+
+Create a new follow-up for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/follow_ups
+```
+
+**_Body:_**
+
+```js
+{
+    "follow_up_xray":"boolean",
+    "follow_up_amoxicillin":"boolean",
+    "follow_up_other_antibiotic":"string",
+    "follow_up_schedule_date":"date",
+    "follow_up_comments":"string"
+}
+```
+
+### 8. Fetch follow ups
+
+Fetch follow-ups for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/follow_ups
+```
+
+### 9. Create outcome recorded
+
+Create a new outcome recorded for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/outcome_recorded
+```
+
+**_Body:_**
+
+```js
+{
+    "outcome_recorded_started_tb_treatment_outcome":"string",
+    "outcome_recorded_tb_rx_number":"string",
+    "outcome_recorded_other":"string",
+    "outcome_recorded_comments":"string"
+}
+```
+
+### 10. Fetch outcome recorded
+
+Fetch outcome recorded for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/outcome_recorded
+```
+
+### 11. Create tb treatment outcome
+
+Create a new tb treatment outcome for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/tb_treatment_outcomes
+```
+
+**_Body:_**
+
+```js
+{
+    "tb_treatment_outcome_result":"string",
+    "tb_treatment_outcome_comments":"string",
+    "tb_treatment_outcome_close_patient_file":"string"
+}
+```
+
+### 12. Fetch tb treatment outcomes
+
+Fetch tb treatment outcomes for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}/tb_treatment_outcomes
+```
+
+## Exports
+
+Exports endpoint
+
+### 1. Export data
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}?start_date=<date>&end_date=<date>
+```
+
+**_Query params:_**
+
+| Key        | Value  | Description |
+| ---------- | ------ | ----------- |
+| start_date | <date> |             |
+| end_date   | <date> |             |
+
+---
+
+[Back to top](#chpr-is-api-references)

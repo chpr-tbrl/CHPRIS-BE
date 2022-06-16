@@ -13,7 +13,9 @@ from base64 import b64encode, b64decode
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto import Random
-from error import InternalServerError, Unauthorized
+
+from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import Unauthorized
 
 class Data:
     """
@@ -95,7 +97,7 @@ class Data:
                 logger.info("- Successfully decryted data")
                 return pt
         except (ValueError, KeyError) as error:
-            logger.error(error)
+            logger.exception(error)
             raise Unauthorized()
 
     def hash(self, data: str, salt: str = None) -> str:
