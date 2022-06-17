@@ -530,6 +530,110 @@ def createSpecimenCollectionRecord(record_id: int) -> None:
         logger.exception(err)
         return "internal server error", 500
 
+@v1.route("/records/<int:record_id>/specimen_collections/<int:specimen_collection_id>", methods=["PUT"])
+def updateSpecimenCollectionRecord(record_id: int, specimen_collection_id: int) -> None:
+    """
+    Create a new specimen_collections record.
+
+    Parameters:
+        record_id: int
+
+    Body:
+        specimen_collection_1_date: str,
+        specimen_collection_1_specimen_collection_type: str,
+        specimen_collection_1_other: str,
+        specimen_collection_1_period: str,
+        specimen_collection_1_aspect: str,
+        specimen_collection_1_received_by: str,
+        specimen_collection_2_date: str,
+        specimen_collection_2_specimen_collection_type: str,
+        specimen_collection_2_other: str,
+        specimen_collection_2_period: str,
+        specimen_collection_2_aspect: str,
+        specimen_collection_2_received_by: str
+            
+    Response:
+        200: None,
+        400: str,
+        401: str,
+        500: str
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session = Session_Model()
+
+        user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        payload = (
+            record_id,
+            user_id,
+            specimen_collection_id,
+            request.json["specimen_collection_1_date"],
+            request.json["specimen_collection_1_specimen_collection_type"],
+            request.json["specimen_collection_1_other"],
+            request.json["specimen_collection_1_period"],
+            request.json["specimen_collection_1_aspect"],
+            request.json["specimen_collection_1_received_by"],
+            request.json["specimen_collection_2_date"],
+            request.json["specimen_collection_2_specimen_collection_type"],
+            request.json["specimen_collection_2_other"],
+            request.json["specimen_collection_2_period"],
+            request.json["specimen_collection_2_aspect"],
+            request.json["specimen_collection_2_received_by"],
+        )
+
+        Record = Record_Model()
+       
+        Record.update_specimen_collection(*payload)
+
+        res = jsonify()
+
+        session = Session.update(sid=sid, unique_identifier=user_id)
+
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+        
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
 @v1.route("/records/<int:record_id>/specimen_collections", methods=["GET"])
 def findSpecimenCollectionRecord(record_id: int) -> list:
     """

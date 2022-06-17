@@ -353,6 +353,63 @@ class Record_Model:
             logger.error("creating Specimen_collection record failed check logs")
             raise InternalServerError(err) from None
 
+    def update_specimen_collection(self, specimen_collection_id: int, specimen_collection_1_date: str, specimen_collection_1_specimen_collection_type: str, specimen_collection_1_other: str, specimen_collection_1_period: str, specimen_collection_1_aspect: str, specimen_collection_1_received_by: str, specimen_collection_2_date: str, specimen_collection_2_specimen_collection_type: str, specimen_collection_2_other: str, specimen_collection_2_period: str, specimen_collection_2_aspect: str, specimen_collection_2_received_by: str) -> str:
+        """
+        Create a new specimen_collections record.
+
+        Arguments:
+            specimen_collection_id: int,
+            specimen_collection_1_date: str,
+            specimen_collection_1_specimen_collection_type: str,
+            specimen_collection_1_other: str,
+            specimen_collection_1_period: str,
+            specimen_collection_1_aspect: str,
+            specimen_collection_1_received_by: str,
+            specimen_collection_2_date: str,
+            specimen_collection_2_specimen_collection_type: str,
+            specimen_collection_2_other: str,
+            specimen_collection_2_period: str,
+            specimen_collection_2_aspect: str,
+            specimen_collection_2_received_by: str
+                
+        Returns:
+            str
+        """
+        try:
+            logger.debug("updating specimen_collection record %s ..." % specimen_collection_id)
+            
+            specimen_collection = self.Specimen_collections.update(
+                specimen_collection_1_date=specimen_collection_1_date,
+                specimen_collection_1_specimen_collection_type=specimen_collection_1_specimen_collection_type,
+                specimen_collection_1_other=specimen_collection_1_other,
+                specimen_collection_1_period=specimen_collection_1_period,
+                specimen_collection_1_aspect=specimen_collection_1_aspect,
+                specimen_collection_1_received_by=specimen_collection_1_received_by,
+                specimen_collection_2_date=specimen_collection_2_date,
+                specimen_collection_2_specimen_collection_type=specimen_collection_2_specimen_collection_type,
+                specimen_collection_2_other=specimen_collection_2_other,
+                specimen_collection_2_period=specimen_collection_2_period,
+                specimen_collection_2_aspect=specimen_collection_2_aspect,
+                specimen_collection_2_received_by=specimen_collection_2_received_by
+            ).where(
+                self.Specimen_collections.id == specimen_collection_id
+            )
+
+            logger.info("- Specimen_collection record %s successfully updated" % specimen_collection_id)
+            return str(specimen_collection)
+
+        except OperationalError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except IntegrityError as error:
+            logger.error(error)
+            raise BadRequest()
+            
+        except DatabaseError as err:
+            logger.error("updating Specimen_collection record failed check logs")
+            raise InternalServerError(err) from None
+
     def fetch_specimen_collection(self, specimen_collection_records_id: int) -> list:
         """
         Fetch specimen_collection records >= today by record_id.
