@@ -18,9 +18,11 @@ Manage Users, Sites and Records endpoints
   1. [Remove sites](#11-remove-sites)
 - [Sites](#sites)
   1. [Create site](#1-create-site)
-  1. [Fetch all sites](#2-fetch-all-sites)
-  1. [Create region](#3-create-region)
-  1. [Fetch all regions](#4-fetch-all-regions)
+  1. [Update site](#2-update-site)
+  1. [Fetch all sites](#3-fetch-all-sites)
+  1. [Create region](#4-create-region)
+  1. [Update region](#5-update-region)
+  1. [Fetch all regions](#6-fetch-all-regions)
 - [Records](#records)
   1. [Create record](#1-create-record)
   1. [Update record](#2-update-record)
@@ -372,7 +374,36 @@ URL: {{domain}}/v1/admin/regions/{{region_id}}/sites
 }
 ```
 
-### 2. Fetch all sites
+### 2. Update site
+
+Update a site. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/admin/sites/{{site_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "name": "string",
+    "site_code": "string"
+}
+```
+
+### 3. Fetch all sites
 
 Fetch all sites.
 
@@ -390,7 +421,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/regions/{{region_id}}/sites
 ```
 
-### 3. Create region
+### 4. Create region
 
 Add a new region to the database. Only permitted accounts can perform this action.
 
@@ -418,7 +449,35 @@ URL: {{domain}}/v1/admin/regions
 }
 ```
 
-### 4. Fetch all regions
+### 5. Update region
+
+Update a region. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/admin/regions/{{region_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "name": "string"
+}
+```
+
+### 6. Fetch all regions
 
 Fetch all regions from database.
 
@@ -496,7 +555,7 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records
 
 ### 2. Update record
 
-Update record.
+Update a record.
 
 **_Responses:_**
 

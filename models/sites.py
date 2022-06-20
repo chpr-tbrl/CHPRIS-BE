@@ -47,6 +47,32 @@ class Site_Model:
             logger.error("creating region '%s' failed check logs" % name)
             raise InternalServerError(err) from None
 
+    def update_region(self, region_id:int, name: str) -> int:
+        """
+        Update region.
+
+        Arguments:
+            region_id: int,
+            name: str
+
+        Returns:
+            int
+        """
+        try:
+            region = self.Regions.update(
+                name = name
+            ).where(
+                self.Regions.id == region_id
+            )
+
+            region.execute()
+
+            return region_id
+        
+        except DatabaseError as err:
+            logger.error("updating region '%s' failed check logs" % name)
+            raise InternalServerError(err) from None
+
     def fetch_region(self, region_id: str) -> dict:
         """
         Fetch a single region.
@@ -147,6 +173,34 @@ class Site_Model:
 
         except DatabaseError as err:
             logger.error("creating site '%s' failed check logs" % name)
+            raise InternalServerError(err) from None
+
+    def update_site(self, site_id: int, name: str, site_code: str) -> str:
+        """
+        Update site.
+
+        Arguments:
+            site_id: int,
+            name: str,
+            site_code: str
+
+        Returns:
+            str
+        """
+        try:
+            site = self.Sites.update(
+                name=name,
+                site_code=site_code
+            ).where(
+                self.Sites.id == site_id
+            )
+
+            site.execute()
+
+            return site_id
+
+        except DatabaseError as err:
+            logger.error("updating site '%s' failed check logs" % name)
             raise InternalServerError(err) from None
 
     def fetch_site(self, site_id: str = None) -> dict:
