@@ -78,7 +78,7 @@ class User_Model:
             logger.error("creating user '%s' failed check logs" % email)
             raise InternalServerError(err) from None
 
-    def authenticate(self, email: str, password: str) -> dict:
+    def authenticate(self, email: str, password: str, admin: bool = False) -> dict:
         """
         Find user in database by email and password.
 
@@ -106,6 +106,9 @@ class User_Model:
                 logger.error("No user found")
                 raise Unauthorized()
             else:
+                if admin:
+                    self.check_permission(user_id=user.id, scope=["admin", "super_admin"])
+
                 result = self.fetch_user(user_id=user.id, account_status="approved")
 
                 logger.info("- User %s successfully verified" % email)

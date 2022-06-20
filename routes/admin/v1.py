@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 from Configs import baseConfig
 config = baseConfig()
 api = config["API"]
-cookie_name = api['COOKIE_NAME']
+cookie_name = "%s_%s" % (api['COOKIE_NAME'], "Admin")
 
 import json
 
@@ -35,6 +35,81 @@ def after_request(response):
     sites_db.close()
     records_db.close()
     return response
+
+@v1.route("/login", methods=["POST"])
+def login() -> dict:
+    """
+    Authenticate a user.
+
+    Body:
+        email: str,
+        password: str
+    
+    Response:
+        200: dict,
+        400: str,
+        401: str,
+        409: str,
+        500: str
+    """
+    try:
+        if not "email" in request.json or not request.json["email"]:
+            logger.error("no email")
+            raise BadRequest()
+        elif not "password" in request.json or not request.json["password"]:
+            logger.error("no password")
+            raise BadRequest()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        email = request.json["email"]
+        password = request.json["password"]
+        user_agent = request.headers.get("User-Agent")
+
+        User = User_Model()
+
+        user = User.authenticate(email=email, password=password, admin=True)
+
+        res = jsonify(user)
+
+        Session = Session_Model()
+
+        session = Session.create(unique_identifier=user["id"], user_agent=user_agent)
+
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except Conflict as err:
+        return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+        
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
 
 @v1.route("/users", methods=["GET"])
 def getAllUsers() -> list:
