@@ -413,7 +413,7 @@ class User_Model:
 
             try:
                 user = self.Users.get(self.Users.id == user_id, self.Users.account_status == "approved")
-            except Users.DoesNotExist:
+            except self.Users.DoesNotExist:
                 logger.error("no user found")
                 raise Unauthorized()
             else:
@@ -554,6 +554,21 @@ class User_Model:
             logger.error("failed to update user %d  password. Check logs" % id)
             raise InternalServerError(err) from None
 
+    def check_account_status(self, user_id: int) -> bool:
+        """
+        """
+        try:
+            logger.debug("checking account status for user %s ..." % user_id)
 
+            try:
+                self.Users.get(self.Users.id == user_id, self.Users.account_status == "approved")
+            except self.Users.DoesNotExist:
+                logger.error("Unapproved account")
+                raise Unauthorized()
+            else:
+                logger.info("Approved account")
+                return True
 
-
+        except DatabaseError as err:
+            logger.error("failed to check account status for user %d. Check logs" % user_id)
+            raise InternalServerError(err) from None

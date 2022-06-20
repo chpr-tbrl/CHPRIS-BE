@@ -267,6 +267,10 @@ def createRecord(region_id: int, site_id: int) -> None:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         payload = (
             site_id,
             region_id,
@@ -363,6 +367,10 @@ def updateRecord(region_id: int, site_id: int, record_id: int) -> None:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         payload = (
             site_id,
             region_id,
@@ -439,7 +447,7 @@ def findRecord() -> list:
     Find records that belong to user's site.
 
     Parameters:
-            None
+        None
 
     Body:
        None
@@ -474,7 +482,7 @@ def findRecord() -> list:
         
         User = User_Model()
 
-        user = User.fetch_user(user_id=user_id)
+        user = User.fetch_user(user_id=user_id, account_status="approved")
 
         result = []
 
@@ -573,6 +581,10 @@ def createSpecimenCollectionRecord(record_id: int) -> None:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         payload = (
             record_id,
             user_id,
@@ -651,6 +663,10 @@ def updateSpecimenCollectionRecord(specimen_collection_id: int) -> None:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
 
         payload = (
             specimen_collection_id,
@@ -742,6 +758,10 @@ def findSpecimenCollectionRecord(record_id: int) -> list:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
                
         Record = Record_Model()
 
@@ -804,6 +824,10 @@ def createLabRecord(record_id: int) -> None:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
 
         payload = (
             record_id,            
@@ -887,6 +911,10 @@ def updateLabRecord(lab_id: int) -> None:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         payload = (
             lab_id,
             request.json["lab_date_specimen_collection_received"],
@@ -967,6 +995,10 @@ def findLabRecord(record_id: int) -> list:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
        
         Record = Record_Model()
 
@@ -1026,6 +1058,10 @@ def createFollowUpRecord(record_id: int) -> None:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
 
         payload = (
             record_id,
@@ -1096,6 +1132,10 @@ def updateFollowUpRecord(follow_up_id: int) -> None:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         payload = (
             follow_up_id,
             request.json["follow_up_xray"],
@@ -1163,6 +1203,10 @@ def findFollowUpRecord(record_id: int) -> list:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+        
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
     
         Record = Record_Model()
 
@@ -1222,6 +1266,10 @@ def createOutcomeRecoredRecord(record_id: int) -> None:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
 
         payload = (
             record_id,
@@ -1291,6 +1339,10 @@ def updateOutcomeRecoredRecord(outcome_recorded_id: int) -> None:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         payload = (
             outcome_recorded_id,
             request.json["outcome_recorded_started_tb_treatment_outcome"],
@@ -1358,6 +1410,10 @@ def findOutcomeRecoredRecord(record_id: int) -> list:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         Record = Record_Model()
 
         result = Record.fetch_outcome_recorded(outcome_recorded_records_id=record_id)
@@ -1416,6 +1472,10 @@ def createTbTreatmentOutcomeRecord(record_id: int) -> None:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
         
         payload = (
             record_id,
@@ -1483,6 +1543,10 @@ def updateTbTreatmentOutcomeRecord(tb_treatment_outcomes_id: int) -> None:
         Session = Session_Model()
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)
+
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
         
         payload = (
             tb_treatment_outcomes_id,
@@ -1550,6 +1614,10 @@ def findTbTreatmentOutcomeRecord(record_id: int) -> list:
 
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie)       
 
+        User = User_Model()
+
+        User.check_account_status(user_id=user_id)
+
         Record = Record_Model()
 
         result = Record.fetch_tb_treatment_outcome(tb_treatment_outcome_records_id=record_id)
@@ -1611,7 +1679,7 @@ def findAUser() -> dict:
 
         User = User_Model()
 
-        user = User.fetch_user(user_id=user_id)
+        user = User.fetch_user(user_id=user_id, account_status="approved")
        
         res = jsonify(user)
 
@@ -1672,6 +1740,8 @@ def updateProfile() -> None:
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
 
         User = User_Model()
+
+        User.check_account_status(user_id=user_id)
 
         if request.method == "PUT":
             if not "phone_number" in request.json or not request.json["phone_number"]:
@@ -1854,7 +1924,7 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
 
         User = User_Model()
         
-        user = User.fetch_user(user_id=user_id, no_sites=True)
+        user = User.fetch_user(user_id=user_id, no_sites=True, account_status="approved")
 
         if user['permitted_export_range'] < 1:
             logger.error("Not allowed to export. permitted_export_range < 1")

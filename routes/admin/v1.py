@@ -143,76 +143,37 @@ def updateUser(user_id: int) -> None:
         500: str
     """
     try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+        
+        Session = Session_Model()
+
+        admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        User = User_Model()
+
         # Fetch account
         if request.method == "GET":
-            if not request.cookies.get(cookie_name):
-                logger.error("no cookie")
-                raise Unauthorized()
-            elif not request.headers.get("User-Agent"):
-                logger.error("no user agent")
-                raise BadRequest()
-        
-            cookie = Cookie()
-            e_cookie = request.cookies.get(cookie_name)
-            d_cookie = cookie.decrypt(e_cookie)
-            json_cookie = json.loads(d_cookie)
-
-            sid = json_cookie["sid"]
-            uid = json_cookie["uid"]
-            user_cookie = json_cookie["cookie"]
-            user_agent = request.headers.get("User-Agent")
-            
-            Session = Session_Model()
-
-            admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
-
-            User = User_Model()
-
             user = User.fetch_user(user_id=user_id)
 
             res = jsonify(user)
-
-            session = Session.update(sid=sid, unique_identifier=admin_user_id)
-
-            cookie = Cookie()
-            cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-            e_cookie = cookie.encrypt(cookie_data)
-            res.set_cookie(
-                cookie_name,
-                e_cookie,
-                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-                secure=session["data"]["secure"],
-                httponly=session["data"]["httpOnly"],
-                samesite=session["data"]["sameSite"],
-            )
-            
-            return res, 200
            
         # update account
         elif request.method == "PUT":
-            if not request.cookies.get(cookie_name):
-                logger.error("no cookie")
-                raise Unauthorized()
-            elif not request.headers.get("User-Agent"):
-                logger.error("no user agent")
-                raise BadRequest()
-        
-            cookie = Cookie()
-            e_cookie = request.cookies.get(cookie_name)
-            d_cookie = cookie.decrypt(e_cookie)
-            json_cookie = json.loads(d_cookie)
-
-            sid = json_cookie["sid"]
-            uid = json_cookie["uid"]
-            user_cookie = json_cookie["cookie"]
-            user_agent = request.headers.get("User-Agent")
-            
-            Session = Session_Model()
-
-            admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
-            
-            User = User_Model()
-
             account_type = User.check_permission(user_id=admin_user_id, scope=["admin", "super_admin"])
             
             user = User.fetch_user(user_id=user_id, no_sites=True)
@@ -234,55 +195,15 @@ def updateUser(user_id: int) -> None:
                 request.json["permitted_decrypted_data"]
             )
 
-            User = User_Model()
-
             User.update(*payload)
 
             res = jsonify()
 
-            session = Session.update(sid=sid, unique_identifier=admin_user_id)
-
-            cookie = Cookie()
-            cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-            e_cookie = cookie.encrypt(cookie_data)
-            res.set_cookie(
-                cookie_name,
-                e_cookie,
-                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-                secure=session["data"]["secure"],
-                httponly=session["data"]["httpOnly"],
-                samesite=session["data"]["sameSite"],
-            )
-            
-            return res, 200
-
         # change account_status
         elif request.method == "POST":
-            if not request.cookies.get(cookie_name):
-                logger.error("no cookie")
-                raise Unauthorized()
-            elif not request.headers.get("User-Agent"):
-                logger.error("no user agent")
-                raise BadRequest()
-            elif not "account_status" in request.json or not request.json["account_status"]:
+            if not "account_status" in request.json or not request.json["account_status"]:
                 logger.error("no account_status")
                 raise BadRequest()
-
-            cookie = Cookie()
-            e_cookie = request.cookies.get(cookie_name)
-            d_cookie = cookie.decrypt(e_cookie)
-            json_cookie = json.loads(d_cookie)
-
-            sid = json_cookie["sid"]
-            uid = json_cookie["uid"]
-            user_cookie = json_cookie["cookie"]
-            user_agent = request.headers.get("User-Agent")
-            
-            Session = Session_Model()
-
-            admin_user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
-            
-            User = User_Model()
 
             User.check_permission(user_id=admin_user_id, scope=["admin", "super_admin"], permitted_approve_accounts=True)
 
@@ -292,21 +213,21 @@ def updateUser(user_id: int) -> None:
 
             res = jsonify()
 
-            session = Session.update(sid=sid, unique_identifier=admin_user_id)
+        session = Session.update(sid=sid, unique_identifier=admin_user_id)
 
-            cookie = Cookie()
-            cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
-            e_cookie = cookie.encrypt(cookie_data)
-            res.set_cookie(
-                cookie_name,
-                e_cookie,
-                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
-                secure=session["data"]["secure"],
-                httponly=session["data"]["httpOnly"],
-                samesite=session["data"]["sameSite"],
-            )
-            
-            return res, 200
+        cookie = Cookie()
+        cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
+        e_cookie = cookie.encrypt(cookie_data)
+        res.set_cookie(
+            cookie_name,
+            e_cookie,
+            max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+            secure=session["data"]["secure"],
+            httponly=session["data"]["httpOnly"],
+            samesite=session["data"]["sameSite"],
+        )
+        
+        return res, 200
 
     except BadRequest as err:
         return str(err), 400
