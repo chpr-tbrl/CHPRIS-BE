@@ -23,17 +23,23 @@ Manage Users, Sites and Records endpoints
   1. [Fetch all regions](#4-fetch-all-regions)
 - [Records](#records)
   1. [Create record](#1-create-record)
-  1. [Fetch records](#2-fetch-records)
-  1. [Create specimen collection](#3-create-specimen-collection)
-  1. [Fetch specimen collections](#4-fetch-specimen-collections)
-  1. [Create lab](#5-create-lab)
-  1. [Fetch labs](#6-fetch-labs)
-  1. [Create follow up](#7-create-follow-up)
-  1. [Fetch follow ups](#8-fetch-follow-ups)
-  1. [Create outcome recorded](#9-create-outcome-recorded)
-  1. [Fetch outcome recorded](#10-fetch-outcome-recorded)
-  1. [Create tb treatment outcome](#11-create-tb-treatment-outcome)
-  1. [Fetch tb treatment outcomes](#12-fetch-tb-treatment-outcomes)
+  1. [Update record](#2-update-record)
+  1. [Fetch records](#3-fetch-records)
+  1. [Create specimen collection](#4-create-specimen-collection)
+  1. [Update specimen collection](#5-update-specimen-collection)
+  1. [Fetch specimen collections](#6-fetch-specimen-collections)
+  1. [Create lab](#7-create-lab)
+  1. [Update lab](#8-update-lab)
+  1. [Fetch labs](#9-fetch-labs)
+  1. [Create follow up](#10-create-follow-up)
+  1. [Update follow up](#11-update-follow-up)
+  1. [Fetch follow ups](#12-fetch-follow-ups)
+  1. [Create outcome recorded](#13-create-outcome-recorded)
+  1. [Update outcome recorded](#14-update-outcome-recorded)
+  1. [Fetch outcome recorded](#15-fetch-outcome-recorded)
+  1. [Create tb treatment outcome](#16-create-tb-treatment-outcome)
+  1. [Update tb treatment outcome](#17-update-tb-treatment-outcome)
+  1. [Fetch tb treatment outcomes](#18-fetch-tb-treatment-outcomes)
 - [Exports](#exports)
   1. [Export data](#1-export-data)
 
@@ -488,7 +494,61 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records
 }
 ```
 
-### 2. Fetch records
+### 2. Update record
+
+Update record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records/{{record_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "records_name":"string",
+    "records_age":"integer",
+    "records_sex":"string",
+    "records_date_of_test_request":"date",
+    "records_address":"string",
+    "records_telephone":"string",
+    "records_telephone_2":"string",
+    "records_has_art_unique_code":"string",
+    "records_art_unique_code":"string",
+    "records_status":"string",
+    "records_ward_bed_number":"string",
+    "records_currently_pregnant":"string",
+    "records_symptoms_current_cough":"boolean",
+    "records_symptoms_fever":"boolean",
+    "records_symptoms_night_sweats":"boolean",
+    "records_symptoms_weight_loss":"boolean",
+    "records_symptoms_none_of_the_above":"boolean",
+    "records_patient_category_hospitalized":"boolean",
+    "records_patient_category_child":"boolean",
+    "records_patient_category_to_initiate_art":"boolean",
+    "records_patient_category_on_art_symptomatic":"boolean",
+    "records_patient_category_outpatient":"boolean",
+    "records_patient_category_anc":"boolean",
+    "records_patient_category_diabetes_clinic":"boolean",
+    "records_patient_category_other":"string",
+    "records_reason_for_test_presumptive_tb":"boolean",
+    "records_tb_treatment_history":"string",
+    "records_tb_treatment_history_contact_of_tb_patient":"string"
+}
+```
+
+### 3. Fetch records
 
 Fetch all records a user is permitted to access.
 
@@ -507,7 +567,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records
 ```
 
-### 3. Create specimen collection
+### 4. Create specimen collection
 
 Create a new specimen collection for a record.
 
@@ -545,7 +605,45 @@ URL: {{domain}}/v1/records/{{record_id}}/specimen_collections
 }
 ```
 
-### 4. Fetch specimen collections
+### 5. Update specimen collection
+
+Update specimen collection for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/specimen_collections/{{specimen_collections_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "specimen_collection_1_date":"date",
+    "specimen_collection_1_specimen_collection_type":"string",
+    "specimen_collection_1_other":"string",
+    "specimen_collection_1_period":"string",
+    "specimen_collection_1_aspect":"string",
+    "specimen_collection_1_received_by":"string",
+    "specimen_collection_2_date":"date",
+    "specimen_collection_2_specimen_collection_type":"string",
+    "specimen_collection_2_other":"string",
+    "specimen_collection_2_period":"string",
+    "specimen_collection_2_aspect":"string",
+    "specimen_collection_2_received_by":"string"
+}
+```
+
+### 6. Fetch specimen collections
 
 Fetch specimen collections for a record.
 
@@ -564,7 +662,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/specimen_collections
 ```
 
-### 5. Create lab
+### 7. Create lab
 
 Create a new labs for a record.
 
@@ -592,20 +690,61 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_registration_number":"string",
     "lab_smear_microscopy_result_result_1":"string",
     "lab_smear_microscopy_result_result_2":"string",
-    "lab_smear_microscopy_result_date":"string",
+    "lab_smear_microscopy_result_date":"date",
     "lab_smear_microscopy_result_done_by":"string",
     "lab_xpert_mtb_rif_assay_result":"string",
     "lab_xpert_mtb_rif_assay_grades":"string",
     "lab_xpert_mtb_rif_assay_rif_result":"string",
-    "lab_xpert_mtb_rif_assay_date":"string",
+    "lab_xpert_mtb_rif_assay_date":"date",
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
-    "lab_urine_lf_lam_date":"string",
+    "lab_urine_lf_lam_date":"date",
     "lab_urine_lf_lam_done_by":"string"
 }
 ```
 
-### 6. Fetch labs
+### 8. Update lab
+
+Update labs for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/labs/{{labs_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "lab_date_specimen_collection_received":"date",
+    "lab_received_by":"string",
+    "lab_registration_number":"string",
+    "lab_smear_microscopy_result_result_1":"string",
+    "lab_smear_microscopy_result_result_2":"string",
+    "lab_smear_microscopy_result_date":"date",
+    "lab_smear_microscopy_result_done_by":"string",
+    "lab_xpert_mtb_rif_assay_result":"string",
+    "lab_xpert_mtb_rif_assay_grades":"string",
+    "lab_xpert_mtb_rif_assay_rif_result":"string",
+    "lab_xpert_mtb_rif_assay_date":"date",
+    "lab_xpert_mtb_rif_assay_done_by":"string",
+    "lab_urine_lf_lam_result":"string",
+    "lab_urine_lf_lam_date":"date",
+    "lab_urine_lf_lam_done_by":"string"
+}
+```
+
+### 9. Fetch labs
 
 Fetch labs for a record.
 
@@ -624,7 +763,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/labs
 ```
 
-### 7. Create follow up
+### 10. Create follow up
 
 Create a new follow-up for a record.
 
@@ -655,7 +794,38 @@ URL: {{domain}}/v1/records/{{record_id}}/follow_ups
 }
 ```
 
-### 8. Fetch follow ups
+### 11. Update follow up
+
+Update follow-up for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/follow_ups/{{follow_ups_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "follow_up_xray":"boolean",
+    "follow_up_amoxicillin":"boolean",
+    "follow_up_other_antibiotic":"string",
+    "follow_up_schedule_date":"date",
+    "follow_up_comments":"string"
+}
+```
+
+### 12. Fetch follow ups
 
 Fetch follow-ups for a record.
 
@@ -674,7 +844,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/follow_ups
 ```
 
-### 9. Create outcome recorded
+### 13. Create outcome recorded
 
 Create a new outcome recorded for a record.
 
@@ -704,7 +874,37 @@ URL: {{domain}}/v1/records/{{record_id}}/outcome_recorded
 }
 ```
 
-### 10. Fetch outcome recorded
+### 14. Update outcome recorded
+
+Update outcome recorded for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/outcome_recorded/{{outcome_recorded_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "outcome_recorded_started_tb_treatment_outcome":"string",
+    "outcome_recorded_tb_rx_number":"string",
+    "outcome_recorded_other":"string",
+    "outcome_recorded_comments":"string"
+}
+```
+
+### 15. Fetch outcome recorded
 
 Fetch outcome recorded for a record.
 
@@ -723,7 +923,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/outcome_recorded
 ```
 
-### 11. Create tb treatment outcome
+### 16. Create tb treatment outcome
 
 Create a new tb treatment outcome for a record.
 
@@ -752,7 +952,36 @@ URL: {{domain}}/v1/records/{{record_id}}/tb_treatment_outcomes
 }
 ```
 
-### 12. Fetch tb treatment outcomes
+### 17. Update tb treatment outcome
+
+Update tb treatment outcome for a record.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/tb_treatment_outcomes/{{tb_treatment_outcomes_id}}
+```
+
+**_Body:_**
+
+```js
+{
+    "tb_treatment_outcome_result":"string",
+    "tb_treatment_outcome_comments":"string",
+    "tb_treatment_outcome_close_patient_file":"boolean"
+}
+```
+
+### 18. Fetch tb treatment outcomes
 
 Fetch tb treatment outcomes for a record.
 
@@ -777,12 +1006,22 @@ Exports endpoint
 
 ### 1. Export data
 
+Export data permitted to access.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
 **_Endpoint:_**
 
 ```bash
 Method: GET
 Content-Type: application/json
-URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}?start_date=<date>&end_date=<date>
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}
 ```
 
 **_Query params:_**

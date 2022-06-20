@@ -33,6 +33,8 @@ class Record_Model:
         self.Tb_treatment_outcomes = Tb_treatment_outcomes
         self.Data = Data
 
+    # record
+
     def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str) -> str:
         """
         Create a new record.
@@ -122,6 +124,100 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("creating record %d failed check logs" % records_user_id)
+            raise InternalServerError(err) from None
+
+    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str) -> str:
+        """
+        Create a new record.
+
+        Arguments::
+            site_id: int,
+            region_id: int, 
+            record_id: int,
+            records_name: str,
+            records_age: int,
+            records_sex: str,
+            records_date_of_test_request: str,
+            records_address: str,
+            records_telephone: str,
+            records_telephone_2: str,
+            records_has_art_unique_code: str,
+            records_art_unique_code: str,
+            records_status: str,
+            records_ward_bed_number: str,
+            records_currently_pregnant: str,
+            records_symptoms_current_cough: str,
+            records_symptoms_fever: bool,
+            records_symptoms_night_sweats: bool,
+            records_symptoms_weight_loss: bool,
+            records_symptoms_none_of_the_above: bool,
+            records_patient_category_hospitalized: bool,
+            records_patient_category_child: bool,
+            records_patient_category_to_initiate_art: bool,
+            records_patient_category_on_art_symptomatic: bool,
+            records_patient_category_outpatient: bool,
+            records_patient_category_anc: bool,
+            records_patient_category_diabetes_clinic: bool,
+            records_patient_category_other: str,
+            records_reason_for_test_presumptive_tb: bool,
+            records_tb_treatment_history: str,
+            records_tb_treatment_history_contact_of_tb_patient: str
+        
+        Returns:
+            str
+        """
+        try:
+            logger.debug("updating record for %d ..." % record_id)
+            
+            data = self.Data()
+
+            record = Records.update(
+                site_id=site_id,
+                region_id=region_id,
+                records_name= data.encrypt(records_name)["e_data"],
+                records_age=records_age,
+                records_sex=records_sex,
+                records_date_of_test_request=records_date_of_test_request,
+                records_address= data.encrypt(records_address)["e_data"],
+                records_telephone= data.encrypt(records_telephone)["e_data"],
+                records_telephone_2= data.encrypt(records_telephone_2)["e_data"],
+                records_has_art_unique_code=records_has_art_unique_code,
+                records_art_unique_code= data.encrypt(records_art_unique_code)["e_data"],
+                records_status=records_status,
+                records_ward_bed_number= data.encrypt(records_ward_bed_number)["e_data"],
+                records_currently_pregnant=records_currently_pregnant,
+                records_symptoms_current_cough=records_symptoms_current_cough,
+                records_symptoms_fever=records_symptoms_fever,
+                records_symptoms_night_sweats=records_symptoms_night_sweats,
+                records_symptoms_weight_loss=records_symptoms_weight_loss,
+                records_symptoms_none_of_the_above=records_symptoms_none_of_the_above,
+                records_patient_category_hospitalized=records_patient_category_hospitalized,
+                records_patient_category_child=records_patient_category_child,
+                records_patient_category_to_initiate_art=records_patient_category_to_initiate_art,
+                records_patient_category_on_art_symptomatic=records_patient_category_on_art_symptomatic,
+                records_patient_category_outpatient=records_patient_category_outpatient,
+                records_patient_category_anc=records_patient_category_anc,
+                records_patient_category_diabetes_clinic=records_patient_category_diabetes_clinic,
+                records_patient_category_other=records_patient_category_other,
+                records_reason_for_test_presumptive_tb=records_reason_for_test_presumptive_tb,
+                records_tb_treatment_history=records_tb_treatment_history,
+                records_tb_treatment_history_contact_of_tb_patient= data.encrypt(records_tb_treatment_history_contact_of_tb_patient)["e_data"],
+                iv = data.iv
+            ).where(
+                self.Records.record_id == record_id
+            )
+
+            record.execute()
+
+            logger.info("- Record %s successfully updated" % record_id)
+            return record_id
+
+        except OperationalError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except DatabaseError as err:
+            logger.error("updating record %d failed check logs" % record_id)
             raise InternalServerError(err) from None
 
     def fetch_record(self, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool) -> list:
@@ -295,6 +391,8 @@ class Record_Model:
             logger.error("failed to fetch all records check logs")
             raise InternalServerError(err) from None
 
+    # specimen collection 
+
     def create_specimen_collection(self, specimen_collection_records_id: int, specimen_collection_user_id: int, specimen_collection_1_date: str, specimen_collection_1_specimen_collection_type: str, specimen_collection_1_other: str, specimen_collection_1_period: str, specimen_collection_1_aspect: str, specimen_collection_1_received_by: str, specimen_collection_2_date: str, specimen_collection_2_specimen_collection_type: str, specimen_collection_2_other: str, specimen_collection_2_period: str, specimen_collection_2_aspect: str, specimen_collection_2_received_by: str) -> str:
         """
         Create a new specimen_collections record.
@@ -355,25 +453,6 @@ class Record_Model:
 
     def update_specimen_collection(self, specimen_collection_id: int, specimen_collection_1_date: str, specimen_collection_1_specimen_collection_type: str, specimen_collection_1_other: str, specimen_collection_1_period: str, specimen_collection_1_aspect: str, specimen_collection_1_received_by: str, specimen_collection_2_date: str, specimen_collection_2_specimen_collection_type: str, specimen_collection_2_other: str, specimen_collection_2_period: str, specimen_collection_2_aspect: str, specimen_collection_2_received_by: str) -> str:
         """
-        Create a new specimen_collections record.
-
-        Arguments:
-            specimen_collection_id: int,
-            specimen_collection_1_date: str,
-            specimen_collection_1_specimen_collection_type: str,
-            specimen_collection_1_other: str,
-            specimen_collection_1_period: str,
-            specimen_collection_1_aspect: str,
-            specimen_collection_1_received_by: str,
-            specimen_collection_2_date: str,
-            specimen_collection_2_specimen_collection_type: str,
-            specimen_collection_2_other: str,
-            specimen_collection_2_period: str,
-            specimen_collection_2_aspect: str,
-            specimen_collection_2_received_by: str
-                
-        Returns:
-            str
         """
         try:
             logger.debug("updating specimen_collection record %s ..." % specimen_collection_id)
@@ -392,11 +471,13 @@ class Record_Model:
                 specimen_collection_2_aspect=specimen_collection_2_aspect,
                 specimen_collection_2_received_by=specimen_collection_2_received_by
             ).where(
-                self.Specimen_collections.id == specimen_collection_id
+                self.Specimen_collections.specimen_collection_id == specimen_collection_id
             )
 
+            specimen_collection.execute()
+
             logger.info("- Specimen_collection record %s successfully updated" % specimen_collection_id)
-            return str(specimen_collection)
+            return specimen_collection_id
 
         except OperationalError as error:
             logger.error(error)
@@ -441,6 +522,8 @@ class Record_Model:
             logger.error("failed to find specimen_collection record for %d check logs" % specimen_collection_records_id)
             raise InternalServerError(err) from None
 
+    # labs
+
     def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str) -> str:
         """
         """
@@ -481,6 +564,49 @@ class Record_Model:
         except DatabaseError as err:
             logger.error("creating Lab record %s failed check logs" % lab)
             raise InternalServerError(err) from None
+
+    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str) -> str:
+        """
+        """
+        try:
+            logger.debug("updating lab record %d ..." % lab_id)
+            
+            lab = self.Labs.update(
+                lab_date_specimen_collection_received=lab_date_specimen_collection_received,
+                lab_received_by=lab_received_by,
+                lab_registration_number=lab_registration_number,
+                lab_smear_microscopy_result_result_1=lab_smear_microscopy_result_result_1,
+                lab_smear_microscopy_result_result_2=lab_smear_microscopy_result_result_2,
+                lab_smear_microscopy_result_date=lab_smear_microscopy_result_date,
+                lab_smear_microscopy_result_done_by=lab_smear_microscopy_result_done_by,
+                lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result,
+                lab_xpert_mtb_rif_assay_grades=lab_xpert_mtb_rif_assay_grades,
+                lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result,
+                lab_xpert_mtb_rif_assay_date=lab_xpert_mtb_rif_assay_date,
+                lab_xpert_mtb_rif_assay_done_by=lab_xpert_mtb_rif_assay_done_by,
+                lab_urine_lf_lam_result=lab_urine_lf_lam_result,
+                lab_urine_lf_lam_date=lab_urine_lf_lam_date,
+                lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by
+            ).where(
+                self.Labs.lab_id == lab_id
+            )
+
+            lab.execute()
+
+            logger.info("- Lab record %s successfully updated" % lab_id)
+            return lab_id
+
+        except OperationalError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except IntegrityError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except DatabaseError as err:
+            logger.error("updating Lab record %s failed check logs" % lab_id)
+            raise InternalServerError(err) from None
             
     def fetch_lab(self, lab_records_id: int) -> list:
         """
@@ -505,6 +631,8 @@ class Record_Model:
         except DatabaseError as err:
             logger.error("failed to find lab record for %d check logs" % lab_records_id)
             raise InternalServerError(err) from None
+
+    # follow up
 
     def create_follow_up(self, follow_up_records_id: int, follow_up_user_id: int, follow_up_xray: str, follow_up_amoxicillin: str, follow_up_other_antibiotic: str, follow_up_schedule_date: str, follow_up_comments: str) -> str:
         """
@@ -537,6 +665,39 @@ class Record_Model:
             logger.error("creating Follow_up record %s failed check logs" % follow_up)
             raise InternalServerError(err) from None
 
+    def update_follow_up(self, follow_up_id: int, follow_up_xray: str, follow_up_amoxicillin: str, follow_up_other_antibiotic: str, follow_up_schedule_date: str, follow_up_comments: str) -> str:
+        """
+        """
+        try:
+            logger.debug("updating follow_up record %s ..." % follow_up_id)
+
+            follow_up = self.Follow_ups.update(
+                follow_up_xray=follow_up_xray,
+                follow_up_amoxicillin=follow_up_amoxicillin,
+                follow_up_other_antibiotic=follow_up_other_antibiotic,
+                follow_up_schedule_date=follow_up_schedule_date,
+                follow_up_comments=follow_up_comments
+            ).where(
+                self.Follow_ups.follow_up_id == follow_up_id
+            )
+
+            follow_up.execute()
+
+            logger.info("Follow_up record %s successfully updated" % follow_up_id)
+            return follow_up_id
+
+        except OperationalError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except IntegrityError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except DatabaseError as err:
+            logger.error("updating Follow_up record %s failed check logs" % follow_up_id)
+            raise InternalServerError(err) from None
+
     def fetch_follow_up(self, follow_up_records_id: int) -> list:
         """
         """
@@ -560,6 +721,8 @@ class Record_Model:
         except DatabaseError as err:
             logger.error("failed to finding follow_ups record for %s check logs" % follow_up_records_id)
             raise InternalServerError(err) from None
+
+    # outcome recorded
 
     def create_outcome_recorded(self, outcome_recorded_records_id: int, outcome_recorded_user_id: int, outcome_recorded_started_tb_treatment_outcome: str, outcome_recorded_tb_rx_number: str, outcome_recorded_other: str, outcome_recorded_comments: str) -> str:
         """
@@ -591,6 +754,38 @@ class Record_Model:
             logger.error("creating outcome_recorded record %s failed check logs" % outcome_recorded)
             raise InternalServerError(err) from None
 
+    def update_outcome_recorded(self, outcome_recorded_id: int, outcome_recorded_started_tb_treatment_outcome: str, outcome_recorded_tb_rx_number: str, outcome_recorded_other: str, outcome_recorded_comments: str) -> str:
+        """
+        """
+        try:
+            logger.debug("updating outcome_recorded record %s ..." % outcome_recorded_id)
+
+            outcome_recorded = self.Outcome_recorded.update(
+                outcome_recorded_started_tb_treatment_outcome=outcome_recorded_started_tb_treatment_outcome,
+                outcome_recorded_tb_rx_number=outcome_recorded_tb_rx_number,
+                outcome_recorded_other=outcome_recorded_other,
+                outcome_recorded_comments=outcome_recorded_comments
+            ).where(
+                self.Outcome_recorded.outcome_recorded_id == outcome_recorded_id
+            )
+
+            outcome_recorded.execute()
+
+            logger.info("Outcome_recorded record %s successfully updated" % outcome_recorded_id)
+            return outcome_recorded_id
+
+        except OperationalError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except IntegrityError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except DatabaseError as err:
+            logger.error("updating outcome_recorded record %s failed check logs" % outcome_recorded_id)
+            raise InternalServerError(err) from None
+
     def fetch_outcome_recorded(self, outcome_recorded_records_id: int) -> list:
         """
         """
@@ -614,6 +809,8 @@ class Record_Model:
         except DatabaseError as err:
             logger.error("failed to finding outcome_recorded record for %s check logs" % outcome_recorded_records_id)
             raise InternalServerError(err) from None
+
+    # tb treatment outcome
 
     def create_tb_treatment_outcome(self, tb_treatment_outcome_records_id: int, tb_treatment_outcome_user_id: int, tb_treatment_outcome_result: str, tb_treatment_outcome_comments: str, tb_treatment_outcome_close_patient_file: bool) -> str:
         """
@@ -642,6 +839,37 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("creating tb_treatment_outcome record %s failed check logs" % tb_treatment_outcome)
+            raise InternalServerError(err) from None
+
+    def update_tb_treatment_outcome(self, tb_treatment_outcome_id: int, tb_treatment_outcome_result: str, tb_treatment_outcome_comments: str, tb_treatment_outcome_close_patient_file: bool) -> str:
+        """
+        """
+        try:
+            logger.debug("updating tb_treatment_outcome record %s ..." % tb_treatment_outcome_id)
+
+            tb_treatment_outcome = self.Tb_treatment_outcomes.update(
+                tb_treatment_outcome_result = tb_treatment_outcome_result,
+                tb_treatment_outcome_comments = tb_treatment_outcome_comments,
+                tb_treatment_outcome_close_patient_file = tb_treatment_outcome_close_patient_file
+            ).where(
+                self.Tb_treatment_outcomes.tb_treatment_outcome_id == tb_treatment_outcome_id
+            )
+
+            tb_treatment_outcome.execute()
+
+            logger.info("Tb_treatment_outcome record %s successfully update" % tb_treatment_outcome_id)
+            return tb_treatment_outcome_id
+
+        except OperationalError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except IntegrityError as error:
+            logger.error(error)
+            raise BadRequest()
+
+        except DatabaseError as err:
+            logger.error("updating tb_treatment_outcome record %s failed check logs" % tb_treatment_outcome_id)
             raise InternalServerError(err) from None
 
     def fetch_tb_treatment_outcome(self, tb_treatment_outcome_records_id: int) -> list:
