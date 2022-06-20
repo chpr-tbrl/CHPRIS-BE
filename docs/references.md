@@ -121,6 +121,7 @@ Login to admin account.
 - `200` - OK
 - `400` - Bad Request
 - `401` - Unauthorised
+- `403` - Forbidden
 - `500` - Internal Server Error
 
 **_Endpoint:_**
