@@ -9,14 +9,15 @@ Manage Users, Sites and Records endpoints
   1. [Login](#2-login)
   1. [Admin login](#3-admin-login)
   1. [Fetch profile](#4-fetch-profile)
-  1. [Update profile](#5-update-profile)
-  1. [Fetch all users](#6-fetch-all-users)
-  1. [Fetch a user](#7-fetch-a-user)
-  1. [Update a user](#8-update-a-user)
-  1. [Update account status](#9-update-account-status)
-  1. [Update password](#10-update-password)
-  1. [Add sites](#11-add-sites)
-  1. [Remove sites](#12-remove-sites)
+  1. [Fetch admin profile](#5-fetch-admin-profile)
+  1. [Update profile](#6-update-profile)
+  1. [Fetch all users](#7-fetch-all-users)
+  1. [Fetch a user](#8-fetch-a-user)
+  1. [Update a user](#9-update-a-user)
+  1. [Update account status](#10-update-account-status)
+  1. [Update password](#11-update-password)
+  1. [Add sites](#12-add-sites)
+  1. [Remove sites](#13-remove-sites)
 - [Sites](#sites)
   1. [Create site](#1-create-site)
   1. [Update site](#2-update-site)
@@ -121,7 +122,6 @@ Login to admin account.
 - `200` - OK
 - `400` - Bad Request
 - `401` - Unauthorised
-- `403` - Forbidden
 - `500` - Internal Server Error
 
 **_Endpoint:_**
@@ -160,7 +160,27 @@ Content-Type: application/json
 URL: {{domain}}/v1/profile
 ```
 
-### 5. Update profile
+### 5. Fetch admin profile
+
+Fetch currently authenticated admin user's account information. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/admin/profile
+```
+
+### 6. Update profile
 
 Update currently authenticated user's account information.
 
@@ -189,7 +209,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 6. Fetch all users
+### 7. Fetch all users
 
 Fetch all users' account information. Only permitted accounts can perform this action.
 
@@ -209,7 +229,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users
 ```
 
-### 7. Fetch a user
+### 8. Fetch a user
 
 Fetch a user's account information. Only permitted accounts can perform this action.
 
@@ -229,7 +249,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users/{{user_id}}
 ```
 
-### 8. Update a user
+### 9. Update a user
 
 Update a user's account information. Only permitted accounts can perform this action.
 
@@ -262,7 +282,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 9. Update account status
+### 10. Update account status
 
 Update a user's account status. Only permitted accounts can perform this action.
 
@@ -290,7 +310,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 10. Update password
+### 11. Update password
 
 Update a user's password.
 
@@ -319,7 +339,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 11. Add sites
+### 12. Add sites
 
 Add a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -345,7 +365,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}/sites
 [];
 ```
 
-### 12. Remove sites
+### 13. Remove sites
 
 Remove a list of sites to a user's account. Only permitted accounts can perform this action.
 
