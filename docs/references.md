@@ -11,13 +11,15 @@ Manage Users, Sites and Records endpoints
   1. [Fetch profile](#4-fetch-profile)
   1. [Fetch admin profile](#5-fetch-admin-profile)
   1. [Update profile](#6-update-profile)
-  1. [Fetch all users](#7-fetch-all-users)
-  1. [Fetch a user](#8-fetch-a-user)
-  1. [Update a user](#9-update-a-user)
-  1. [Update account status](#10-update-account-status)
-  1. [Update password](#11-update-password)
-  1. [Add sites](#12-add-sites)
-  1. [Remove sites](#13-remove-sites)
+  1. [Update admins profile](#7-update-admins-profile)
+  1. [Fetch all users](#8-fetch-all-users)
+  1. [Fetch a user](#9-fetch-a-user)
+  1. [Update a user](#10-update-a-user)
+  1. [Update account status](#11-update-account-status)
+  1. [Update password](#12-update-password)
+  1. [Update admin password](#13-update-admin-password)
+  1. [Add sites](#14-add-sites)
+  1. [Remove sites](#15-remove-sites)
 - [Sites](#sites)
   1. [Create site](#1-create-site)
   1. [Update site](#2-update-site)
@@ -169,7 +171,6 @@ Fetch currently authenticated admin user's account information. Only permitted a
 - `200` - OK
 - `400` - Bad Request
 - `401` - Unauthorised
-- `403` - Forbidden
 - `500` - Internal Server Error
 
 **_Endpoint:_**
@@ -209,7 +210,37 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 7. Fetch all users
+### 7. Update admins profile
+
+Update currently authenticated admin user's account information. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number":"string",
+    "name": "string",
+    "occupation": "string"
+}
+```
+
+### 8. Fetch all users
 
 Fetch all users' account information. Only permitted accounts can perform this action.
 
@@ -229,7 +260,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users
 ```
 
-### 8. Fetch a user
+### 9. Fetch a user
 
 Fetch a user's account information. Only permitted accounts can perform this action.
 
@@ -249,7 +280,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users/{{user_id}}
 ```
 
-### 9. Update a user
+### 10. Update a user
 
 Update a user's account information. Only permitted accounts can perform this action.
 
@@ -282,7 +313,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 10. Update account status
+### 11. Update account status
 
 Update a user's account status. Only permitted accounts can perform this action.
 
@@ -310,7 +341,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 11. Update password
+### 12. Update password
 
 Update a user's password.
 
@@ -339,7 +370,36 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 12. Add sites
+### 13. Update admin password
+
+Update admin user's password. Only permitted accounts can perform this action.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/users
+```
+
+**_Body:_**
+
+```js
+{
+    "current_password":"string",
+    "new_password":"string"
+}
+```
+
+### 14. Add sites
 
 Add a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -365,7 +425,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}/sites
 [];
 ```
 
-### 13. Remove sites
+### 15. Remove sites
 
 Remove a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -1143,3 +1203,5 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type
 ---
 
 [Back to top](#chpr-is-api-references)
+
+> Generated at 2022-06-23 15:57:03 by [docgen](https://github.com/thedevsaddam/docgen)
