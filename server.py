@@ -1,3 +1,4 @@
+import ssl
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -10,6 +11,7 @@ from Configs import baseConfig
 
 config = baseConfig()
 api = config["API"]
+SSL = config["SSL_API"]
 
 from flask import Flask
 from flask import send_from_directory
@@ -21,6 +23,7 @@ from routes.admin.v1 import v1 as admin_v1
 from controllers.sync_database import create_database
 from controllers.sync_database import create_tables
 from controllers.sync_database import create_super_admin
+from controllers.SSL import isSSL
 
 app = Flask(__name__)
 
@@ -42,6 +45,15 @@ def downloads(path):
     app.logger.debug("Requesting %s download ..." % path)
     return send_from_directory("datasets", path)
 
+checkSSL = isSSL(path_crt_file=SSL["CERTIFICATE"], path_key_file=SSL["KEY"], path_pem_file=SSL["PEM"])
+
 if __name__ == "__main__":
-    app.logger.info("Running on un-secure port: %s" % api["PORT"])
-    app.run(host=api["HOST"], port=api["PORT"])
+    if checkSSL:
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(SSL["CERTIFICATE"], SSL["KEY"])
+
+        app.logger.info("Running on secure port: %s" % SSL['PORT'])
+        app.run(host=api["HOST"], port=SSL["PORT"], ssl_context=context)
+    else:
+        app.logger.info("Running on un-secure port: %s" % api['PORT'])
+        app.run(host=api["HOST"], port=api["PORT"])
