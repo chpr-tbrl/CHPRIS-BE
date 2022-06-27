@@ -1,5 +1,9 @@
 # Byte-compiled / optimized / DLL files
+default.ini
+logs/
+datasets/
 __pycache__/
+.vscode/
 *.py[cod]
 *$py.class
 
