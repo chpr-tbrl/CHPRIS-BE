@@ -31,21 +31,22 @@ Manage Users, Sites and Records endpoints
   1. [Create record](#1-create-record)
   1. [Update record](#2-update-record)
   1. [Fetch records](#3-fetch-records)
-  1. [Create specimen collection](#4-create-specimen-collection)
-  1. [Update specimen collection](#5-update-specimen-collection)
-  1. [Fetch specimen collections](#6-fetch-specimen-collections)
-  1. [Create lab](#7-create-lab)
-  1. [Update lab](#8-update-lab)
-  1. [Fetch labs](#9-fetch-labs)
-  1. [Create follow up](#10-create-follow-up)
-  1. [Update follow up](#11-update-follow-up)
-  1. [Fetch follow ups](#12-fetch-follow-ups)
-  1. [Create outcome recorded](#13-create-outcome-recorded)
-  1. [Update outcome recorded](#14-update-outcome-recorded)
-  1. [Fetch outcome recorded](#15-fetch-outcome-recorded)
-  1. [Create tb treatment outcome](#16-create-tb-treatment-outcome)
-  1. [Update tb treatment outcome](#17-update-tb-treatment-outcome)
-  1. [Fetch tb treatment outcomes](#18-fetch-tb-treatment-outcomes)
+  1. [Fetch a record](#4-fetch-a-record)
+  1. [Create specimen collection](#5-create-specimen-collection)
+  1. [Update specimen collection](#6-update-specimen-collection)
+  1. [Fetch specimen collections](#7-fetch-specimen-collections)
+  1. [Create lab](#8-create-lab)
+  1. [Update lab](#9-update-lab)
+  1. [Fetch labs](#10-fetch-labs)
+  1. [Create follow up](#11-create-follow-up)
+  1. [Update follow up](#12-update-follow-up)
+  1. [Fetch follow ups](#13-fetch-follow-ups)
+  1. [Create outcome recorded](#14-create-outcome-recorded)
+  1. [Update outcome recorded](#15-update-outcome-recorded)
+  1. [Fetch outcome recorded](#16-fetch-outcome-recorded)
+  1. [Create tb treatment outcome](#17-create-tb-treatment-outcome)
+  1. [Update tb treatment outcome](#18-update-tb-treatment-outcome)
+  1. [Fetch tb treatment outcomes](#19-fetch-tb-treatment-outcomes)
 - [Exports](#exports)
   1. [Export data](#1-export-data)
 
@@ -736,7 +737,26 @@ Content-Type: application/json
 URL: {{domain}}/v1/records
 ```
 
-### 4. Create specimen collection
+### 4. Fetch a record
+
+Fetch a single record a user is permitted to access.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: GET
+Content-Type: application/json
+URL: {{domain}}/v1/records/{{record_id}}
+```
+
+### 5. Create specimen collection
 
 Create a new specimen collection for a record.
 
@@ -774,7 +794,7 @@ URL: {{domain}}/v1/records/{{record_id}}/specimen_collections
 }
 ```
 
-### 5. Update specimen collection
+### 6. Update specimen collection
 
 Update specimen collection for a record.
 
@@ -812,7 +832,7 @@ URL: {{domain}}/v1/specimen_collections/{{specimen_collections_id}}
 }
 ```
 
-### 6. Fetch specimen collections
+### 7. Fetch specimen collections
 
 Fetch specimen collections for a record.
 
@@ -831,7 +851,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/specimen_collections
 ```
 
-### 7. Create lab
+### 8. Create lab
 
 Create a new labs for a record.
 
@@ -872,7 +892,7 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
 }
 ```
 
-### 8. Update lab
+### 9. Update lab
 
 Update labs for a record.
 
@@ -913,7 +933,7 @@ URL: {{domain}}/v1/labs/{{labs_id}}
 }
 ```
 
-### 9. Fetch labs
+### 10. Fetch labs
 
 Fetch labs for a record.
 
@@ -932,7 +952,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/labs
 ```
 
-### 10. Create follow up
+### 11. Create follow up
 
 Create a new follow-up for a record.
 
@@ -963,7 +983,7 @@ URL: {{domain}}/v1/records/{{record_id}}/follow_ups
 }
 ```
 
-### 11. Update follow up
+### 12. Update follow up
 
 Update follow-up for a record.
 
@@ -994,7 +1014,7 @@ URL: {{domain}}/v1/follow_ups/{{follow_ups_id}}
 }
 ```
 
-### 12. Fetch follow ups
+### 13. Fetch follow ups
 
 Fetch follow-ups for a record.
 
@@ -1013,7 +1033,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/follow_ups
 ```
 
-### 13. Create outcome recorded
+### 14. Create outcome recorded
 
 Create a new outcome recorded for a record.
 
@@ -1043,7 +1063,7 @@ URL: {{domain}}/v1/records/{{record_id}}/outcome_recorded
 }
 ```
 
-### 14. Update outcome recorded
+### 15. Update outcome recorded
 
 Update outcome recorded for a record.
 
@@ -1073,7 +1093,7 @@ URL: {{domain}}/v1/outcome_recorded/{{outcome_recorded_id}}
 }
 ```
 
-### 15. Fetch outcome recorded
+### 16. Fetch outcome recorded
 
 Fetch outcome recorded for a record.
 
@@ -1092,7 +1112,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/records/{{record_id}}/outcome_recorded
 ```
 
-### 16. Create tb treatment outcome
+### 17. Create tb treatment outcome
 
 Create a new tb treatment outcome for a record.
 
@@ -1121,7 +1141,7 @@ URL: {{domain}}/v1/records/{{record_id}}/tb_treatment_outcomes
 }
 ```
 
-### 17. Update tb treatment outcome
+### 18. Update tb treatment outcome
 
 Update tb treatment outcome for a record.
 
@@ -1150,7 +1170,7 @@ URL: {{domain}}/v1/tb_treatment_outcomes/{{tb_treatment_outcomes_id}}
 }
 ```
 
-### 18. Fetch tb treatment outcomes
+### 19. Fetch tb treatment outcomes
 
 Fetch tb treatment outcomes for a record.
 
@@ -1203,5 +1223,3 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type
 ---
 
 [Back to top](#chpr-is-api-references)
-
-> Generated at 2022-06-23 15:57:03 by [docgen](https://github.com/thedevsaddam/docgen)

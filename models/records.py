@@ -128,7 +128,7 @@ class Record_Model:
 
     def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str) -> str:
         """
-        Create a new record.
+        Update a record.
 
         Arguments::
             site_id: int,
@@ -220,7 +220,119 @@ class Record_Model:
             logger.error("updating record %d failed check logs" % record_id)
             raise InternalServerError(err) from None
 
-    def fetch_record(self, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool) -> list:
+    def fetch_record(self, record_id: int, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool) -> list:
+        """
+        Fetch a record by record_id, site_id and region_id.
+
+        Arguments:
+            record_id: int,
+            site_id: int,
+            region_id: int,
+            records_user_id: int,
+            permitted_decrypted_data; bool
+
+        Returns:
+            list
+        """
+        try:
+            logger.debug("finding records for %d ..." % records_user_id)
+
+            result = []
+            
+            records = (
+                self.Records.select().where(
+                    self.Records.record_id == record_id,
+                    self.Records.site_id == site_id,
+                    self.Records.region_id == region_id
+                ).dicts()
+            )
+
+            for record in records.iterator():
+                if permitted_decrypted_data:
+                    iv = record["iv"]
+
+                    data = self.Data()
+
+                    result.append({
+                        'record_id':record['record_id'],
+                        'site_id':record['site_id'],
+                        'region_id':record['region_id'],
+                        'records_user_id':record['records_user_id'],
+                        'records_date':record['records_date'],
+                        'records_name': data.decrypt(record['records_name'], iv),
+                        'records_age':record['records_age'],
+                        'records_sex':record['records_sex'],
+                        'records_date_of_test_request':record['records_date_of_test_request'],
+                        'records_address': data.decrypt(record['records_address'], iv),
+                        'records_telephone': data.decrypt(record['records_telephone'], iv),
+                        'records_telephone_2': data.decrypt(record['records_telephone_2'], iv),
+                        'records_has_art_unique_code':record['records_has_art_unique_code'],
+                        'records_art_unique_code': data.decrypt(record['records_art_unique_code'], iv),
+                        'records_status':record['records_status'],
+                        'records_ward_bed_number': data.decrypt(record['records_ward_bed_number'], iv),
+                        'records_currently_pregnant':record['records_currently_pregnant'],
+                        'records_symptoms_current_cough':record['records_symptoms_current_cough'],
+                        'records_symptoms_fever':record['records_symptoms_fever'],
+                        'records_symptoms_night_sweats':record['records_symptoms_night_sweats'],
+                        'records_symptoms_weight_loss':record['records_symptoms_weight_loss'],
+                        'records_symptoms_none_of_the_above':record['records_symptoms_none_of_the_above'],
+                        'records_patient_category_hospitalized':record['records_patient_category_hospitalized'],
+                        'records_patient_category_child':record['records_patient_category_child'],
+                        'records_patient_category_to_initiate_art':record['records_patient_category_to_initiate_art'],
+                        'records_patient_category_on_art_symptomatic':record['records_patient_category_on_art_symptomatic'],
+                        'records_patient_category_outpatient':record['records_patient_category_outpatient'],
+                        'records_patient_category_anc':record['records_patient_category_anc'],
+                        'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
+                        'records_patient_category_other':record['records_patient_category_other'],
+                        'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
+                        'records_tb_treatment_history':record['records_tb_treatment_history'],
+                        'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(record['records_tb_treatment_history_contact_of_tb_patient'], iv)
+                    })
+                else:
+                    result.append({
+                        'record_id':record['record_id'],
+                        'site_id':record['site_id'],
+                        'region_id':record['region_id'],
+                        'records_user_id':record['records_user_id'],
+                        'records_date':record['records_date'],
+                        'records_name':record['records_name'],
+                        'records_age':record['records_age'],
+                        'records_sex':record['records_sex'],
+                        'records_date_of_test_request':record['records_date_of_test_request'],
+                        'records_address':record['records_address'],
+                        'records_telephone':record['records_telephone'],
+                        'records_telephone_2':record['records_telephone_2'],
+                        'records_has_art_unique_code':record['records_has_art_unique_code'],
+                        'records_art_unique_code':record['records_art_unique_code'],
+                        'records_status':record['records_status'],
+                        'records_ward_bed_number':record['records_ward_bed_number'],
+                        'records_currently_pregnant':record['records_currently_pregnant'],
+                        'records_symptoms_current_cough':record['records_symptoms_current_cough'],
+                        'records_symptoms_fever':record['records_symptoms_fever'],
+                        'records_symptoms_night_sweats':record['records_symptoms_night_sweats'],
+                        'records_symptoms_weight_loss':record['records_symptoms_weight_loss'],
+                        'records_symptoms_none_of_the_above':record['records_symptoms_none_of_the_above'],
+                        'records_patient_category_hospitalized':record['records_patient_category_hospitalized'],
+                        'records_patient_category_child':record['records_patient_category_child'],
+                        'records_patient_category_to_initiate_art':record['records_patient_category_to_initiate_art'],
+                        'records_patient_category_on_art_symptomatic':record['records_patient_category_on_art_symptomatic'],
+                        'records_patient_category_outpatient':record['records_patient_category_outpatient'],
+                        'records_patient_category_anc':record['records_patient_category_anc'],
+                        'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
+                        'records_patient_category_other':record['records_patient_category_other'],
+                        'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
+                        'records_tb_treatment_history':record['records_tb_treatment_history'],
+                        'records_tb_treatment_history_contact_of_tb_patient':record['records_tb_treatment_history_contact_of_tb_patient']
+                    })
+
+            logger.info("- Successfully found records with site_id = %s & region_id = %s requested by user_id = %s" % (site_id, region_id, records_user_id))
+            return result
+
+        except DatabaseError as err:
+            logger.error("failed to find record for %d check logs" % records_user_id)
+            raise InternalServerError(err) from None
+
+    def fetch_records(self, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool) -> list:
         """
         Fetch all records >= today by site_id and region_id.
 
@@ -280,115 +392,6 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("failed to find record for %d check logs" % records_user_id)
-            raise InternalServerError(err) from None
-
-    def fetch_records(self, permitted_decrypted_data: bool) -> list:
-        """
-        Fetch all records.
-
-        Arguments:
-            permitted_decrypted_data: bool
-
-        Returns:
-            list
-        """
-        try:
-            logger.debug("fetching all records ...")
-
-            result = []
-
-            data = self.Data()
-
-            records = (
-                self.Records.select()
-                .dicts()
-            )
-
-            for record in records.iterator():
-                result.append(record)
-
-            if permitted_decrypted_data:
-                iv = record["iv"]
-
-                data = self.Data()
-                
-                result.append({
-                    'record_id':record['record_id'],
-                    'site_id':record['site_id'],
-                    'region_id':record['region_id'],
-                    'records_user_id':record['records_user_id'],
-                    'records_date':record['records_date'],
-                    'records_name': data.decrypt(record['records_name'], iv),
-                    'records_age':record['records_age'],
-                    'records_sex':record['records_sex'],
-                    'records_date_of_test_request':record['records_date_of_test_request'],
-                    'records_address': data.decrypt(record['records_address'], iv),
-                    'records_telephone': data.decrypt(record['records_telephone'], iv),
-                    'records_telephone_2': data.decrypt(record['records_telephone_2'], iv),
-                    'records_has_art_unique_code':record['records_has_art_unique_code'],
-                    'records_art_unique_code': data.decrypt(record['records_art_unique_code'], iv),
-                    'records_status':record['records_status'],
-                    'records_ward_bed_number': data.decrypt(record['records_ward_bed_number'], iv),
-                    'records_currently_pregnant':record['records_currently_pregnant'],
-                    'records_symptoms_current_cough':record['records_symptoms_current_cough'],
-                    'records_symptoms_fever':record['records_symptoms_fever'],
-                    'records_symptoms_night_sweats':record['records_symptoms_night_sweats'],
-                    'records_symptoms_weight_loss':record['records_symptoms_weight_loss'],
-                    'records_symptoms_none_of_the_above':record['records_symptoms_none_of_the_above'],
-                    'records_patient_category_hospitalized':record['records_patient_category_hospitalized'],
-                    'records_patient_category_child':record['records_patient_category_child'],
-                    'records_patient_category_to_initiate_art':record['records_patient_category_to_initiate_art'],
-                    'records_patient_category_on_art_symptomatic':record['records_patient_category_on_art_symptomatic'],
-                    'records_patient_category_outpatient':record['records_patient_category_outpatient'],
-                    'records_patient_category_anc':record['records_patient_category_anc'],
-                    'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
-                    'records_patient_category_other':record['records_patient_category_other'],
-                    'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
-                    'records_tb_treatment_history':record['records_tb_treatment_history'],
-                    'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(record['records_tb_treatment_history_contact_of_tb_patient'], iv)
-                })
-            else:
-                result.append({
-                    'record_id':record['record_id'],
-                    'site_id':record['site_id'],
-                    'region_id':record['region_id'],
-                    'records_user_id':record['records_user_id'],
-                    'records_date':record['records_date'],
-                    'records_name':record['records_name'],
-                    'records_age':record['records_age'],
-                    'records_sex':record['records_sex'],
-                    'records_date_of_test_request':record['records_date_of_test_request'],
-                    'records_address':record['records_address'],
-                    'records_telephone':record['records_telephone'],
-                    'records_telephone_2':record['records_telephone_2'],
-                    'records_has_art_unique_code':record['records_has_art_unique_code'],
-                    'records_art_unique_code':record['records_art_unique_code'],
-                    'records_status':record['records_status'],
-                    'records_ward_bed_number':record['records_ward_bed_number'],
-                    'records_currently_pregnant':record['records_currently_pregnant'],
-                    'records_symptoms_current_cough':record['records_symptoms_current_cough'],
-                    'records_symptoms_fever':record['records_symptoms_fever'],
-                    'records_symptoms_night_sweats':record['records_symptoms_night_sweats'],
-                    'records_symptoms_weight_loss':record['records_symptoms_weight_loss'],
-                    'records_symptoms_none_of_the_above':record['records_symptoms_none_of_the_above'],
-                    'records_patient_category_hospitalized':record['records_patient_category_hospitalized'],
-                    'records_patient_category_child':record['records_patient_category_child'],
-                    'records_patient_category_to_initiate_art':record['records_patient_category_to_initiate_art'],
-                    'records_patient_category_on_art_symptomatic':record['records_patient_category_on_art_symptomatic'],
-                    'records_patient_category_outpatient':record['records_patient_category_outpatient'],
-                    'records_patient_category_anc':record['records_patient_category_anc'],
-                    'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
-                    'records_patient_category_other':record['records_patient_category_other'],
-                    'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
-                    'records_tb_treatment_history':record['records_tb_treatment_history'],
-                    'records_tb_treatment_history_contact_of_tb_patient':record['records_tb_treatment_history_contact_of_tb_patient']
-                })
-
-            logger.info("- Successfully fetched all records")
-            return result
-
-        except DatabaseError as err:
-            logger.error("failed to fetch all records check logs")
             raise InternalServerError(err) from None
 
     # specimen collection 
