@@ -4,6 +4,11 @@ logger = logging.getLogger(__name__)
 from security.data import Data
 
 from schemas.records.records import Records
+from schemas.records.specimen_collection import Specimen_collections
+from schemas.records.lab import Labs
+from schemas.records.follow_up import Follow_ups
+from schemas.records.outcome_recorded import Outcome_recorded
+from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
 
 import os
 import csv
@@ -17,6 +22,11 @@ class Export_Model:
         """
         """
         self.Records = Records
+        self.Specimen_collections = Specimen_collections
+        self.Labs = Labs
+        self.Follow_ups = Follow_ups
+        self.Outcome_recorded = Outcome_recorded
+        self.Tb_treatment_outcomes = Tb_treatment_outcomes
         self.Data = Data
 
     def records(self, start_date:str, end_date:str, permitted_decrypted_data: bool, region_id:str = None, site_id:str = None) -> str:
@@ -56,7 +66,56 @@ class Export_Model:
                 'records_patient_category_other',
                 'records_reason_for_test_presumptive_tb',
                 'records_tb_treatment_history',
-                'records_tb_treatment_history_contact_of_tb_patient'
+                'records_tb_treatment_history_contact_of_tb_patient',
+
+                'specimen_collection_user_id',
+                'specimen_collection_1_date',
+                'specimen_collection_1_specimen_collection_type',
+                'specimen_collection_1_other',
+                'specimen_collection_1_period',
+                'specimen_collection_1_aspect',
+                'specimen_collection_1_received_by',
+                'specimen_collection_2_date',
+                'specimen_collection_2_specimen_collection_type',
+                'specimen_collection_2_other',
+                'specimen_collection_2_period',
+                'specimen_collection_2_aspect',
+                'specimen_collection_2_received_by',
+
+                'lab_user_id',
+                'lab_date_specimen_collection_received',
+                'lab_received_by',
+                'lab_registration_number',
+                'lab_smear_microscopy_result_result_1',
+                'lab_smear_microscopy_result_result_2',
+                'lab_smear_microscopy_result_date',
+                'lab_smear_microscopy_result_done_by',
+                'lab_xpert_mtb_rif_assay_result',
+                'lab_xpert_mtb_rif_assay_grades',
+                'lab_xpert_mtb_rif_assay_rif_result',
+                'lab_xpert_mtb_rif_assay_date',
+                'lab_xpert_mtb_rif_assay_done_by',
+                'lab_urine_lf_lam_result',
+                'lab_urine_lf_lam_date',
+                'lab_urine_lf_lam_done_by',
+
+                'follow_up_user_id',
+                'follow_up_xray',
+                'follow_up_amoxicillin',
+                'follow_up_other_antibiotic',
+                'follow_up_schedule_date',
+                'follow_up_comments',
+
+                'outcome_recorded_user_id',
+                'outcome_recorded_started_tb_treatment_outcome',
+                'outcome_recorded_tb_rx_number',
+                'outcome_recorded_other',
+                'outcome_recorded_comments',
+
+                'tb_treatment_outcome_user_id',
+                'tb_treatment_outcome_result',
+                'tb_treatment_outcome_comments',
+                'tb_treatment_outcome_close_patient_file',
             ]
 
             if not os.path.exists("datasets/"):
@@ -97,6 +156,66 @@ class Export_Model:
                 writer.writeheader()        
 
                 for row in records.iterator():
+                    # specimen_collections
+                    specimen_collections_results = []
+
+                    specimen_collections = (
+                        self.Specimen_collections.select()
+                        .where(self.Specimen_collections.specimen_collection_records_id == row['record_id'])
+                        .dicts()
+                    )
+
+                    for specimen_collection in specimen_collections:
+                        specimen_collections_results.append(specimen_collection)
+            
+                    # labs
+                    labs_results = []
+
+                    labs = (
+                        self.Labs.select()
+                        .where(self.Labs.lab_records_id == row['record_id'])
+                        .dicts()
+                    )
+
+                    for lab in labs:
+                        labs_results.append(lab)
+
+                    # follow_ups
+                    follow_ups_results = []
+    
+                    follow_ups = (
+                        self.Follow_ups.select()
+                        .where(self.Follow_ups.follow_up_records_id == row['record_id'])
+                        .dicts()
+                    )
+
+                    for follow_up in follow_ups:
+                        follow_ups_results.append(follow_up)
+
+                    # outcomes_recorded
+                    outcomes_recorded_results = []
+            
+                    outcomes_recorded = (
+                        self.Outcome_recorded.select()
+                        .where(self.Outcome_recorded.outcome_recorded_records_id == row['record_id'])
+                        .dicts()
+                    )
+
+                    for outcome_recorded in outcomes_recorded:
+                        outcomes_recorded_results.append(outcome_recorded)
+
+                    # tb_treatment_outcomes
+                    tb_treatment_outcomes_results = []
+            
+                    tb_treatment_outcomes = (
+                        self.Tb_treatment_outcomes.select()
+                        .where(self.Tb_treatment_outcomes.tb_treatment_outcome_records_id == row['record_id'])
+                        .dicts()
+                    )
+
+                    for tb_treatment_outcome in tb_treatment_outcomes:
+                        tb_treatment_outcomes_results.append(tb_treatment_outcome)
+
                     if permitted_decrypted_data:
                         iv = row['iv']
 
@@ -135,7 +254,56 @@ class Export_Model:
                             'records_patient_category_other':row['records_patient_category_other'],
                             'records_reason_for_test_presumptive_tb':row['records_reason_for_test_presumptive_tb'],
                             'records_tb_treatment_history':row['records_tb_treatment_history'],
-                            'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(row['records_tb_treatment_history_contact_of_tb_patient'], iv)
+                            'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(row['records_tb_treatment_history_contact_of_tb_patient'], iv),
+
+                            'specimen_collection_user_id': specimen_collections_results[0]['specimen_collection_user_id'],
+                            'specimen_collection_1_date': specimen_collections_results[0]['specimen_collection_1_date'],
+                            'specimen_collection_1_specimen_collection_type': specimen_collections_results[0]['specimen_collection_1_specimen_collection_type'],
+                            'specimen_collection_1_other': specimen_collections_results[0]['specimen_collection_1_other'],
+                            'specimen_collection_1_period': specimen_collections_results[0]['specimen_collection_1_period'],
+                            'specimen_collection_1_aspect': specimen_collections_results[0]['specimen_collection_1_aspect'],
+                            'specimen_collection_1_received_by': specimen_collections_results[0]['specimen_collection_1_received_by'],
+                            'specimen_collection_2_date': specimen_collections_results[0]['specimen_collection_2_date'],
+                            'specimen_collection_2_specimen_collection_type': specimen_collections_results[0]['specimen_collection_2_specimen_collection_type'],
+                            'specimen_collection_2_other': specimen_collections_results[0]['specimen_collection_2_other'],
+                            'specimen_collection_2_period': specimen_collections_results[0]['specimen_collection_2_period'],
+                            'specimen_collection_2_aspect': specimen_collections_results[0]['specimen_collection_2_aspect'],
+                            'specimen_collection_2_received_by': specimen_collections_results[0]['specimen_collection_2_received_by'],
+
+                            'lab_user_id': labs_results[0]['lab_user_id'],
+                            'lab_date_specimen_collection_received': labs_results[0]['lab_date_specimen_collection_received'],
+                            'lab_received_by': labs_results[0]['lab_received_by'],
+                            'lab_registration_number': labs_results[0]['lab_registration_number'],
+                            'lab_smear_microscopy_result_result_1': labs_results[0]['lab_smear_microscopy_result_result_1'],
+                            'lab_smear_microscopy_result_result_2': labs_results[0]['lab_smear_microscopy_result_result_2'],
+                            'lab_smear_microscopy_result_date': labs_results[0]['lab_smear_microscopy_result_date'],
+                            'lab_smear_microscopy_result_done_by': labs_results[0]['lab_smear_microscopy_result_done_by'],
+                            'lab_xpert_mtb_rif_assay_result': labs_results[0]['lab_xpert_mtb_rif_assay_result'],
+                            'lab_xpert_mtb_rif_assay_grades': labs_results[0]['lab_xpert_mtb_rif_assay_grades'],
+                            'lab_xpert_mtb_rif_assay_rif_result': labs_results[0]['lab_xpert_mtb_rif_assay_rif_result'],
+                            'lab_xpert_mtb_rif_assay_date': labs_results[0]['lab_xpert_mtb_rif_assay_date'],
+                            'lab_xpert_mtb_rif_assay_done_by': labs_results[0]['lab_xpert_mtb_rif_assay_done_by'],
+                            'lab_urine_lf_lam_result': labs_results[0]['lab_urine_lf_lam_result'],
+                            'lab_urine_lf_lam_date': labs_results[0]['lab_urine_lf_lam_date'],
+                            'lab_urine_lf_lam_done_by': labs_results[0]['lab_urine_lf_lam_done_by'],
+
+                            'follow_up_user_id': follow_ups_results[0]['follow_up_user_id'],
+                            'follow_up_xray': follow_ups_results[0]['follow_up_xray'],
+                            'follow_up_amoxicillin': follow_ups_results[0]['follow_up_amoxicillin'],
+                            'follow_up_other_antibiotic': follow_ups_results[0]['follow_up_other_antibiotic'],
+                            'follow_up_schedule_date': follow_ups_results[0]['follow_up_schedule_date'],
+                            'follow_up_comments': follow_ups_results[0]['follow_up_comments'],
+
+                            'outcome_recorded_user_id': outcomes_recorded_results[0]['outcome_recorded_user_id'],
+                            'outcome_recorded_started_tb_treatment_outcome': outcomes_recorded_results[0]['outcome_recorded_started_tb_treatment_outcome'],
+                            'outcome_recorded_tb_rx_number': outcomes_recorded_results[0]['outcome_recorded_tb_rx_number'],
+                            'outcome_recorded_other': outcomes_recorded_results[0]['outcome_recorded_other'],
+                            'outcome_recorded_comments': outcomes_recorded_results[0]['outcome_recorded_comments'],
+
+                            'tb_treatment_outcome_user_id': tb_treatment_outcomes_results[0]['tb_treatment_outcome_user_id'],
+                            'tb_treatment_outcome_result': tb_treatment_outcomes_results[0]['tb_treatment_outcome_result'],
+                            'tb_treatment_outcome_comments': tb_treatment_outcomes_results[0]['tb_treatment_outcome_comments'],
+                            'tb_treatment_outcome_close_patient_file': tb_treatment_outcomes_results[0]['tb_treatment_outcome_close_patient_file']
                         })
                     else:
                         writer.writerow({
@@ -171,7 +339,56 @@ class Export_Model:
                             'records_patient_category_other':row['records_patient_category_other'],
                             'records_reason_for_test_presumptive_tb':row['records_reason_for_test_presumptive_tb'],
                             'records_tb_treatment_history':row['records_tb_treatment_history'],
-                            'records_tb_treatment_history_contact_of_tb_patient':row['records_tb_treatment_history_contact_of_tb_patient']
+                            'records_tb_treatment_history_contact_of_tb_patient':row['records_tb_treatment_history_contact_of_tb_patient'],
+
+                            'specimen_collection_user_id': specimen_collections_results[0]['specimen_collection_user_id'],
+                            'specimen_collection_1_date': specimen_collections_results[0]['specimen_collection_1_date'],
+                            'specimen_collection_1_specimen_collection_type': specimen_collections_results[0]['specimen_collection_1_specimen_collection_type'],
+                            'specimen_collection_1_other': specimen_collections_results[0]['specimen_collection_1_other'],
+                            'specimen_collection_1_period': specimen_collections_results[0]['specimen_collection_1_period'],
+                            'specimen_collection_1_aspect': specimen_collections_results[0]['specimen_collection_1_aspect'],
+                            'specimen_collection_1_received_by': specimen_collections_results[0]['specimen_collection_1_received_by'],
+                            'specimen_collection_2_date': specimen_collections_results[0]['specimen_collection_2_date'],
+                            'specimen_collection_2_specimen_collection_type': specimen_collections_results[0]['specimen_collection_2_specimen_collection_type'],
+                            'specimen_collection_2_other': specimen_collections_results[0]['specimen_collection_2_other'],
+                            'specimen_collection_2_period': specimen_collections_results[0]['specimen_collection_2_period'],
+                            'specimen_collection_2_aspect': specimen_collections_results[0]['specimen_collection_2_aspect'],
+                            'specimen_collection_2_received_by': specimen_collections_results[0]['specimen_collection_2_received_by'],
+
+                            'lab_user_id': labs_results[0]['lab_user_id'],
+                            'lab_date_specimen_collection_received': labs_results[0]['lab_date_specimen_collection_received'],
+                            'lab_received_by': labs_results[0]['lab_received_by'],
+                            'lab_registration_number': labs_results[0]['lab_registration_number'],
+                            'lab_smear_microscopy_result_result_1': labs_results[0]['lab_smear_microscopy_result_result_1'],
+                            'lab_smear_microscopy_result_result_2': labs_results[0]['lab_smear_microscopy_result_result_2'],
+                            'lab_smear_microscopy_result_date': labs_results[0]['lab_smear_microscopy_result_date'],
+                            'lab_smear_microscopy_result_done_by': labs_results[0]['lab_smear_microscopy_result_done_by'],
+                            'lab_xpert_mtb_rif_assay_result': labs_results[0]['lab_xpert_mtb_rif_assay_result'],
+                            'lab_xpert_mtb_rif_assay_grades': labs_results[0]['lab_xpert_mtb_rif_assay_grades'],
+                            'lab_xpert_mtb_rif_assay_rif_result': labs_results[0]['lab_xpert_mtb_rif_assay_rif_result'],
+                            'lab_xpert_mtb_rif_assay_date': labs_results[0]['lab_xpert_mtb_rif_assay_date'],
+                            'lab_xpert_mtb_rif_assay_done_by': labs_results[0]['lab_xpert_mtb_rif_assay_done_by'],
+                            'lab_urine_lf_lam_result': labs_results[0]['lab_urine_lf_lam_result'],
+                            'lab_urine_lf_lam_date': labs_results[0]['lab_urine_lf_lam_date'],
+                            'lab_urine_lf_lam_done_by': labs_results[0]['lab_urine_lf_lam_done_by'],
+
+                            'follow_up_user_id': follow_ups_results[0]['follow_up_user_id'],
+                            'follow_up_xray': follow_ups_results[0]['follow_up_xray'],
+                            'follow_up_amoxicillin': follow_ups_results[0]['follow_up_amoxicillin'],
+                            'follow_up_other_antibiotic': follow_ups_results[0]['follow_up_other_antibiotic'],
+                            'follow_up_schedule_date': follow_ups_results[0]['follow_up_schedule_date'],
+                            'follow_up_comments': follow_ups_results[0]['follow_up_comments'],
+
+                            'outcome_recorded_user_id': outcomes_recorded_results[0]['outcome_recorded_user_id'],
+                            'outcome_recorded_started_tb_treatment_outcome': outcomes_recorded_results[0]['outcome_recorded_started_tb_treatment_outcome'],
+                            'outcome_recorded_tb_rx_number': outcomes_recorded_results[0]['outcome_recorded_tb_rx_number'],
+                            'outcome_recorded_other': outcomes_recorded_results[0]['outcome_recorded_other'],
+                            'outcome_recorded_comments': outcomes_recorded_results[0]['outcome_recorded_comments'],
+
+                            'tb_treatment_outcome_user_id': tb_treatment_outcomes_results[0]['tb_treatment_outcome_user_id'],
+                            'tb_treatment_outcome_result': tb_treatment_outcomes_results[0]['tb_treatment_outcome_result'],
+                            'tb_treatment_outcome_comments': tb_treatment_outcomes_results[0]['tb_treatment_outcome_comments'],
+                            'tb_treatment_outcome_close_patient_file': tb_treatment_outcomes_results[0]['tb_treatment_outcome_close_patient_file']
                         })
 
             logger.info("- Export complete")
