@@ -737,6 +737,16 @@ Content-Type: application/json
 URL: {{domain}}/v1/records
 ```
 
+**_Query params:_**
+
+| Key       | Value              | Description                        |
+| --------- | ------------------ | ---------------------------------- |
+| id        | <record_id>        | optional                           |
+| site_id   | <record_site_id>   | required only when searching by ID |
+| region_id | <record_region_id> | required only when searching by ID |
+| name      | <record_name>      | optional                           |
+| telephone | <record_telephone> | optional                           |
+
 ### 4. Fetch a record
 
 Fetch a single record a user is permitted to access.

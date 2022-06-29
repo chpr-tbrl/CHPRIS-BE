@@ -484,20 +484,51 @@ def findRecord() -> list:
 
         user = User.fetch_user(user_id=user_id, account_status="approved")
 
+        records_name = request.args.get("name") or None
+        records_id = request.args.get("id") or None
+        records_telephone = request.args.get("telephone") or None
+        records_site_id = request.args.get("site_id") or None
+        records_region_id = request.args.get("region_id") or None
+
+
         result = []
 
-        for site in user["users_sites"]:
-            payload = (
-                site["id"],
-                site["region"]["id"],
-                user["id"],
-                user["permitted_decrypted_data"]
-            )
+        Record = Record_Model()
 
-            Record = Record_Model()
+        if records_id:
+            if not records_site_id:
+                logger.error("no site_id")
+                raise BadRequest()
+            elif not records_region_id:
+                logger.error("no region_id")
+                raise BadRequest()
+
+            payload = (
+                records_site_id,
+                records_region_id,
+                user["id"],
+                user["permitted_decrypted_data"],
+                records_name,
+                records_id,
+                records_telephone
+            )
 
             for record in Record.fetch_records(*payload):
                 result.append(record)
+        else:
+            for site in user["users_sites"]:
+                payload = (
+                    site["id"],
+                    site["region"]["id"],
+                    user["id"],
+                    user["permitted_decrypted_data"],
+                    records_name,
+                    records_id,
+                    records_telephone
+                )
+
+                for record in Record.fetch_records(*payload):
+                    result.append(record)
 
         res = jsonify(result)
 
