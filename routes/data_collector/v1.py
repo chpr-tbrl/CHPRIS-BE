@@ -408,7 +408,10 @@ def updateRecord(region_id: int, site_id: int, record_id: int) -> None:
             request.json["records_patient_category_other"],
             request.json["records_reason_for_test_presumptive_tb"],
             request.json["records_tb_treatment_history"],
-            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+            request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_type"],
+            request.json["records_tb_treatment_number"],
+            request.json["records_sms_notifications"]
         )
        
         Record = Record_Model()
