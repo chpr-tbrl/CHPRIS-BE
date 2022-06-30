@@ -35,7 +35,7 @@ class Record_Model:
 
     # record
 
-    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str, records_tb_type: str, records_tb_treatment_number: str) -> str:
+    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool) -> str:
         """
         Create a new record.
 
@@ -72,7 +72,8 @@ class Record_Model:
             records_tb_treatment_history: str,
             records_tb_treatment_history_contact_of_tb_patient: str,
             records_tb_type: str,
-            records_tb_treatment_number: str
+            records_tb_treatment_number: str,
+            records_sms_notifications: bool
         
         Returns:
             str
@@ -116,6 +117,7 @@ class Record_Model:
                 records_tb_treatment_history_contact_of_tb_patient= data.encrypt(records_tb_treatment_history_contact_of_tb_patient)["e_data"],
                 records_tb_type=records_tb_type,
                 records_tb_treatment_number=records_tb_treatment_number,
+                records_sms_notifications=records_sms_notifications,
                 iv = data.iv
             )
 

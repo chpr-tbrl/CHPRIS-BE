@@ -44,4 +44,5 @@ class Records(BaseModel):
     records_tb_treatment_history_contact_of_tb_patient = CharField(null=True)
     records_tb_type = CharField()
     records_tb_treatment_number = CharField()
+    records_sms_notifications = BooleanField(default=False)
     iv = CharField()

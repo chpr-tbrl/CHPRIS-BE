@@ -239,7 +239,8 @@ def createRecord(region_id: int, site_id: int) -> None:
         records_tb_treatment_history: str,
         records_tb_treatment_history_contact_of_tb_patient: str,
         records_tb_type: str,
-        records_tb_treatment_number: str
+        records_tb_treatment_number: str,
+        records_sms_notifications: bool
     
     Response:
         200: None,
@@ -306,7 +307,8 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_tb_treatment_history"],
             request.json["records_tb_treatment_history_contact_of_tb_patient"],
             request.json["records_tb_type"],
-            request.json["records_tb_treatment_number"]
+            request.json["records_tb_treatment_number"],
+            request.json["records_sms_notifications"]
         )
        
         Record = Record_Model()

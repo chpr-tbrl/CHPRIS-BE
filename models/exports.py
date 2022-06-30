@@ -67,6 +67,9 @@ class Export_Model:
                 'records_reason_for_test_presumptive_tb',
                 'records_tb_treatment_history',
                 'records_tb_treatment_history_contact_of_tb_patient',
+                'records_tb_type',
+                'records_tb_treatment_number',
+                'records_sms_notifications',
 
                 'specimen_collection_user_id',
                 'specimen_collection_1_date',
@@ -255,6 +258,9 @@ class Export_Model:
                             'records_reason_for_test_presumptive_tb':row['records_reason_for_test_presumptive_tb'],
                             'records_tb_treatment_history':row['records_tb_treatment_history'],
                             'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(row['records_tb_treatment_history_contact_of_tb_patient'], iv),
+                            'records_tb_type':row['records_tb_type'],
+                            'records_tb_treatment_number':row['records_tb_treatment_number'],
+                            'records_sms_notifications':row['records_sms_notifications'],
 
                             'specimen_collection_user_id': specimen_collections_results[0]['specimen_collection_user_id'],
                             'specimen_collection_1_date': specimen_collections_results[0]['specimen_collection_1_date'],
@@ -340,6 +346,9 @@ class Export_Model:
                             'records_reason_for_test_presumptive_tb':row['records_reason_for_test_presumptive_tb'],
                             'records_tb_treatment_history':row['records_tb_treatment_history'],
                             'records_tb_treatment_history_contact_of_tb_patient':row['records_tb_treatment_history_contact_of_tb_patient'],
+                            'records_tb_type':row['records_tb_type'],
+                            'records_tb_treatment_number':row['records_tb_treatment_number'],
+                            'records_sms_notifications':row['records_sms_notifications'],
 
                             'specimen_collection_user_id': specimen_collections_results[0]['specimen_collection_user_id'],
                             'specimen_collection_1_date': specimen_collections_results[0]['specimen_collection_1_date'],
