@@ -237,7 +237,9 @@ def createRecord(region_id: int, site_id: int) -> None:
         records_patient_category_other: str,
         records_reason_for_test_presumptive_tb: bool,
         records_tb_treatment_history: str,
-        records_tb_treatment_history_contact_of_tb_patient: str
+        records_tb_treatment_history_contact_of_tb_patient: str,
+        records_tb_type: str,
+        records_tb_treatment_number: str
     
     Response:
         200: None,
@@ -302,7 +304,9 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_patient_category_other"],
             request.json["records_reason_for_test_presumptive_tb"],
             request.json["records_tb_treatment_history"],
-            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+            request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_type"],
+            request.json["records_tb_treatment_number"]
         )
        
         Record = Record_Model()
