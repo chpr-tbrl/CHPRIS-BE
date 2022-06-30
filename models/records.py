@@ -332,7 +332,7 @@ class Record_Model:
             logger.error("failed to find record for %d check logs" % records_user_id)
             raise InternalServerError(err) from None
 
-    def fetch_records(self, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool) -> list:
+    def fetch_records(self, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool, records_name: str, record_id: int, records_telephone: str) -> list:
         """
         Fetch all records >= today by site_id and region_id.
 
@@ -340,7 +340,10 @@ class Record_Model:
             site_id: int,
             region_id: int,
             records_user_id: int,
-            permitted_decrypted_data; bool
+            permitted_decrypted_data; bool,
+            name: str,
+            record_id: int,
+            phone_number: str
 
         Returns:
             list
@@ -349,21 +352,54 @@ class Record_Model:
             logger.debug("finding records for %d ..." % records_user_id)
 
             result = []
-            
-            records = (
-                self.Records.select(
-                    self.Records.record_id,
-                    self.Records.records_name,
-                    self.Records.records_date,
-                    self.Records.records_sex,
-                    self.Records.records_date_of_test_request,
-                    self.Records.iv
-                ).where(
-                    self.Records.site_id == site_id,
-                    self.Records.region_id == region_id,
-                    self.Records.records_date >= date.today()
-                ).dicts()
-            )
+
+            if record_id:
+                records = (
+                    self.Records.select(
+                        self.Records.record_id,
+                        self.Records.records_name,
+                        self.Records.records_telephone,
+                        self.Records.records_date,
+                        self.Records.records_sex,
+                        self.Records.records_date_of_test_request,
+                        self.Records.iv
+                    ).where(
+                        self.Records.record_id == record_id,
+                        self.Records.site_id == site_id,
+                        self.Records.region_id == region_id,
+                    ).dicts()
+                )
+            elif records_telephone or records_name:
+                records = (
+                    self.Records.select(
+                        self.Records.record_id,
+                        self.Records.records_name,
+                        self.Records.records_telephone,
+                        self.Records.records_date,
+                        self.Records.records_sex,
+                        self.Records.records_date_of_test_request,
+                        self.Records.iv
+                    ).where(
+                        self.Records.site_id == site_id,
+                        self.Records.region_id == region_id,
+                    ).dicts()
+                )
+            else:
+                records = (
+                    self.Records.select(
+                        self.Records.record_id,
+                        self.Records.records_name,
+                        self.Records.records_telephone,
+                        self.Records.records_date,
+                        self.Records.records_sex,
+                        self.Records.records_date_of_test_request,
+                        self.Records.iv
+                    ).where(
+                        self.Records.site_id == site_id,
+                        self.Records.region_id == region_id,
+                        self.Records.records_date >= date.today()
+                    ).dicts()
+                )
 
             for record in records.iterator():
                 if permitted_decrypted_data:
@@ -371,17 +407,40 @@ class Record_Model:
 
                     data = self.Data()
 
-                    result.append({
-                        "record_id" : record["record_id"],
-                        "records_name" : data.decrypt(record["records_name"], iv),
-                        "records_date" : record["records_date"],
-                        "records_sex" : record["records_sex"],
-                        "records_date_of_test_request" : record["records_date_of_test_request"]
-                    })
+                    if records_name:
+                        if records_name.lower() in data.decrypt(record["records_name"], iv).lower():
+                            result.append({
+                                "record_id" : record["record_id"],
+                                "records_name" : data.decrypt(record["records_name"], iv),
+                                "records_telephone": data.decrypt(record["records_telephone"], iv),
+                                "records_date" : record["records_date"],
+                                "records_sex" : record["records_sex"],
+                                "records_date_of_test_request" : record["records_date_of_test_request"]
+                            })
+                    elif records_telephone:
+                        if records_telephone in data.decrypt(record["records_telephone"], iv):
+                            result.append({
+                                "record_id" : record["record_id"],
+                                "records_name" : data.decrypt(record["records_name"], iv),
+                                "records_telephone": data.decrypt(record["records_telephone"], iv),
+                                "records_date" : record["records_date"],
+                                "records_sex" : record["records_sex"],
+                                "records_date_of_test_request" : record["records_date_of_test_request"]
+                            })
+                    else:
+                        result.append({
+                            "record_id" : record["record_id"],
+                            "records_name" : data.decrypt(record["records_name"], iv),
+                            "records_telephone": data.decrypt(record["records_telephone"], iv),
+                            "records_date" : record["records_date"],
+                            "records_sex" : record["records_sex"],
+                            "records_date_of_test_request" : record["records_date_of_test_request"]
+                        })
                 else:
                     result.append({
                         "record_id" : record["record_id"],
                         "records_name" : record["records_name"],
+                        "records_telephone" : record["records_telephone"],
                         "records_date" : record["records_date"],
                         "records_sex" : record["records_sex"],
                         "records_date_of_test_request" : record["records_date_of_test_request"]
