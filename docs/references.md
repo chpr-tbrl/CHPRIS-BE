@@ -904,7 +904,24 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
     "lab_urine_lf_lam_date":"date",
-    "lab_urine_lf_lam_done_by":"string"
+    "lab_urine_lf_lam_done_by":"string",
+    "lab_culture_mgit_culture":"string",
+    "lab_culture_lj_culture":"string",
+    "lab_lpa_mtbdrplus_isoniazid":"string",
+    "lab_lpa_mtbdrplus_rifampin":"string",
+    "lab_lpa_mtbdrs_flouoroquinolones":"string",
+    "lab_lpa_mtbdrs_kanamycin":"string",
+    "lab_lpa_mtbdrs_amikacin":"string",
+    "lab_lpa_mtbdrs_capreomycin":"string",
+    "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_dst_isonazid":"string",
+    "lab_dst_rifampin":"string",
+    "lab_dst_ethambutol":"string",
+    "lab_dst_kanamycin":"string",
+    "lab_dst_ofloxacin":"string",
+    "lab_dst_levofloxacinekanamycin":"string",
+    "lab_dst_moxifloxacinekanamycin":"string",
+    "lab_dst_amikacinekanamycin":"string"
 }
 ```
 
@@ -945,7 +962,24 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
     "lab_urine_lf_lam_date":"date",
-    "lab_urine_lf_lam_done_by":"string"
+    "lab_urine_lf_lam_done_by":"string",
+    "lab_culture_mgit_culture":"string",
+    "lab_culture_lj_culture":"string",
+    "lab_lpa_mtbdrplus_isoniazid":"string",
+    "lab_lpa_mtbdrplus_rifampin":"string",
+    "lab_lpa_mtbdrs_flouoroquinolones":"string",
+    "lab_lpa_mtbdrs_kanamycin":"string",
+    "lab_lpa_mtbdrs_amikacin":"string",
+    "lab_lpa_mtbdrs_capreomycin":"string",
+    "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_dst_isonazid":"string",
+    "lab_dst_rifampin":"string",
+    "lab_dst_ethambutol":"string",
+    "lab_dst_kanamycin":"string",
+    "lab_dst_ofloxacin":"string",
+    "lab_dst_levofloxacinekanamycin":"string",
+    "lab_dst_moxifloxacinekanamycin":"string",
+    "lab_dst_amikacinekanamycin":"string"
 }
 ```
 
