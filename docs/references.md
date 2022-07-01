@@ -84,7 +84,8 @@ URL: {{domain}}/v1/signup
     "email": "string",
     "password": "string",
     "occupation": "string",
-    "site_id": "integer"
+    "site_id": "integer",
+    "sms_notifications_type": "string"
 }
 ```
 
@@ -207,7 +208,9 @@ URL: {{domain}}/v1/users
 {
     "phone_number":"string",
     "name": "string",
-    "occupation": "string"
+    "occupation": "string",
+    "sms_notifications": "boolean",
+    "sms_notifications_type": "string"
 }
 ```
 
@@ -237,7 +240,9 @@ URL: {{domain}}/v1/admin/users
 {
     "phone_number":"string",
     "name": "string",
-    "occupation": "string"
+    "occupation": "string",
+    "sms_notifications": "boolean",
+    "sms_notifications_type": "string"
 }
 ```
 

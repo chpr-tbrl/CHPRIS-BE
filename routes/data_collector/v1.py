@@ -90,6 +90,9 @@ def signup() -> None:
         elif not "site_id" in request.json or not request.json["site_id"]:
             logger.error("no site_id")
             raise BadRequest()
+        elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+            logger.error("no sms_notifications_type")
+            raise BadRequest()
 
         email = request.json["email"]
         password = request.json["password"]
@@ -97,6 +100,7 @@ def signup() -> None:
         name = request.json["name"]
         site_id = request.json["site_id"]
         occupation = request.json["occupation"]
+        sms_notifications_type = request.json["sms_notifications_type"]
 
         User = User_Model()
 
@@ -106,7 +110,8 @@ def signup() -> None:
             phone_number=phone_number,
             name=name,
             occupation=occupation,
-            site_id=site_id 
+            site_id=site_id,
+            sms_notifications_type=sms_notifications_type
         )
 
         return "", 200
@@ -1918,16 +1923,26 @@ def updateProfile() -> None:
             elif not "occupation" in request.json or not request.json["occupation"]:
                 logger.error("no occupation")
                 raise BadRequest()
+            elif not "sms_notifications" in request.json or not request.json["sms_notifications"]:
+                logger.error("no sms_notifications")
+                raise BadRequest()
+            elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+                logger.error("no sms_notifications_type")
+                raise BadRequest()
 
             phone_number = request.json["phone_number"]
             name = request.json["name"]
             occupation = request.json["occupation"]
+            sms_notifications = request.json["sms_notifications"]
+            sms_notifications_type = request.json["sms_notifications_type"]
 
             User.update_profile(
                 id=user_id,
                 phone_number=phone_number,
                 name=name,
-                occupation=occupation
+                occupation=occupation,
+                sms_notifications=sms_notifications,
+                sms_notifications_type=sms_notifications_type
             )
 
         elif request.method == "POST":

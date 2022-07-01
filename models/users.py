@@ -29,7 +29,7 @@ class User_Model:
         self.Data = Data
         self.Sites = Site_Model
 
-    def create(self, email: str, password: str, phone_number: str, name: str, occupation: str, site_id: int) -> str:
+    def create(self, email: str, password: str, phone_number: str, name: str, occupation: str, site_id: int, sms_notifications_type: str) -> str:
         """
         Add user to database.
 
@@ -39,7 +39,8 @@ class User_Model:
             phone_number: str,
             name: str,
             occupation: str,
-            site_id: int
+            site_id: int,
+            sms_notifications_type: str
 
         Returns:
             str
@@ -59,6 +60,7 @@ class User_Model:
                     phone_number= data.encrypt(phone_number)["e_data"],
                     name= data.encrypt(name)["e_data"],
                     occupation= data.encrypt(occupation)["e_data"],
+                    sms_notifications_type = sms_notifications_type,
                     iv = data.iv
                 )
 
@@ -167,7 +169,9 @@ class User_Model:
                         "permitted_export_types": user["permitted_export_types"],
                         "permitted_export_range": user["permitted_export_range"],
                         "permitted_decrypted_data": user["permitted_decrypted_data"],
-                        "permitted_approve_accounts": user["permitted_approve_accounts"]
+                        "permitted_approve_accounts": user["permitted_approve_accounts"],
+                        "sms_notifications": user["sms_notifications"],
+                        "sms_notifications_type": user["sms_notifications_type"]
                     })
                 else:
                     logger.debug("Fetching all sites for user '%s' ..." % user["id"])
@@ -209,6 +213,8 @@ class User_Model:
                         "permitted_export_range": user["permitted_export_range"],
                         "permitted_decrypted_data": user["permitted_decrypted_data"],
                         "permitted_approve_accounts": user["permitted_approve_accounts"],
+                        "sms_notifications": user["sms_notifications"],
+                        "sms_notifications_type": user["sms_notifications_type"],
                         "users_sites": site_arr
                     })
 
@@ -276,7 +282,9 @@ class User_Model:
                         "permitted_export_types": user["permitted_export_types"],
                         "permitted_export_range": user["permitted_export_range"],
                         "permitted_decrypted_data": user["permitted_decrypted_data"],
-                        "permitted_approve_accounts": user["permitted_approve_accounts"]
+                        "permitted_approve_accounts": user["permitted_approve_accounts"],
+                        "sms_notifications": user["sms_notifications"],
+                        "sms_notifications_type": user["sms_notifications_type"]
                     })
                 else:
                     logger.debug("Fetching all sites for user '%s' ..." % user["id"])
@@ -319,6 +327,8 @@ class User_Model:
                         "permitted_export_range": user["permitted_export_range"],
                         "permitted_decrypted_data": user["permitted_decrypted_data"],
                         "permitted_approve_accounts": user["permitted_approve_accounts"],
+                        "sms_notifications": user["sms_notifications"],
+                        "sms_notifications_type": user["sms_notifications_type"],
                         "users_sites": site_arr
                     })
 
@@ -481,7 +491,7 @@ class User_Model:
             logger.error("removing users_sites failed check logs")
             raise InternalServerError(err) from None
 
-    def update_profile(self, id: int, phone_number: str, name: str, occupation: str) -> int:
+    def update_profile(self, id: int, phone_number: str, name: str, occupation: str, sms_notifications: bool, sms_notifications_type: str) -> int:
         """
         Update a user's profile information.
 
@@ -489,7 +499,9 @@ class User_Model:
             id: int,
             phone_number: str,
             name: str,
-            occupation: str
+            occupation: str,
+            sms_notifications: bool,
+            sms_notifications_type: str
 
         Returns:
             int
@@ -503,6 +515,8 @@ class User_Model:
                 phone_number=data.encrypt(phone_number)["e_data"],
                 name=data.encrypt(name)["e_data"],
                 occupation=data.encrypt(occupation)["e_data"],
+                sms_notifications=sms_notifications,
+                sms_notifications_type=sms_notifications_type,
                 iv=data.iv
             ).where(self.Users.id == id)
 
