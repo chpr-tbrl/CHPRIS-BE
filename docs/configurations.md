@@ -20,6 +20,13 @@ On Ubuntu **libmysqlclient-dev** is required
 
 ```
 sudo apt install python3-dev libmysqlclient-dev
+sudo apt-get install libapache2-mod-wsgi-py3 
+```
+
+If using apache2 wsgi on Ubuntu
+
+```
+sudo apt-get install libapache2-mod-wsgi-py3 
 ```
 
 ## Installation
