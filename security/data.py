@@ -84,7 +84,7 @@ class Data:
             str
         """
         try:
-            logger.debug("starting data encryption ...")
+            logger.debug("starting data decryption ...")
             if not data:
                 logger.info("- Nothing to decrypt")
                 return None    
