@@ -24,5 +24,6 @@ def baseConfig() -> dict:
         "DATABASE": config["DATABASE"],
         "API": config["API"],
         "SSL_API": config["SSL_API"],
-        "SUPER_ADMIN": config["SUPER_ADMIN"]
+        "SUPER_ADMIN": config["SUPER_ADMIN"],
+        "SMSWITHOUTBORDERS": config["SMSWITHOUTBORDERS"]
     }
