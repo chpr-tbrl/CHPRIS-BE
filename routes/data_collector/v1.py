@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import json 
+from threading import Thread
 
 # configurations
 from Configs import baseConfig
@@ -9,7 +10,7 @@ config = baseConfig()
 api = config["API"]
 cookie_name = api['COOKIE_NAME']
 
-from flask import Blueprint
+from flask import Blueprint, after_this_request
 from flask import Response
 from flask import request
 from flask import jsonify
@@ -34,8 +35,8 @@ from models.sites import Site_Model
 from models.records import Record_Model
 from models.sessions import Session_Model
 from models.exports import Export_Model
-
-# from models.data_exports import data_export
+from models.contacts import Contact_Model
+from models.sms_notifications import SMS_Model
 
 # exceptions
 from werkzeug.exceptions import BadRequest
@@ -1004,9 +1005,34 @@ def createLabRecord(record_id: int) -> None:
        
         Record = Record_Model()
 
-        Record.create_lab(*payload)
+        lab_id = Record.create_lab(*payload)
 
-        res = jsonify()
+        Contact = Contact_Model()
+
+        Sms = SMS_Model()
+
+        logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
+        if request.json["lab_result_type"] == "positive":
+            contacts = Contact.lab(record_id=record_id, sms_notification_type="positive,all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+
+        elif request.json["lab_result_type"] == "negative":
+            contacts = Contact.lab(record_id=record_id, sms_notification_type="all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+        else:
+            pass
+
+        res = Response()
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
@@ -1106,10 +1132,35 @@ def updateLabRecord(lab_id: int) -> None:
        
         Record = Record_Model()
 
-        Record.update_lab(*payload)
+        record_id = Record.update_lab(*payload)
 
-        res = jsonify()
+        Contact = Contact_Model()
+        
+        Sms = SMS_Model()
 
+        logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
+        if request.json["lab_result_type"] == "positive":
+            contacts = Contact.lab(record_id=record_id, sms_notification_type="positive,all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+
+        elif request.json["lab_result_type"] == "negative":
+            contacts = Contact.lab(record_id=record_id, sms_notification_type="all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+        else:
+            pass
+
+        res = Response()
+        
         session = Session.update(sid=sid, unique_identifier=user_id)
 
         cookie = Cookie()
