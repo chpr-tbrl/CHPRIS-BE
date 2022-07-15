@@ -103,7 +103,7 @@ class SMS_Model:
             logger.debug("lab_smear_microscopy_result_result_2: %s" % lab_smear_microscopy_result_result_2)
             logger.debug("smr_result: %s" % smr_result)
 
-            if lab_xpert_mtb_rif_assay_result in ["detected", "trace",]:
+            if lab_xpert_mtb_rif_assay_result in ["detected"]:
                 grade = lab_xpert_mtb_rif_assay_grades
             else:
                 grade = None
@@ -195,7 +195,7 @@ class SMS_Model:
             logger.debug("lab_smear_microscopy_result_result_2: %s" % lab_smear_microscopy_result_result_2)
             logger.debug("smr_result: %s" % smr_result)
 
-            if lab_xpert_mtb_rif_assay_result in ["detected", "trace",]:
+            if lab_xpert_mtb_rif_assay_result in ["detected"]:
                 grade = lab_xpert_mtb_rif_assay_grades
             else:
                 grade = None
