@@ -93,6 +93,8 @@ def create_tables() -> None:
             ]
         )
 
+        users_db.close()
+
         logger.info("- Successfully Sync database %s" % database['MYSQL_USERS_DATABASE'])
 
         # create sites database tables
@@ -104,6 +106,8 @@ def create_tables() -> None:
                 Daughter_sites
             ]
         )
+
+        sites_db.close()
 
         logger.info("- Successfully Sync database %s" % database['MYSQL_SITES_DATABASE'])
 
@@ -119,6 +123,8 @@ def create_tables() -> None:
                 Tb_treatment_outcomes
             ]
         )
+
+        records_db.close()
 
         logger.info("- Successfully Sync database %s" % database['MYSQL_RECORDS_DATABASE'])
 
@@ -153,6 +159,8 @@ def create_super_admin() -> None:
                 permitted_approve_accounts = True,
                 iv = data.iv
             )
+        else:
+            users_db.close()
             
     except Exception as error:
         raise InternalServerError(error)

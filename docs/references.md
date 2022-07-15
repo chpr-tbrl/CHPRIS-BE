@@ -84,7 +84,8 @@ URL: {{domain}}/v1/signup
     "email": "string",
     "password": "string",
     "occupation": "string",
-    "site_id": "integer"
+    "site_id": "integer",
+    "sms_notifications_type": "string"
 }
 ```
 
@@ -207,7 +208,9 @@ URL: {{domain}}/v1/users
 {
     "phone_number":"string",
     "name": "string",
-    "occupation": "string"
+    "occupation": "string",
+    "sms_notifications": "boolean",
+    "sms_notifications_type": "string"
 }
 ```
 
@@ -237,7 +240,9 @@ URL: {{domain}}/v1/admin/users
 {
     "phone_number":"string",
     "name": "string",
-    "occupation": "string"
+    "occupation": "string",
+    "sms_notifications": "boolean",
+    "sms_notifications_type": "string"
 }
 ```
 
@@ -660,7 +665,12 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records
     "records_patient_category_other":"string",
     "records_reason_for_test_presumptive_tb":"boolean",
     "records_tb_treatment_history":"string",
-    "records_tb_treatment_history_contact_of_tb_patient":"string"
+    "records_tb_treatment_history_contact_of_tb_patient":"string",
+    "records_tb_type":"string",
+    "records_tb_treatment_number":"string",
+    "records_sms_notifications":"boolean",
+    "records_requester_name": "string",
+    "records_requester_telephone": "string"
 }
 ```
 
@@ -714,7 +724,12 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records/{{record_id}}
     "records_patient_category_other":"string",
     "records_reason_for_test_presumptive_tb":"boolean",
     "records_tb_treatment_history":"string",
-    "records_tb_treatment_history_contact_of_tb_patient":"string"
+    "records_tb_treatment_history_contact_of_tb_patient":"string",
+    "records_tb_type":"string",
+    "records_tb_treatment_number":"string",
+    "records_sms_notifications":"boolean",
+    "records_requester_name": "string",
+    "records_requester_telephone": "string"
 }
 ```
 
@@ -898,7 +913,25 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
     "lab_urine_lf_lam_date":"date",
-    "lab_urine_lf_lam_done_by":"string"
+    "lab_urine_lf_lam_done_by":"string",
+    "lab_culture_mgit_culture":"string",
+    "lab_culture_lj_culture":"string",
+    "lab_lpa_mtbdrplus_isoniazid":"string",
+    "lab_lpa_mtbdrplus_rifampin":"string",
+    "lab_lpa_mtbdrs_flouoroquinolones":"string",
+    "lab_lpa_mtbdrs_kanamycin":"string",
+    "lab_lpa_mtbdrs_amikacin":"string",
+    "lab_lpa_mtbdrs_capreomycin":"string",
+    "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_dst_isonazid":"string",
+    "lab_dst_rifampin":"string",
+    "lab_dst_ethambutol":"string",
+    "lab_dst_kanamycin":"string",
+    "lab_dst_ofloxacin":"string",
+    "lab_dst_levofloxacinekanamycin":"string",
+    "lab_dst_moxifloxacinekanamycin":"string",
+    "lab_dst_amikacinekanamycin":"string",
+    "lab_result_type":"string"
 }
 ```
 
@@ -939,7 +972,25 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
     "lab_urine_lf_lam_date":"date",
-    "lab_urine_lf_lam_done_by":"string"
+    "lab_urine_lf_lam_done_by":"string",
+    "lab_culture_mgit_culture":"string",
+    "lab_culture_lj_culture":"string",
+    "lab_lpa_mtbdrplus_isoniazid":"string",
+    "lab_lpa_mtbdrplus_rifampin":"string",
+    "lab_lpa_mtbdrs_flouoroquinolones":"string",
+    "lab_lpa_mtbdrs_kanamycin":"string",
+    "lab_lpa_mtbdrs_amikacin":"string",
+    "lab_lpa_mtbdrs_capreomycin":"string",
+    "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_dst_isonazid":"string",
+    "lab_dst_rifampin":"string",
+    "lab_dst_ethambutol":"string",
+    "lab_dst_kanamycin":"string",
+    "lab_dst_ofloxacin":"string",
+    "lab_dst_levofloxacinekanamycin":"string",
+    "lab_dst_moxifloxacinekanamycin":"string",
+    "lab_dst_amikacinekanamycin":"string",
+    "lab_result_type":"string"
 }
 ```
 

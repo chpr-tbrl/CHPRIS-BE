@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import json 
+from threading import Thread
 
 # configurations
 from Configs import baseConfig
@@ -9,7 +10,7 @@ config = baseConfig()
 api = config["API"]
 cookie_name = api['COOKIE_NAME']
 
-from flask import Blueprint
+from flask import Blueprint, after_this_request
 from flask import Response
 from flask import request
 from flask import jsonify
@@ -34,8 +35,8 @@ from models.sites import Site_Model
 from models.records import Record_Model
 from models.sessions import Session_Model
 from models.exports import Export_Model
-
-# from models.data_exports import data_export
+from models.contacts import Contact_Model
+from models.sms_notifications import SMS_Model
 
 # exceptions
 from werkzeug.exceptions import BadRequest
@@ -90,6 +91,9 @@ def signup() -> None:
         elif not "site_id" in request.json or not request.json["site_id"]:
             logger.error("no site_id")
             raise BadRequest()
+        elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+            logger.error("no sms_notifications_type")
+            raise BadRequest()
 
         email = request.json["email"]
         password = request.json["password"]
@@ -97,6 +101,7 @@ def signup() -> None:
         name = request.json["name"]
         site_id = request.json["site_id"]
         occupation = request.json["occupation"]
+        sms_notifications_type = request.json["sms_notifications_type"]
 
         User = User_Model()
 
@@ -106,7 +111,8 @@ def signup() -> None:
             phone_number=phone_number,
             name=name,
             occupation=occupation,
-            site_id=site_id 
+            site_id=site_id,
+            sms_notifications_type=sms_notifications_type
         )
 
         return "", 200
@@ -237,7 +243,12 @@ def createRecord(region_id: int, site_id: int) -> None:
         records_patient_category_other: str,
         records_reason_for_test_presumptive_tb: bool,
         records_tb_treatment_history: str,
-        records_tb_treatment_history_contact_of_tb_patient: str
+        records_tb_treatment_history_contact_of_tb_patient: str,
+        records_tb_type: str,
+        records_tb_treatment_number: str,
+        records_sms_notifications: bool,
+        records_requester_name: str,
+        records_requester_telephone: str
     
     Response:
         200: None,
@@ -302,7 +313,12 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_patient_category_other"],
             request.json["records_reason_for_test_presumptive_tb"],
             request.json["records_tb_treatment_history"],
-            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+            request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_type"],
+            request.json["records_tb_treatment_number"],
+            request.json["records_sms_notifications"],
+            request.json["records_requester_name"],
+            request.json["records_requester_telephone"]
         )
        
         Record = Record_Model()
@@ -402,7 +418,12 @@ def updateRecord(region_id: int, site_id: int, record_id: int) -> None:
             request.json["records_patient_category_other"],
             request.json["records_reason_for_test_presumptive_tb"],
             request.json["records_tb_treatment_history"],
-            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+            request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_type"],
+            request.json["records_tb_treatment_number"],
+            request.json["records_sms_notifications"],
+            request.json["records_requester_name"],
+            request.json["records_requester_telephone"]
         )
        
         Record = Record_Model()
@@ -969,13 +990,64 @@ def createLabRecord(record_id: int) -> None:
             request.json["lab_urine_lf_lam_result"],
             request.json["lab_urine_lf_lam_date"],
             request.json["lab_urine_lf_lam_done_by"],
+            request.json["lab_culture_mgit_culture"],
+            request.json["lab_culture_lj_culture"],
+            request.json["lab_lpa_mtbdrplus_isoniazid"],
+            request.json["lab_lpa_mtbdrplus_rifampin"],
+            request.json["lab_lpa_mtbdrs_flouoroquinolones"],
+            request.json["lab_lpa_mtbdrs_kanamycin"],
+            request.json["lab_lpa_mtbdrs_amikacin"],
+            request.json["lab_lpa_mtbdrs_capreomycin"],
+            request.json["lab_lpa_mtbdrs_low_level_kanamycin"],
+            request.json["lab_dst_isonazid"],
+            request.json["lab_dst_rifampin"],
+            request.json["lab_dst_ethambutol"],
+            request.json["lab_dst_kanamycin"],
+            request.json["lab_dst_ofloxacin"],
+            request.json["lab_dst_levofloxacinekanamycin"],
+            request.json["lab_dst_moxifloxacinekanamycin"],
+            request.json["lab_dst_amikacinekanamycin"]
         )
        
         Record = Record_Model()
 
-        Record.create_lab(*payload)
+        lab_id = Record.create_lab(*payload)
 
-        res = jsonify()
+        Contact = Contact_Model()
+        
+        Sms = SMS_Model()
+
+        def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
+            """
+            """
+            Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
+            Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
+            Sms.send_client(contacts=contacts['client'])
+
+            return None
+
+        logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
+        if request.json["lab_result_type"] == "positive":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': int(lab_id), 'contacts': contacts})
+                thread.start()
+                return response
+
+        elif request.json["lab_result_type"] == "negative":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': int(lab_id), 'contacts': contacts})
+                thread.start()
+                return response
+        else:
+            pass
+
+        res = Response()
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
@@ -1054,14 +1126,65 @@ def updateLabRecord(lab_id: int) -> None:
             request.json["lab_urine_lf_lam_result"],
             request.json["lab_urine_lf_lam_date"],
             request.json["lab_urine_lf_lam_done_by"],
+            request.json["lab_culture_mgit_culture"],
+            request.json["lab_culture_lj_culture"],
+            request.json["lab_lpa_mtbdrplus_isoniazid"],
+            request.json["lab_lpa_mtbdrplus_rifampin"],
+            request.json["lab_lpa_mtbdrs_flouoroquinolones"],
+            request.json["lab_lpa_mtbdrs_kanamycin"],
+            request.json["lab_lpa_mtbdrs_amikacin"],
+            request.json["lab_lpa_mtbdrs_capreomycin"],
+            request.json["lab_lpa_mtbdrs_low_level_kanamycin"],
+            request.json["lab_dst_isonazid"],
+            request.json["lab_dst_rifampin"],
+            request.json["lab_dst_ethambutol"],
+            request.json["lab_dst_kanamycin"],
+            request.json["lab_dst_ofloxacin"],
+            request.json["lab_dst_levofloxacinekanamycin"],
+            request.json["lab_dst_moxifloxacinekanamycin"],
+            request.json["lab_dst_amikacinekanamycin"]
         )
        
         Record = Record_Model()
 
-        Record.update_lab(*payload)
+        record_id = Record.update_lab(*payload)
 
-        res = jsonify()
+        Contact = Contact_Model()
+        
+        Sms = SMS_Model()
 
+        def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
+            """
+            """
+            Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
+            Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
+            Sms.send_client(contacts=contacts['client'])
+
+            return None
+
+        logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
+        if request.json["lab_result_type"] == "positive":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+
+        elif request.json["lab_result_type"] == "negative":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+        else:
+            pass
+
+        res = Response()
+        
         session = Session.update(sid=sid, unique_identifier=user_id)
 
         cookie = Cookie()
@@ -1875,16 +1998,26 @@ def updateProfile() -> None:
             elif not "occupation" in request.json or not request.json["occupation"]:
                 logger.error("no occupation")
                 raise BadRequest()
+            elif not "sms_notifications" in request.json or not request.json["sms_notifications"]:
+                logger.error("no sms_notifications")
+                raise BadRequest()
+            elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+                logger.error("no sms_notifications_type")
+                raise BadRequest()
 
             phone_number = request.json["phone_number"]
             name = request.json["name"]
             occupation = request.json["occupation"]
+            sms_notifications = request.json["sms_notifications"]
+            sms_notifications_type = request.json["sms_notifications_type"]
 
             User.update_profile(
                 id=user_id,
                 phone_number=phone_number,
                 name=name,
-                occupation=occupation
+                occupation=occupation,
+                sms_notifications=sms_notifications,
+                sms_notifications_type=sms_notifications_type
             )
 
         elif request.method == "POST":
