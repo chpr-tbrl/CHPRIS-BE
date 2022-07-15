@@ -278,6 +278,8 @@ class Export_Model:
                             'records_tb_type':row['records_tb_type'],
                             'records_tb_treatment_number':row['records_tb_treatment_number'],
                             'records_sms_notifications':row['records_sms_notifications'],
+                            'records_requester_name': data.decrypt(row['records_requester_name'], iv),
+                            'records_requester_telephone': data.decrypt(row['records_requester_telephone'], iv),
 
                             'specimen_collection_user_id': None if len(specimen_collections_results)<1 else specimen_collections_results[0]['specimen_collection_user_id'],
                             'specimen_collection_1_date': None if len(specimen_collections_results)<1 else specimen_collections_results[0]['specimen_collection_1_date'],
@@ -383,6 +385,8 @@ class Export_Model:
                             'records_tb_type':row['records_tb_type'],
                             'records_tb_treatment_number':row['records_tb_treatment_number'],
                             'records_sms_notifications':row['records_sms_notifications'],
+                            'records_requester_name': row['records_requester_name'],
+                            'records_requester_telephone': row['records_requester_telephone'],
 
                             'specimen_collection_user_id': None if len(specimen_collections_results)<1 else specimen_collections_results[0]['specimen_collection_user_id'],
                             'specimen_collection_1_date': None if len(specimen_collections_results)<1 else specimen_collections_results[0]['specimen_collection_1_date'],

@@ -45,4 +45,6 @@ class Records(BaseModel):
     records_tb_type = CharField()
     records_tb_treatment_number = CharField()
     records_sms_notifications = BooleanField(default=False)
+    records_requester_name = CharField(null=True)
+    records_requester_telephone = CharField(null=True)
     iv = CharField()

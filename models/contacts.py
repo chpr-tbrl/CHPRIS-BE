@@ -23,7 +23,7 @@ class Contact_Model:
         self.Records = Records
         self.Data = Data
 
-    def lab(self, record_id: int, sms_notification_type: str) -> list:
+    def all(self, record_id: int, sms_notification_type: str) -> dict:
         """
         """
         try:
@@ -35,7 +35,11 @@ class Contact_Model:
             else:
                 logger.debug("finding users that belong to site_id: %d with sms_notification_type: %s ..." % (record.site_id, sms_notification_type))
                 
-                result = []
+                result = {
+                    "lab": [],
+                    "requester": [],
+                    "client": []
+                }
                 
                 data = self.Data()
 
@@ -67,11 +71,22 @@ class Contact_Model:
                 for user in users:
                     iv = user["iv"]
 
-                    result.append(data.decrypt(user["phone_number"], iv))
+                    result["lab"].append(data.decrypt(user["phone_number"], iv))
 
                 logger.info("- Succesfully gathered lab contacts")
+
+                if record.records_requester_telephone:
+                    result["requester"].append(data.decrypt(record.records_requester_telephone, record.iv))
+                    
+                    logger.info("- Succesfully gathered requester contact")
+                
+                if record.records_sms_notifications:
+                    result["client"].append(data.decrypt(record.records_telephone, record.iv))
+                    
+                    logger.info("- Succesfully gathered client contact")
+
                 return result
 
         except DatabaseError as err:
             logger.error("Failed to find users that belong to site_id: %d with sms_notification_type: %s. Check logs." % (record.site_id, sms_notification_type))
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)

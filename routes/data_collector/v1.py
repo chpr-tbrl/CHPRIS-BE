@@ -246,7 +246,9 @@ def createRecord(region_id: int, site_id: int) -> None:
         records_tb_treatment_history_contact_of_tb_patient: str,
         records_tb_type: str,
         records_tb_treatment_number: str,
-        records_sms_notifications: bool
+        records_sms_notifications: bool,
+        records_requester_name: str,
+        records_requester_telephone: str
     
     Response:
         200: None,
@@ -314,7 +316,9 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_tb_treatment_history_contact_of_tb_patient"],
             request.json["records_tb_type"],
             request.json["records_tb_treatment_number"],
-            request.json["records_sms_notifications"]
+            request.json["records_sms_notifications"],
+            request.json["records_requester_name"],
+            request.json["records_requester_telephone"]
         )
        
         Record = Record_Model()
@@ -417,7 +421,9 @@ def updateRecord(region_id: int, site_id: int, record_id: int) -> None:
             request.json["records_tb_treatment_history_contact_of_tb_patient"],
             request.json["records_tb_type"],
             request.json["records_tb_treatment_number"],
-            request.json["records_sms_notifications"]
+            request.json["records_sms_notifications"],
+            request.json["records_requester_name"],
+            request.json["records_requester_telephone"]
         )
        
         Record = Record_Model()
@@ -1008,25 +1014,34 @@ def createLabRecord(record_id: int) -> None:
         lab_id = Record.create_lab(*payload)
 
         Contact = Contact_Model()
-
+        
         Sms = SMS_Model()
+
+        def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
+            """
+            """
+            Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
+            Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
+            Sms.send_client(contacts=contacts['client'])
+
+            return None
 
         logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
         if request.json["lab_result_type"] == "positive":
-            contacts = Contact.lab(record_id=record_id, sms_notification_type="positive,all")
+            contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
 
             @after_this_request
             def send_sms(response):
-                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': int(lab_id), 'contacts': contacts})
                 thread.start()
                 return response
 
         elif request.json["lab_result_type"] == "negative":
-            contacts = Contact.lab(record_id=record_id, sms_notification_type="all")
+            contacts = Contact.all(record_id=record_id, sms_notification_type="all")
 
             @after_this_request
             def send_sms(response):
-                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': int(lab_id), 'contacts': contacts})
                 thread.start()
                 return response
         else:
@@ -1138,22 +1153,31 @@ def updateLabRecord(lab_id: int) -> None:
         
         Sms = SMS_Model()
 
+        def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
+            """
+            """
+            Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
+            Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
+            Sms.send_client(contacts=contacts['client'])
+
+            return None
+
         logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
         if request.json["lab_result_type"] == "positive":
-            contacts = Contact.lab(record_id=record_id, sms_notification_type="positive,all")
+            contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
 
             @after_this_request
             def send_sms(response):
-                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
                 thread.start()
                 return response
 
         elif request.json["lab_result_type"] == "negative":
-            contacts = Contact.lab(record_id=record_id, sms_notification_type="all")
+            contacts = Contact.all(record_id=record_id, sms_notification_type="all")
 
             @after_this_request
             def send_sms(response):
-                thread = Thread(target=Sms.send_lab, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
                 thread.start()
                 return response
         else:

@@ -35,7 +35,7 @@ class Record_Model:
 
     # record
 
-    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool) -> str:
+    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
         """
         Create a new record.
 
@@ -73,7 +73,9 @@ class Record_Model:
             records_tb_treatment_history_contact_of_tb_patient: str,
             records_tb_type: str,
             records_tb_treatment_number: str,
-            records_sms_notifications: bool
+            records_sms_notifications: bool,
+            records_requester_name: str,
+            records_requester_telephone: str
         
         Returns:
             str
@@ -118,6 +120,8 @@ class Record_Model:
                 records_tb_type=records_tb_type,
                 records_tb_treatment_number=records_tb_treatment_number,
                 records_sms_notifications=records_sms_notifications,
+                records_requester_name= data.encrypt(records_requester_name)["e_data"],
+                records_requester_telephone= data.encrypt(records_requester_telephone)["e_data"],
                 iv = data.iv
             )
 
@@ -132,7 +136,7 @@ class Record_Model:
             logger.error("creating record %d failed check logs" % records_user_id)
             raise InternalServerError(err) from None
 
-    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool) -> str:
+    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
         """
         Update a record.
 
@@ -170,7 +174,9 @@ class Record_Model:
             records_tb_treatment_history_contact_of_tb_patient: str,
             records_tb_type: str,
             records_tb_treatment_number: str,
-            records_sms_notifications: bool
+            records_sms_notifications: bool,
+            records_requester_name: str,
+            records_requester_telephone: str
         
         Returns:
             str
@@ -214,6 +220,8 @@ class Record_Model:
                 records_tb_type=records_tb_type,
                 records_tb_treatment_number=records_tb_treatment_number,
                 records_sms_notifications=records_sms_notifications,
+                records_requester_name= data.encrypt(records_requester_name)["e_data"],
+                records_requester_telephone= data.encrypt(records_requester_telephone)["e_data"],
                 iv = data.iv
             ).where(
                 self.Records.record_id == record_id
@@ -301,7 +309,9 @@ class Record_Model:
                         'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(record['records_tb_treatment_history_contact_of_tb_patient'], iv),
                         'records_tb_type':record['records_tb_type'],
                         'records_tb_treatment_number':record['records_tb_treatment_number'],
-                        'records_sms_notifications':record['records_sms_notifications']
+                        'records_sms_notifications':record['records_sms_notifications'],
+                        'records_requester_name': data.decrypt(record['records_requester_name'], iv),
+                        'records_requester_telephone': data.decrypt(record['records_requester_telephone'], iv)
                     })
                 else:
                     result.append({
@@ -340,7 +350,9 @@ class Record_Model:
                         'records_tb_treatment_history_contact_of_tb_patient':record['records_tb_treatment_history_contact_of_tb_patient'],
                         'records_tb_type':record['records_tb_type'],
                         'records_tb_treatment_number':record['records_tb_treatment_number'],
-                        'records_sms_notifications':record['records_sms_notifications']
+                        'records_sms_notifications':record['records_sms_notifications'],
+                        'records_requester_name': record['records_requester_name'],
+                        'records_requester_telephone': record['records_requester_telephone']
                     })
 
             logger.info("- Successfully found records with site_id = %s & region_id = %s requested by user_id = %s" % (site_id, region_id, records_user_id))
@@ -648,7 +660,7 @@ class Record_Model:
             )
 
             logger.info("- Lab record %s successfully created" % lab)
-            return int(lab)
+            return str(lab)
 
         except OperationalError as error:
             logger.error(error)
