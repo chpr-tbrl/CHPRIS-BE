@@ -926,7 +926,8 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_dst_ofloxacin":"string",
     "lab_dst_levofloxacinekanamycin":"string",
     "lab_dst_moxifloxacinekanamycin":"string",
-    "lab_dst_amikacinekanamycin":"string"
+    "lab_dst_amikacinekanamycin":"string",
+    "lab_result_type":"string"
 }
 ```
 
@@ -984,7 +985,8 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_dst_ofloxacin":"string",
     "lab_dst_levofloxacinekanamycin":"string",
     "lab_dst_moxifloxacinekanamycin":"string",
-    "lab_dst_amikacinekanamycin":"string"
+    "lab_dst_amikacinekanamycin":"string",
+    "lab_result_type":"string"
 }
 ```
 
