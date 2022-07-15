@@ -668,7 +668,9 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records
     "records_tb_treatment_history_contact_of_tb_patient":"string",
     "records_tb_type":"string",
     "records_tb_treatment_number":"string",
-    "records_sms_notifications":"boolean"
+    "records_sms_notifications":"boolean",
+    "records_requester_name": "string",
+    "records_requester_telephone": "string"
 }
 ```
 
@@ -725,7 +727,9 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records/{{record_id}}
     "records_tb_treatment_history_contact_of_tb_patient":"string",
     "records_tb_type":"string",
     "records_tb_treatment_number":"string",
-    "records_sms_notifications":"boolean"
+    "records_sms_notifications":"boolean",
+    "records_requester_name": "string",
+    "records_requester_telephone": "string"
 }
 ```
 
