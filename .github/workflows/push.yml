@@ -16,7 +16,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          cd /var/ww/repos/CHPR-BE
+          cd /var/www/repos/CHPRIS-BE
           git pull origin testing
           . venv/bin/activate
           pip3 install -r requirements.txt
