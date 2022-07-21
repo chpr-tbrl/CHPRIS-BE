@@ -2255,3 +2255,54 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
     except Exception as err:
         logger.exception(err)
         return "internal server error", 500
+
+@v1.route("/logout", methods=["POST"])
+def logout() -> None:
+    """
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session = Session_Model()
+
+        Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        res = Response()
+
+        res.delete_cookie(cookie_name)
+
+        logger.info("- Successfully cleared cookie")
+
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
