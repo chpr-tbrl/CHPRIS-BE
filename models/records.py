@@ -616,7 +616,7 @@ class Record_Model:
 
     # labs
 
-    def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str) -> int:
+    def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str) -> int:
         """
         """
         try:
@@ -635,6 +635,9 @@ class Record_Model:
                 lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result,
                 lab_xpert_mtb_rif_assay_grades=lab_xpert_mtb_rif_assay_grades,
                 lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result,
+                lab_xpert_mtb_rif_assay_result_2=lab_xpert_mtb_rif_assay_result_2,
+                lab_xpert_mtb_rif_assay_grades_2=lab_xpert_mtb_rif_assay_grades_2,
+                lab_xpert_mtb_rif_assay_rif_result_2=lab_xpert_mtb_rif_assay_rif_result_2,
                 lab_xpert_mtb_rif_assay_date=lab_xpert_mtb_rif_assay_date,
                 lab_xpert_mtb_rif_assay_done_by=lab_xpert_mtb_rif_assay_done_by,
                 lab_urine_lf_lam_result=lab_urine_lf_lam_result,
@@ -674,7 +677,7 @@ class Record_Model:
             logger.error("creating Lab record %s failed check logs" % lab)
             raise InternalServerError(err) from None
 
-    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str) -> int:
+    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str) -> int:
         """
         """
         try:
@@ -691,6 +694,9 @@ class Record_Model:
                 lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result,
                 lab_xpert_mtb_rif_assay_grades=lab_xpert_mtb_rif_assay_grades,
                 lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result,
+                lab_xpert_mtb_rif_assay_result_2=lab_xpert_mtb_rif_assay_result_2,
+                lab_xpert_mtb_rif_assay_grades_2=lab_xpert_mtb_rif_assay_grades_2,
+                lab_xpert_mtb_rif_assay_rif_result_2=lab_xpert_mtb_rif_assay_rif_result_2,
                 lab_xpert_mtb_rif_assay_date=lab_xpert_mtb_rif_assay_date,
                 lab_xpert_mtb_rif_assay_done_by=lab_xpert_mtb_rif_assay_done_by,
                 lab_urine_lf_lam_result=lab_urine_lf_lam_result,
