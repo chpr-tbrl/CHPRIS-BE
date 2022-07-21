@@ -8,18 +8,20 @@ Manage Users, Sites and Records endpoints
   1. [Signup](#1-signup)
   1. [Login](#2-login)
   1. [Admin login](#3-admin-login)
-  1. [Fetch profile](#4-fetch-profile)
-  1. [Fetch admin profile](#5-fetch-admin-profile)
-  1. [Update profile](#6-update-profile)
-  1. [Update admins profile](#7-update-admins-profile)
-  1. [Fetch all users](#8-fetch-all-users)
-  1. [Fetch a user](#9-fetch-a-user)
-  1. [Update a user](#10-update-a-user)
-  1. [Update account status](#11-update-account-status)
-  1. [Update password](#12-update-password)
-  1. [Update admin password](#13-update-admin-password)
-  1. [Add sites](#14-add-sites)
-  1. [Remove sites](#15-remove-sites)
+  1. [Admin logout](#4-admin-logout)
+  1. [Logout](#5-logout)
+  1. [Fetch profile](#6-fetch-profile)
+  1. [Fetch admin profile](#7-fetch-admin-profile)
+  1. [Update profile](#8-update-profile)
+  1. [Update admins profile](#9-update-admins-profile)
+  1. [Fetch all users](#10-fetch-all-users)
+  1. [Fetch a user](#11-fetch-a-user)
+  1. [Update a user](#12-update-a-user)
+  1. [Update account status](#13-update-account-status)
+  1. [Update password](#14-update-password)
+  1. [Update admin password](#15-update-admin-password)
+  1. [Add sites](#16-add-sites)
+  1. [Remove sites](#17-remove-sites)
 - [Sites](#sites)
   1. [Create site](#1-create-site)
   1. [Update site](#2-update-site)
@@ -145,7 +147,45 @@ URL: {{domain}}/v1/admin/login
 }
 ```
 
-### 4. Fetch profile
+### 4. Admin logout
+
+Logout of admin account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/logout
+```
+
+### 5. Logout
+
+Logout of current account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/logout
+```
+
+### 6. Fetch profile
 
 Fetch currently authenticated user's account information.
 
@@ -164,7 +204,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/profile
 ```
 
-### 5. Fetch admin profile
+### 7. Fetch admin profile
 
 Fetch currently authenticated admin user's account information. Only permitted accounts can perform this action.
 
@@ -183,7 +223,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/profile
 ```
 
-### 6. Update profile
+### 8. Update profile
 
 Update currently authenticated user's account information.
 
@@ -214,7 +254,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 7. Update admins profile
+### 9. Update admins profile
 
 Update currently authenticated admin user's account information. Only permitted accounts can perform this action.
 
@@ -246,7 +286,7 @@ URL: {{domain}}/v1/admin/users
 }
 ```
 
-### 8. Fetch all users
+### 10. Fetch all users
 
 Fetch all users' account information. Only permitted accounts can perform this action.
 
@@ -266,7 +306,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users
 ```
 
-### 9. Fetch a user
+### 11. Fetch a user
 
 Fetch a user's account information. Only permitted accounts can perform this action.
 
@@ -286,7 +326,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users/{{user_id}}
 ```
 
-### 10. Update a user
+### 12. Update a user
 
 Update a user's account information. Only permitted accounts can perform this action.
 
@@ -319,7 +359,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 11. Update account status
+### 13. Update account status
 
 Update a user's account status. Only permitted accounts can perform this action.
 
@@ -347,7 +387,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 12. Update password
+### 14. Update password
 
 Update a user's password.
 
@@ -376,7 +416,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 13. Update admin password
+### 15. Update admin password
 
 Update admin user's password. Only permitted accounts can perform this action.
 
@@ -405,7 +445,7 @@ URL: {{domain}}/v1/admin/users
 }
 ```
 
-### 14. Add sites
+### 16. Add sites
 
 Add a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -431,7 +471,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}/sites
 [];
 ```
 
-### 15. Remove sites
+### 17. Remove sites
 
 Remove a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -561,7 +601,8 @@ URL: {{domain}}/v1/admin/regions
 
 ```js
 {
-    "name": "string"
+    "name": "string",
+    "region_code": "string"
 }
 ```
 
@@ -589,7 +630,8 @@ URL: {{domain}}/v1/admin/regions/{{region_id}}
 
 ```js
 {
-    "name": "string"
+    "name": "string",
+    "region_code":"string"
 }
 ```
 
@@ -909,6 +951,9 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_xpert_mtb_rif_assay_result":"string",
     "lab_xpert_mtb_rif_assay_grades":"string",
     "lab_xpert_mtb_rif_assay_rif_result":"string",
+    "lab_xpert_mtb_rif_assay_result_2":"string",
+    "lab_xpert_mtb_rif_assay_grades_2":"string",
+    "lab_xpert_mtb_rif_assay_rif_result_2":"string",
     "lab_xpert_mtb_rif_assay_date":"date",
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
@@ -968,6 +1013,9 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_xpert_mtb_rif_assay_result":"string",
     "lab_xpert_mtb_rif_assay_grades":"string",
     "lab_xpert_mtb_rif_assay_rif_result":"string",
+    "lab_xpert_mtb_rif_assay_result_2":"string",
+    "lab_xpert_mtb_rif_assay_grades_2":"string",
+    "lab_xpert_mtb_rif_assay_rif_result_2":"string",
     "lab_xpert_mtb_rif_assay_date":"date",
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
