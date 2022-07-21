@@ -26,6 +26,7 @@ from controllers.sync_database import create_super_admin
 from controllers.SSL import isSSL
 
 from schemas.migration import migrate_labs
+from schemas.migration import migrate_regions
 
 app = Flask(__name__)
 
@@ -39,6 +40,7 @@ create_database()
 create_tables()
 
 migrate_labs()
+migrate_regions()
 
 create_super_admin()
 

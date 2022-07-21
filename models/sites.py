@@ -19,7 +19,7 @@ class Site_Model:
         self.Sites = Sites
         self.Regions = Regions
 
-    def create_region(self, name: str) -> str:
+    def create_region(self, name: str, region_code: str) -> str:
         """
         Add region to database.
 
@@ -35,7 +35,7 @@ class Site_Model:
             except self.Regions.DoesNotExist:
                 logger.debug("creating region '%s' ..." % name)
 
-                region = self.Regions.create(name=name)
+                region = self.Regions.create(name=name, region_code=region_code)
 
                 logger.info("- Region '%s' successfully created" % name)
                 return str(region)
@@ -47,7 +47,7 @@ class Site_Model:
             logger.error("creating region '%s' failed check logs" % name)
             raise InternalServerError(err) from None
 
-    def update_region(self, region_id:int, name: str) -> int:
+    def update_region(self, region_id:int, name: str, region_code: str) -> int:
         """
         Update region.
 
@@ -60,7 +60,8 @@ class Site_Model:
         """
         try:
             region = self.Regions.update(
-                name = name
+                name = name,
+                region_code=region_code
             ).where(
                 self.Regions.id == region_id
             )

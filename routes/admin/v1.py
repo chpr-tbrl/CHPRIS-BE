@@ -542,6 +542,7 @@ def createRegion() -> None:
 
     Body:
         name: str,
+        region_code: str
 
     Response:
         200: None
@@ -557,6 +558,9 @@ def createRegion() -> None:
             raise BadRequest()
         elif not "name" in request.json or not request.json["name"]:
             logger.error("no name")
+            raise BadRequest()
+        elif not "region_code" in request.json or not request.json["region_code"]:
+            logger.error("no region_code")
             raise BadRequest()
 
         cookie = Cookie()
@@ -578,10 +582,11 @@ def createRegion() -> None:
         User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
+        region_code = request.json["region_code"]
 
         Site = Site_Model()
 
-        Site.create_region(name=name)
+        Site.create_region(name=name, region_code=region_code)
 
         res = jsonify()
 
@@ -667,10 +672,11 @@ def updateRegion(region_id) -> None:
         User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
+        region_code = request.json["region_code"]
 
         Site = Site_Model()
 
-        Site.update_region(region_id=region_id, name=name)
+        Site.update_region(region_id=region_id, name=name, region_code=region_code)
 
         res = jsonify()
 

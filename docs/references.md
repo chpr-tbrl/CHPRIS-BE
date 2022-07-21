@@ -561,7 +561,8 @@ URL: {{domain}}/v1/admin/regions
 
 ```js
 {
-    "name": "string"
+    "name": "string",
+    "region_code": "string"
 }
 ```
 
@@ -589,7 +590,8 @@ URL: {{domain}}/v1/admin/regions/{{region_id}}
 
 ```js
 {
-    "name": "string"
+    "name": "string",
+    "region_code":"string"
 }
 ```
 

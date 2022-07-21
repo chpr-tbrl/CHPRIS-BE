@@ -6,4 +6,5 @@ from datetime import datetime
 
 class Regions(BaseModel):
     name = CharField(null=True, unique=True)
+    region_code = CharField(null=True, unique=True)
     createdAt = DateTimeField(null=True, default=datetime.now)
