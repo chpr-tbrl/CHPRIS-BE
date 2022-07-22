@@ -33,113 +33,27 @@ class Export_Model:
         """
         """
         try:
-            field_names = [
-                'record_id',
-                'site_id',
-                'region_id',
-                'records_user_id',
-                'records_date',
-                'records_name',
-                'records_age',
-                'records_sex',
-                'records_date_of_test_request',
-                'records_address',
-                'records_telephone',
-                'records_telephone_2',
-                'records_has_art_unique_code',
-                'records_art_unique_code',
-                'records_status',
-                'records_ward_bed_number',
-                'records_currently_pregnant',
-                'records_symptoms_current_cough',
-                'records_symptoms_fever',
-                'records_symptoms_night_sweats',
-                'records_symptoms_weight_loss',
-                'records_symptoms_none_of_the_above',
-                'records_patient_category_hospitalized',
-                'records_patient_category_child',
-                'records_patient_category_to_initiate_art',
-                'records_patient_category_on_art_symptomatic',
-                'records_patient_category_outpatient',
-                'records_patient_category_anc',
-                'records_patient_category_diabetes_clinic',
-                'records_patient_category_other',
-                'records_reason_for_test_presumptive_tb',
-                'records_tb_treatment_history',
-                'records_tb_treatment_history_contact_of_tb_patient',
-                'records_tb_type',
-                'records_tb_treatment_number',
-                'records_sms_notifications',
+            field_names = []
 
-                'specimen_collection_user_id',
-                'specimen_collection_1_date',
-                'specimen_collection_1_specimen_collection_type',
-                'specimen_collection_1_other',
-                'specimen_collection_1_period',
-                'specimen_collection_1_aspect',
-                'specimen_collection_1_received_by',
-                'specimen_collection_2_date',
-                'specimen_collection_2_specimen_collection_type',
-                'specimen_collection_2_other',
-                'specimen_collection_2_period',
-                'specimen_collection_2_aspect',
-                'specimen_collection_2_received_by',
+            for record_names in self.Records._meta.fields.keys():
+                field_names.append(record_names)
 
-                'lab_user_id',
-                'lab_date_specimen_collection_received',
-                'lab_received_by',
-                'lab_registration_number',
-                'lab_smear_microscopy_result_result_1',
-                'lab_smear_microscopy_result_result_2',
-                'lab_smear_microscopy_result_date',
-                'lab_smear_microscopy_result_done_by',
-                'lab_xpert_mtb_rif_assay_result',
-                'lab_xpert_mtb_rif_assay_grades',
-                'lab_xpert_mtb_rif_assay_rif_result',
-                'lab_xpert_mtb_rif_assay_result_2',
-                'lab_xpert_mtb_rif_assay_grades_2',
-                'lab_xpert_mtb_rif_assay_rif_result_2',
-                'lab_xpert_mtb_rif_assay_date',
-                'lab_xpert_mtb_rif_assay_done_by',
-                'lab_urine_lf_lam_result',
-                'lab_urine_lf_lam_date',
-                'lab_urine_lf_lam_done_by',
-                'lab_culture_mgit_culture',
-                'lab_culture_lj_culture',
-                'lab_lpa_mtbdrplus_isoniazid',
-                'lab_lpa_mtbdrplus_rifampin',
-                'lab_lpa_mtbdrs_flouoroquinolones',
-                'lab_lpa_mtbdrs_kanamycin',
-                'lab_lpa_mtbdrs_amikacin',
-                'lab_lpa_mtbdrs_capreomycin',
-                'lab_lpa_mtbdrs_low_level_kanamycin',
-                'lab_dst_isonazid',
-                'lab_dst_rifampin',
-                'lab_dst_ethambutol',
-                'lab_dst_kanamycin',
-                'lab_dst_ofloxacin',
-                'lab_dst_levofloxacinekanamycin',
-                'lab_dst_moxifloxacinekanamycin',
-                'lab_dst_amikacinekanamycin',
+            for specimen_collections_names in self.Specimen_collections._meta.fields.keys():
+                field_names.append(specimen_collections_names)
 
-                'follow_up_user_id',
-                'follow_up_xray',
-                'follow_up_amoxicillin',
-                'follow_up_other_antibiotic',
-                'follow_up_schedule_date',
-                'follow_up_comments',
+            for labs_names in self.Labs._meta.fields.keys():
+                field_names.append(labs_names)
 
-                'outcome_recorded_user_id',
-                'outcome_recorded_started_tb_treatment_outcome',
-                'outcome_recorded_tb_rx_number',
-                'outcome_recorded_other',
-                'outcome_recorded_comments',
+            for follow_ups_names in self.Follow_ups._meta.fields.keys():
+                field_names.append(follow_ups_names)
 
-                'tb_treatment_outcome_user_id',
-                'tb_treatment_outcome_result',
-                'tb_treatment_outcome_comments',
-                'tb_treatment_outcome_close_patient_file',
-            ]
+            for outcome_recorded_names in self.Outcome_recorded._meta.fields.keys():
+                field_names.append(outcome_recorded_names)
+
+            for tb_treatment_outcomes_names in self.Tb_treatment_outcomes._meta.fields.keys():
+                field_names.append(tb_treatment_outcomes_names)
+
+            print(field_names)
 
             if not os.path.exists("datasets/"):
                     os.makedirs("datasets/")
@@ -471,7 +385,7 @@ class Export_Model:
             return "%s/%s" % ("/downloads", export_file)
 
         except Exception as error:
-            raise InternalServerError(error) from None
+            raise InternalServerError(error)
 
     def purge(self, max_days:int) -> None:
         """
