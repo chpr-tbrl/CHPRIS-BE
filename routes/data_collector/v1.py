@@ -2216,9 +2216,14 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
 
         Export = Export_Model()
         
-        download_path = Export.records(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
+        if format == "csv":
+            download_path = Export.csv(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
 
-        res = Response(download_path)
+            res = Response(download_path)
+        elif format == "pdf":
+            pdf_data = Export.pdf(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
+
+            res = jsonify(pdf_data)
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
