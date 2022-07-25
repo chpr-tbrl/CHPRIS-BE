@@ -2,6 +2,11 @@ from cgi import print_exception
 import logging
 logger = logging.getLogger(__name__)
 
+from Configs import baseConfig
+
+config = baseConfig()
+export = config["EXPORT"]
+
 from security.data import Data
 
 from schemas.records.records import Records
@@ -61,7 +66,12 @@ class Export_Model:
             date_time = now.strftime("%m-%d-%Y-%H_%M_%S")
 
             export_file = '%s_record_export.csv' % date_time
-            export_filepath = os.path.join('datasets', export_file)
+
+            if not os.path.exists("%s/datasets" % export["PATH"]):
+                error_msg = "dataset directory not found at '%s'" % export["PATH"]
+                raise FileNotFoundError(error_msg)
+
+            export_filepath = os.path.join("%s/datasets" % export["PATH"], export_file)
             
             logger.debug("Gathering data ...")
             if region_id == "all" and site_id == "all":
@@ -717,12 +727,12 @@ class Export_Model:
         try:
             logger.debug("removing export files older than %d day(s) ..." % max_days)
 
-            export_filepath = os.path.abspath('datasets')
+            export_filepath = os.path.join("%s/datasets" % export["PATH"])
             date_limit = datetime.now() - timedelta(max_days)
             files = os.listdir(export_filepath)
 
             for file in files:
-                file_path = os.path.abspath(os.path.join("datasets", file))
+                file_path = os.path.join("%s/datasets" % export["PATH"], file)
                 filetime = datetime.fromtimestamp(os.path.getctime(file_path))
             
                 if filetime < date_limit:
