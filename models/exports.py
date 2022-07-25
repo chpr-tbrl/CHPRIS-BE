@@ -1,3 +1,4 @@
+from cgi import print_exception
 import logging
 logger = logging.getLogger(__name__)
 
@@ -56,14 +57,11 @@ class Export_Model:
             for tb_treatment_outcomes_names in self.Tb_treatment_outcomes._meta.fields.keys():
                 field_names.append(tb_treatment_outcomes_names)
 
-            if not os.path.exists("datasets/"):
-                    os.makedirs("datasets/")
-
             now = datetime.now()
             date_time = now.strftime("%m-%d-%Y-%H_%M_%S")
 
             export_file = '%s_record_export.csv' % date_time
-            export_filepath = os.path.abspath(os.path.join('datasets', export_file))
+            export_filepath = os.path.join('datasets', export_file)
             
             logger.debug("Gathering data ...")
             if region_id == "all" and site_id == "all":
@@ -88,6 +86,8 @@ class Export_Model:
                     ).dicts()
 
             logger.debug("exporting data please wait ...")
+
+            logger.info("export path: %s" % export_filepath)
 
             with open(export_filepath, 'w') as fh:
                 writer = csv.DictWriter(fh, fieldnames=field_names)
