@@ -60,7 +60,7 @@ class Export_Model:
                     os.makedirs("datasets/")
 
             now = datetime.now()
-            date_time = now.strftime("%m-%d-%Y-%H:%M:%S")
+            date_time = now.strftime("%m-%d-%Y-%H_%M_%S")
 
             export_file = '%s_record_export.csv' % date_time
             export_filepath = os.path.abspath(os.path.join('datasets', export_file))
