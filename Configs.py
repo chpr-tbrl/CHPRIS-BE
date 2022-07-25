@@ -25,5 +25,6 @@ def baseConfig() -> dict:
         "API": config["API"],
         "SSL_API": config["SSL_API"],
         "SUPER_ADMIN": config["SUPER_ADMIN"],
-        "SMSWITHOUTBORDERS": config["SMSWITHOUTBORDERS"]
+        "SMSWITHOUTBORDERS": config["SMSWITHOUTBORDERS"],
+        "EXPORT": config["EXPORT"]
     }
