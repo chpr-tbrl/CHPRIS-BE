@@ -210,51 +210,6 @@ def login() -> dict:
 def createRecord(region_id: int, site_id: int) -> None:
     """
     Create a new record.
-
-    Parameters:
-        region_id: int,
-        site_id: int
-
-    Body:
-        records_name: str,
-        records_age: int,
-        records_sex: str,
-        records_date_of_test_request: str,
-        records_address: str,
-        records_telephone: str,
-        records_telephone_2: str,
-        records_has_art_unique_code: str,
-        records_art_unique_code: str,
-        records_status: str,
-        records_ward_bed_number: str,
-        records_currently_pregnant: str,
-        records_symptoms_current_cough: str,
-        records_symptoms_fever: bool,
-        records_symptoms_night_sweats: bool,
-        records_symptoms_weight_loss: bool,
-        records_symptoms_none_of_the_above: bool,
-        records_patient_category_hospitalized: bool,
-        records_patient_category_child: bool,
-        records_patient_category_to_initiate_art: bool,
-        records_patient_category_on_art_symptomatic: bool,
-        records_patient_category_outpatient: bool,
-        records_patient_category_anc: bool,
-        records_patient_category_diabetes_clinic: bool,
-        records_patient_category_other: str,
-        records_reason_for_test_presumptive_tb: bool,
-        records_tb_treatment_history: str,
-        records_tb_treatment_history_contact_of_tb_patient: str,
-        records_tb_type: str,
-        records_tb_treatment_number: str,
-        records_sms_notifications: bool,
-        records_requester_name: str,
-        records_requester_telephone: str
-    
-    Response:
-        200: None,
-        400: str,
-        401: str,
-        500: str
     """
     try:
         if not request.cookies.get(cookie_name):
@@ -310,10 +265,12 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_patient_category_outpatient"],
             request.json["records_patient_category_anc"],
             request.json["records_patient_category_diabetes_clinic"],
+            request.json["records_patient_category_prisoner"],
             request.json["records_patient_category_other"],
             request.json["records_reason_for_test_presumptive_tb"],
             request.json["records_tb_treatment_history"],
             request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_treatment_history_other"],
             request.json["records_tb_type"],
             request.json["records_tb_treatment_number"],
             request.json["records_sms_notifications"],
@@ -415,10 +372,12 @@ def updateRecord(region_id: int, site_id: int, record_id: int) -> None:
             request.json["records_patient_category_outpatient"],
             request.json["records_patient_category_anc"],
             request.json["records_patient_category_diabetes_clinic"],
+            request.json["records_patient_category_prisoner"],
             request.json["records_patient_category_other"],
             request.json["records_reason_for_test_presumptive_tb"],
             request.json["records_tb_treatment_history"],
             request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_treatment_history_other"],
             request.json["records_tb_type"],
             request.json["records_tb_treatment_number"],
             request.json["records_sms_notifications"],
