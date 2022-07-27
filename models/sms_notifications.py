@@ -49,6 +49,9 @@ class SMS_Model:
                     self.Labs.lab_xpert_mtb_rif_assay_result,
                     self.Labs.lab_xpert_mtb_rif_assay_grades,
                     self.Labs.lab_xpert_mtb_rif_assay_rif_result,
+                    self.Labs.lab_xpert_mtb_rif_assay_result_2,
+                    self.Labs.lab_xpert_mtb_rif_assay_grades_2,
+                    self.Labs.lab_xpert_mtb_rif_assay_rif_result_2,
                     self.Labs.lab_urine_lf_lam_result
                 )
                 .where(
@@ -73,6 +76,9 @@ class SMS_Model:
                     "lab_xpert_mtb_rif_assay_result": record.labs.lab_xpert_mtb_rif_assay_result,
                     "lab_xpert_mtb_rif_assay_grades": record.labs.lab_xpert_mtb_rif_assay_grades,
                     "lab_xpert_mtb_rif_assay_rif_result": record.labs.lab_xpert_mtb_rif_assay_rif_result,
+                    "lab_xpert_mtb_rif_assay_result_2": record.labs.lab_xpert_mtb_rif_assay_result_2,
+                    "lab_xpert_mtb_rif_assay_grades_2": record.labs.lab_xpert_mtb_rif_assay_grades_2,
+                    "lab_xpert_mtb_rif_assay_rif_result_2": record.labs.lab_xpert_mtb_rif_assay_rif_result_2,
                     "lab_urine_lf_lam_result": record.labs.lab_urine_lf_lam_result
                 })
 
@@ -84,6 +90,9 @@ class SMS_Model:
             lab_xpert_mtb_rif_assay_result = result[0]["lab_xpert_mtb_rif_assay_result"]
             lab_xpert_mtb_rif_assay_grades = result[0]["lab_xpert_mtb_rif_assay_grades"]
             lab_xpert_mtb_rif_assay_rif_result = result[0]["lab_xpert_mtb_rif_assay_rif_result"]
+            lab_xpert_mtb_rif_assay_result_2 = result[0]["lab_xpert_mtb_rif_assay_result_2"]
+            lab_xpert_mtb_rif_assay_grades_2 = result[0]["lab_xpert_mtb_rif_assay_grades_2"]
+            lab_xpert_mtb_rif_assay_rif_result_2 = result[0]["lab_xpert_mtb_rif_assay_rif_result_2"]
             lab_urine_lf_lam_result = result[0]["lab_urine_lf_lam_result"]
             info_line = "670656041"
             
@@ -99,20 +108,37 @@ class SMS_Model:
             else:
                 smr_result = lab_smear_microscopy_result_result_2
 
+            if lab_xpert_mtb_rif_assay_result_2 in ["detected"]:
+                xpert_result = lab_xpert_mtb_rif_assay_result_2
+                xpert_grade = lab_xpert_mtb_rif_assay_grades_2
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result_2
+            elif lab_xpert_mtb_rif_assay_result in ["detected"]:
+                xpert_result = lab_xpert_mtb_rif_assay_result
+                xpert_grade = lab_xpert_mtb_rif_assay_grades
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result
+            elif lab_xpert_mtb_rif_assay_result_2 in ["not_done"]:
+                xpert_result = lab_xpert_mtb_rif_assay_result
+                xpert_grade = lab_xpert_mtb_rif_assay_grades
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result
+            else:
+                xpert_result = lab_xpert_mtb_rif_assay_result_2
+                xpert_grade = lab_xpert_mtb_rif_assay_grades_2
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result_2
+
             logger.debug("lab_smear_microscopy_result_result_1: %s" % lab_smear_microscopy_result_result_1)
             logger.debug("lab_smear_microscopy_result_result_2: %s" % lab_smear_microscopy_result_result_2)
             logger.debug("smr_result: %s" % smr_result)
 
-            if lab_xpert_mtb_rif_assay_result in ["detected"]:
-                grade = lab_xpert_mtb_rif_assay_grades
+            if xpert_result in ["detected"]:
+                grade = xpert_grade
             else:
                 grade = None
 
-            logger.debug("lab_xpert_mtb_rif_assay_result: %s" % lab_xpert_mtb_rif_assay_result)
-            logger.debug("lab_xpert_mtb_rif_assay_grades: %s" % lab_xpert_mtb_rif_assay_grades)
+            logger.debug("lab_xpert_mtb_rif_assay_result: %s" % xpert_result)
+            logger.debug("lab_xpert_mtb_rif_assay_grades: %s" % xpert_grade)
             logger.debug("grade: %s" % grade)
 
-            sms_result = self.__lab_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
+            sms_result = self.__lab_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=xpert_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
 
             logger.debug("SMS_result: %s" % sms_result)
             
@@ -141,6 +167,9 @@ class SMS_Model:
                     self.Labs.lab_xpert_mtb_rif_assay_result,
                     self.Labs.lab_xpert_mtb_rif_assay_grades,
                     self.Labs.lab_xpert_mtb_rif_assay_rif_result,
+                    self.Labs.lab_xpert_mtb_rif_assay_result_2,
+                    self.Labs.lab_xpert_mtb_rif_assay_grades_2,
+                    self.Labs.lab_xpert_mtb_rif_assay_rif_result_2,
                     self.Labs.lab_urine_lf_lam_result
                 )
                 .where(
@@ -165,6 +194,9 @@ class SMS_Model:
                     "lab_xpert_mtb_rif_assay_result": record.labs.lab_xpert_mtb_rif_assay_result,
                     "lab_xpert_mtb_rif_assay_grades": record.labs.lab_xpert_mtb_rif_assay_grades,
                     "lab_xpert_mtb_rif_assay_rif_result": record.labs.lab_xpert_mtb_rif_assay_rif_result,
+                    "lab_xpert_mtb_rif_assay_result_2": record.labs.lab_xpert_mtb_rif_assay_result_2,
+                    "lab_xpert_mtb_rif_assay_grades_2": record.labs.lab_xpert_mtb_rif_assay_grades_2,
+                    "lab_xpert_mtb_rif_assay_rif_result_2": record.labs.lab_xpert_mtb_rif_assay_rif_result_2,
                     "lab_urine_lf_lam_result": record.labs.lab_urine_lf_lam_result
                 })
 
@@ -176,6 +208,9 @@ class SMS_Model:
             lab_xpert_mtb_rif_assay_result = result[0]["lab_xpert_mtb_rif_assay_result"]
             lab_xpert_mtb_rif_assay_grades = result[0]["lab_xpert_mtb_rif_assay_grades"]
             lab_xpert_mtb_rif_assay_rif_result = result[0]["lab_xpert_mtb_rif_assay_rif_result"]
+            lab_xpert_mtb_rif_assay_result_2 = result[0]["lab_xpert_mtb_rif_assay_result_2"]
+            lab_xpert_mtb_rif_assay_grades_2 = result[0]["lab_xpert_mtb_rif_assay_grades_2"]
+            lab_xpert_mtb_rif_assay_rif_result_2 = result[0]["lab_xpert_mtb_rif_assay_rif_result_2"]
             lab_urine_lf_lam_result = result[0]["lab_urine_lf_lam_result"]
             info_line = "670656041"
             
@@ -191,20 +226,37 @@ class SMS_Model:
             else:
                 smr_result = lab_smear_microscopy_result_result_2
 
+            if lab_xpert_mtb_rif_assay_result_2 in ["detected"]:
+                xpert_result = lab_xpert_mtb_rif_assay_result_2
+                xpert_grade = lab_xpert_mtb_rif_assay_grades_2
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result_2
+            elif lab_xpert_mtb_rif_assay_result in ["detected"]:
+                xpert_result = lab_xpert_mtb_rif_assay_result
+                xpert_grade = lab_xpert_mtb_rif_assay_grades
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result
+            elif lab_xpert_mtb_rif_assay_result_2 in ["not_done"]:
+                xpert_result = lab_xpert_mtb_rif_assay_result
+                xpert_grade = lab_xpert_mtb_rif_assay_grades
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result
+            else:
+                xpert_result = lab_xpert_mtb_rif_assay_result_2
+                xpert_grade = lab_xpert_mtb_rif_assay_grades_2
+                xpert_rif_result = lab_xpert_mtb_rif_assay_rif_result_2
+
             logger.debug("lab_smear_microscopy_result_result_1: %s" % lab_smear_microscopy_result_result_1)
             logger.debug("lab_smear_microscopy_result_result_2: %s" % lab_smear_microscopy_result_result_2)
             logger.debug("smr_result: %s" % smr_result)
 
-            if lab_xpert_mtb_rif_assay_result in ["detected"]:
-                grade = lab_xpert_mtb_rif_assay_grades
+            if xpert_result in ["detected"]:
+                grade = xpert_grade
             else:
                 grade = None
 
-            logger.debug("lab_xpert_mtb_rif_assay_result: %s" % lab_xpert_mtb_rif_assay_result)
-            logger.debug("lab_xpert_mtb_rif_assay_grades: %s" % lab_xpert_mtb_rif_assay_grades)
+            logger.debug("lab_xpert_mtb_rif_assay_result: %s" % xpert_result)
+            logger.debug("lab_xpert_mtb_rif_assay_grades: %s" % xpert_grade)
             logger.debug("grade: %s" % grade)
 
-            sms_result = self.__requester_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
+            sms_result = self.__requester_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=xpert_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
 
             logger.debug("SMS_result: %s" % sms_result)
             
