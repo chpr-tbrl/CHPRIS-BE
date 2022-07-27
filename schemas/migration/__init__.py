@@ -7,7 +7,7 @@ from playhouse.migrate import migrate
 from peewee import OperationalError
 
 from schemas.records.baseModel import records_db
-from schemas.records.lab import Labs
+from schemas.records.records import Records
 
 from schemas.sites.baseModel import sites_db
 from schemas.sites.regions import Regions
@@ -15,32 +15,19 @@ from schemas.sites.regions import Regions
 record_migrator = MySQLMigrator(records_db)
 site_migrator = MySQLMigrator(sites_db)
 
-def migrate_labs() -> None:
+def migrate_records() -> None:
     """
     """
     try:
-        logger.debug("Starting labs schema migration ...")
+        logger.debug("Starting records schema migration ...")
         migrate(
-            record_migrator.add_column('labs', 'lab_xpert_mtb_rif_assay_result_2', Labs.lab_xpert_mtb_rif_assay_result_2),
-            record_migrator.add_column('labs', 'lab_xpert_mtb_rif_assay_grades_2', Labs.lab_xpert_mtb_rif_assay_grades_2),
-            record_migrator.add_column('labs', 'lab_xpert_mtb_rif_assay_rif_result_2', Labs.lab_xpert_mtb_rif_assay_rif_result_2),
+            record_migrator.drop_column('records', 'records_tb_treatment_history_contact_of_tb_patient'),
+            record_migrator.add_column('records', 'records_tb_treatment_history_contact_of_tb_patient', Records.records_tb_treatment_history_contact_of_tb_patient),
+            record_migrator.add_column('records', 'records_tb_treatment_history_other', Records.records_tb_treatment_history_other),
+            record_migrator.add_column('records', 'records_patient_category_prisoner', Records.records_patient_category_prisoner),
         )
 
-        logger.info("- Successfully migrated labs schema")
-
-    except OperationalError as error:
-        logger.error(error)
-
-def migrate_regions() -> None:
-    """
-    """
-    try:
-        logger.debug("Starting regions schema migration ...")
-        migrate(
-            site_migrator.add_column('regions', 'region_code', Regions.region_code),
-        )
-
-        logger.info("- Successfully migrated regions schema")
+        logger.info("- Successfully migrated records schema")
 
     except OperationalError as error:
         logger.error(error)
