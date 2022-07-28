@@ -965,6 +965,8 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_urine_lf_lam_done_by":"string",
     "lab_culture_mgit_culture":"string",
     "lab_culture_lj_culture":"string",
+    "lab_culture_date":"date",
+    "lab_culture_done_by":"string",
     "lab_lpa_mtbdrplus_isoniazid":"string",
     "lab_lpa_mtbdrplus_rifampin":"string",
     "lab_lpa_mtbdrs_flouoroquinolones":"string",
@@ -972,6 +974,8 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_lpa_mtbdrs_amikacin":"string",
     "lab_lpa_mtbdrs_capreomycin":"string",
     "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_lpa_date":"date",
+    "lab_lpa_done_by":"string",
     "lab_dst_isonazid":"string",
     "lab_dst_rifampin":"string",
     "lab_dst_ethambutol":"string",
@@ -980,6 +984,8 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_dst_levofloxacinekanamycin":"string",
     "lab_dst_moxifloxacinekanamycin":"string",
     "lab_dst_amikacinekanamycin":"string",
+    "lab_dst_date":"date",
+    "lab_dst_done_by":"string",
     "lab_result_type":"string"
 }
 ```
@@ -1027,6 +1033,8 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_urine_lf_lam_done_by":"string",
     "lab_culture_mgit_culture":"string",
     "lab_culture_lj_culture":"string",
+    "lab_culture_date":"date",
+    "lab_culture_done_by":"string",
     "lab_lpa_mtbdrplus_isoniazid":"string",
     "lab_lpa_mtbdrplus_rifampin":"string",
     "lab_lpa_mtbdrs_flouoroquinolones":"string",
@@ -1034,6 +1042,8 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_lpa_mtbdrs_amikacin":"string",
     "lab_lpa_mtbdrs_capreomycin":"string",
     "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_lpa_date":"date",
+    "lab_lpa_done_by":"string",
     "lab_dst_isonazid":"string",
     "lab_dst_rifampin":"string",
     "lab_dst_ethambutol":"string",
@@ -1042,6 +1052,8 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_dst_levofloxacinekanamycin":"string",
     "lab_dst_moxifloxacinekanamycin":"string",
     "lab_dst_amikacinekanamycin":"string",
+    "lab_dst_date":"date",
+    "lab_dst_done_by":"string",
     "lab_result_type":"string"
 }
 ```

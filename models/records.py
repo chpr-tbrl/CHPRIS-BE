@@ -542,7 +542,7 @@ class Record_Model:
 
     # labs
 
-    def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str) -> int:
+    def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_culture_date: str, lab_culture_done_by: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_lpa_date: str, lab_lpa_done_by: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str, lab_dst_date: str, lab_dst_done_by: str) -> int:
         """
         """
         try:
@@ -571,6 +571,8 @@ class Record_Model:
                 lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by,
                 lab_culture_mgit_culture=lab_culture_mgit_culture,
                 lab_culture_lj_culture=lab_culture_lj_culture,
+                lab_culture_date=lab_culture_date,
+                lab_culture_done_by=lab_culture_done_by,
                 lab_lpa_mtbdrplus_isoniazid=lab_lpa_mtbdrplus_isoniazid,
                 lab_lpa_mtbdrplus_rifampin=lab_lpa_mtbdrplus_rifampin,
                 lab_lpa_mtbdrs_flouoroquinolones=lab_lpa_mtbdrs_flouoroquinolones,
@@ -578,6 +580,8 @@ class Record_Model:
                 lab_lpa_mtbdrs_amikacin=lab_lpa_mtbdrs_amikacin,
                 lab_lpa_mtbdrs_capreomycin=lab_lpa_mtbdrs_capreomycin,
                 lab_lpa_mtbdrs_low_level_kanamycin=lab_lpa_mtbdrs_low_level_kanamycin,
+                lab_lpa_date=lab_lpa_date,
+                lab_lpa_done_by=lab_lpa_done_by,
                 lab_dst_isonazid=lab_dst_isonazid,
                 lab_dst_rifampin=lab_dst_rifampin,
                 lab_dst_ethambutol=lab_dst_ethambutol,
@@ -585,7 +589,9 @@ class Record_Model:
                 lab_dst_ofloxacin=lab_dst_ofloxacin,
                 lab_dst_levofloxacinekanamycin=lab_dst_levofloxacinekanamycin,
                 lab_dst_moxifloxacinekanamycin=lab_dst_moxifloxacinekanamycin,
-                lab_dst_amikacinekanamycin=lab_dst_amikacinekanamycin
+                lab_dst_amikacinekanamycin=lab_dst_amikacinekanamycin,
+                lab_dst_date=lab_dst_date,
+                lab_dst_done_by=lab_dst_done_by
             )
 
             logger.info("- Lab record %s successfully created" % lab)
@@ -603,7 +609,7 @@ class Record_Model:
             logger.error("creating Lab record %s failed check logs" % lab)
             raise InternalServerError(err) from None
 
-    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str) -> int:
+    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_culture_date: str, lab_culture_done_by: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_lpa_date: str, lab_lpa_done_by: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str, lab_dst_date: str, lab_dst_done_by: str) -> int:
         """
         """
         try:
@@ -630,6 +636,8 @@ class Record_Model:
                 lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by,
                 lab_culture_mgit_culture=lab_culture_mgit_culture,
                 lab_culture_lj_culture=lab_culture_lj_culture,
+                lab_culture_date=lab_culture_date,
+                lab_culture_done_by=lab_culture_done_by,
                 lab_lpa_mtbdrplus_isoniazid=lab_lpa_mtbdrplus_isoniazid,
                 lab_lpa_mtbdrplus_rifampin=lab_lpa_mtbdrplus_rifampin,
                 lab_lpa_mtbdrs_flouoroquinolones=lab_lpa_mtbdrs_flouoroquinolones,
@@ -637,6 +645,8 @@ class Record_Model:
                 lab_lpa_mtbdrs_amikacin=lab_lpa_mtbdrs_amikacin,
                 lab_lpa_mtbdrs_capreomycin=lab_lpa_mtbdrs_capreomycin,
                 lab_lpa_mtbdrs_low_level_kanamycin=lab_lpa_mtbdrs_low_level_kanamycin,
+                lab_lpa_date=lab_lpa_date,
+                lab_lpa_done_by=lab_lpa_done_by,
                 lab_dst_isonazid=lab_dst_isonazid,
                 lab_dst_rifampin=lab_dst_rifampin,
                 lab_dst_ethambutol=lab_dst_ethambutol,
@@ -644,7 +654,9 @@ class Record_Model:
                 lab_dst_ofloxacin=lab_dst_ofloxacin,
                 lab_dst_levofloxacinekanamycin=lab_dst_levofloxacinekanamycin,
                 lab_dst_moxifloxacinekanamycin=lab_dst_moxifloxacinekanamycin,
-                lab_dst_amikacinekanamycin=lab_dst_amikacinekanamycin
+                lab_dst_amikacinekanamycin=lab_dst_amikacinekanamycin,
+                lab_dst_date=lab_dst_date,
+                lab_dst_done_by=lab_dst_done_by
             ).where(
                 self.Labs.lab_id == lab_id
             )
