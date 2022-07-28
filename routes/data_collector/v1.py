@@ -954,6 +954,8 @@ def createLabRecord(record_id: int) -> None:
             request.json["lab_urine_lf_lam_done_by"],
             request.json["lab_culture_mgit_culture"],
             request.json["lab_culture_lj_culture"],
+            request.json["lab_culture_date"],
+            request.json["lab_culture_done_by"],
             request.json["lab_lpa_mtbdrplus_isoniazid"],
             request.json["lab_lpa_mtbdrplus_rifampin"],
             request.json["lab_lpa_mtbdrs_flouoroquinolones"],
@@ -961,6 +963,8 @@ def createLabRecord(record_id: int) -> None:
             request.json["lab_lpa_mtbdrs_amikacin"],
             request.json["lab_lpa_mtbdrs_capreomycin"],
             request.json["lab_lpa_mtbdrs_low_level_kanamycin"],
+            request.json["lab_lpa_date"],
+            request.json["lab_lpa_done_by"],
             request.json["lab_dst_isonazid"],
             request.json["lab_dst_rifampin"],
             request.json["lab_dst_ethambutol"],
@@ -968,7 +972,9 @@ def createLabRecord(record_id: int) -> None:
             request.json["lab_dst_ofloxacin"],
             request.json["lab_dst_levofloxacinekanamycin"],
             request.json["lab_dst_moxifloxacinekanamycin"],
-            request.json["lab_dst_amikacinekanamycin"]
+            request.json["lab_dst_amikacinekanamycin"],
+            request.json["lab_dst_date"],
+            request.json["lab_dst_done_by"]
         )
        
         Record = Record_Model()
@@ -1093,6 +1099,8 @@ def updateLabRecord(lab_id: int) -> None:
             request.json["lab_urine_lf_lam_done_by"],
             request.json["lab_culture_mgit_culture"],
             request.json["lab_culture_lj_culture"],
+            request.json["lab_culture_date"],
+            request.json["lab_culture_done_by"],
             request.json["lab_lpa_mtbdrplus_isoniazid"],
             request.json["lab_lpa_mtbdrplus_rifampin"],
             request.json["lab_lpa_mtbdrs_flouoroquinolones"],
@@ -1100,6 +1108,8 @@ def updateLabRecord(lab_id: int) -> None:
             request.json["lab_lpa_mtbdrs_amikacin"],
             request.json["lab_lpa_mtbdrs_capreomycin"],
             request.json["lab_lpa_mtbdrs_low_level_kanamycin"],
+            request.json["lab_lpa_date"],
+            request.json["lab_lpa_done_by"],
             request.json["lab_dst_isonazid"],
             request.json["lab_dst_rifampin"],
             request.json["lab_dst_ethambutol"],
@@ -1107,7 +1117,9 @@ def updateLabRecord(lab_id: int) -> None:
             request.json["lab_dst_ofloxacin"],
             request.json["lab_dst_levofloxacinekanamycin"],
             request.json["lab_dst_moxifloxacinekanamycin"],
-            request.json["lab_dst_amikacinekanamycin"]
+            request.json["lab_dst_amikacinekanamycin"],
+            request.json["lab_dst_date"],
+            request.json["lab_dst_done_by"]
         )
        
         Record = Record_Model()

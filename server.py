@@ -26,7 +26,7 @@ from controllers.sync_database import create_tables
 from controllers.sync_database import create_super_admin
 from controllers.SSL import isSSL
 
-from schemas.migration import migrate_records
+from schemas.migration import migrate_labs
 
 app = Flask(__name__)
 
@@ -39,7 +39,7 @@ CORS(
 create_database()
 create_tables()
 
-migrate_records()
+migrate_labs()
 
 create_super_admin()
 
