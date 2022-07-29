@@ -35,7 +35,7 @@ class Record_Model:
 
     # record
 
-    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_prisoner: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: bool, records_tb_treatment_history_other: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
+    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_prisoner: bool, records_patient_category_other: str, records_reason_for_test: str, records_reason_for_test_follow_up_months: int, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: bool, records_tb_treatment_history_other: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
         """
         Create a new record.
         """
@@ -74,7 +74,8 @@ class Record_Model:
                 records_patient_category_diabetes_clinic=records_patient_category_diabetes_clinic,
                 records_patient_category_prisoner=records_patient_category_prisoner,
                 records_patient_category_other=records_patient_category_other,
-                records_reason_for_test_presumptive_tb=records_reason_for_test_presumptive_tb,
+                records_reason_for_test=records_reason_for_test,
+                records_reason_for_test_follow_up_months=records_reason_for_test_follow_up_months,
                 records_tb_treatment_history=records_tb_treatment_history,
                 records_tb_treatment_history_contact_of_tb_patient= records_tb_treatment_history_contact_of_tb_patient,
                 records_tb_treatment_history_other= records_tb_treatment_history_other,
@@ -97,7 +98,7 @@ class Record_Model:
             logger.error("creating record %d failed check logs" % records_user_id)
             raise InternalServerError(err) from None
 
-    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_prisoner: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: bool, records_tb_treatment_history_other: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
+    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_prisoner: bool, records_patient_category_other: str, records_reason_for_test: str, records_reason_for_test_follow_up_months: int, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: bool, records_tb_treatment_history_other: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
         """
         Update a record.
         """
@@ -135,7 +136,8 @@ class Record_Model:
                 records_patient_category_diabetes_clinic=records_patient_category_diabetes_clinic,
                 records_patient_category_prisoner=records_patient_category_prisoner,
                 records_patient_category_other=records_patient_category_other,
-                records_reason_for_test_presumptive_tb=records_reason_for_test_presumptive_tb,
+                records_reason_for_test=records_reason_for_test,
+                records_reason_for_test_follow_up_months=records_reason_for_test_follow_up_months,
                 records_tb_treatment_history=records_tb_treatment_history,
                 records_tb_treatment_history_contact_of_tb_patient= records_tb_treatment_history_contact_of_tb_patient,
                 records_tb_treatment_history_other= records_tb_treatment_history_other,
@@ -227,7 +229,8 @@ class Record_Model:
                         'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
                         'records_patient_category_prisoner':record['records_patient_category_prisoner'],
                         'records_patient_category_other':record['records_patient_category_other'],
-                        'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
+                        'records_reason_for_test':record['records_reason_for_test'],
+                        'records_reason_for_test_follow_up_months':record['records_reason_for_test_follow_up_months'],
                         'records_tb_treatment_history':record['records_tb_treatment_history'],
                         'records_tb_treatment_history_contact_of_tb_patient': record['records_tb_treatment_history_contact_of_tb_patient'],
                         'records_tb_treatment_history_other': record['records_tb_treatment_history_other'],
@@ -270,7 +273,8 @@ class Record_Model:
                         'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
                         'records_patient_category_prisoner':record['records_patient_category_prisoner'],
                         'records_patient_category_other':record['records_patient_category_other'],
-                        'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
+                        'records_reason_for_test':record['records_reason_for_test'],
+                        'records_reason_for_test_follow_up_months':record['records_reason_for_test_follow_up_months'],
                         'records_tb_treatment_history':record['records_tb_treatment_history'],
                         'records_tb_treatment_history_contact_of_tb_patient':record['records_tb_treatment_history_contact_of_tb_patient'],
                         'records_tb_treatment_history_other': record['records_tb_treatment_history_other'],

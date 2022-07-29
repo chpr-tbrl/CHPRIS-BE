@@ -1,4 +1,3 @@
-env?=production
 start:
 	python3 server.py
 start_dev:
