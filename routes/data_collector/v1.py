@@ -987,17 +987,21 @@ def createLabRecord(record_id: int) -> None:
         
         Sms = SMS_Model()
 
+        xpert_1 = request.json["lab_xpert_mtb_rif_assay_result"]
+
         def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
             """
             """
+            if xpert_1.lower() in ["detected", "not_detected", "error_invalid"]:
+                Sms.send_client(contacts=contacts['client'])
+
             Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
             Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
-            Sms.send_client(contacts=contacts['client'])
 
             return None
 
         logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
-        if request.json["lab_result_type"] == "positive":
+        if request.json["lab_result_type"].lower() == "positive":
             contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
 
             @after_this_request
@@ -1006,7 +1010,7 @@ def createLabRecord(record_id: int) -> None:
                 thread.start()
                 return response
 
-        elif request.json["lab_result_type"] == "negative":
+        elif request.json["lab_result_type"].lower() == "negative":
             contacts = Contact.all(record_id=record_id, sms_notification_type="all")
 
             @after_this_request
@@ -1132,17 +1136,23 @@ def updateLabRecord(lab_id: int) -> None:
         
         Sms = SMS_Model()
 
+        xpert_1 = request.json["lab_xpert_mtb_rif_assay_result"]
+        xpert_1_done = request.json["lab_xpert_mtb_rif_assay_result_done"]
+
         def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
             """
             """
+            if not xpert_1_done:
+                if xpert_1.lower() in ["detected", "not_detected", "error_invalid"]:
+                    Sms.send_client(contacts=contacts['client'])
+
             Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
             Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
-            Sms.send_client(contacts=contacts['client'])
 
             return None
 
         logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
-        if request.json["lab_result_type"] == "positive":
+        if request.json["lab_result_type"].lower() == "positive":
             contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
 
             @after_this_request
@@ -1151,7 +1161,7 @@ def updateLabRecord(lab_id: int) -> None:
                 thread.start()
                 return response
 
-        elif request.json["lab_result_type"] == "negative":
+        elif request.json["lab_result_type"].lower() == "negative":
             contacts = Contact.all(record_id=record_id, sms_notification_type="all")
 
             @after_this_request
