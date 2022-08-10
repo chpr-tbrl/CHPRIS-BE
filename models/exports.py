@@ -9,6 +9,8 @@ export = config["EXPORT"]
 
 from security.data import Data
 
+from models.sites import Site_Model
+
 from schemas.records.records import Records
 from schemas.records.specimen_collection import Specimen_collections
 from schemas.records.lab import Labs
@@ -39,10 +41,18 @@ class Export_Model:
         """
         """
         try:
+            Site = Site_Model()
+            site_name = Site.fetch_site(site_id=site_id)["name"]
+            region_name = Site.fetch_region(region_id=region_id)["name"]
+
             field_names = []
 
             for record_names in self.Records._meta.fields.keys():
-                if record_names == "iv":
+                if record_names == "site_id":
+                    field_names.append("site_name")
+                elif record_names == "region_id":
+                    field_names.append("region_name")
+                elif record_names == "iv":
                     pass
                 else:
                     field_names.append(record_names)
@@ -171,8 +181,8 @@ class Export_Model:
 
                         writer.writerow({
                             'record_id':row['record_id'],
-                            'site_id':row['site_id'],
-                            'region_id':row['region_id'],
+                            'site_name':site_name,
+                            'region_name':region_name,
                             'records_user_id':row['records_user_id'],
                             'records_date':row['records_date'],
                             'records_name': data.decrypt(row['records_name'], iv),
@@ -290,8 +300,8 @@ class Export_Model:
                     else:
                         writer.writerow({
                             'record_id':row['record_id'],
-                            'site_id':row['site_id'],
-                            'region_id':row['region_id'],
+                            'site_name':site_name,
+                            'region_name':region_name,
                             'records_user_id':row['records_user_id'],
                             'records_date':row['records_date'],
                             'records_name':row['records_name'],
@@ -420,7 +430,12 @@ class Export_Model:
         """
         """
         try:            
+            Site = Site_Model()
+            site_name = Site.fetch_site(site_id=site_id)["name"]
+            region_name = Site.fetch_region(region_id=region_id)["name"]
+
             logger.debug("Gathering data ...")
+
             if region_id == "all" and site_id == "all":
                 records = self.Records.select().where(
                     self.Records.records_date.between(start_date, end_date)
@@ -512,8 +527,8 @@ class Export_Model:
 
                     pdf_data = {
                         'record_id':row['record_id'],
-                        'site_id':row['site_id'],
-                        'region_id':row['region_id'],
+                        'site_name':site_name,
+                        'region_name':region_name,
                         'records_user_id':row['records_user_id'],
                         'records_date':row['records_date'],
                         'records_name': data.decrypt(row['records_name'], iv),
@@ -631,8 +646,8 @@ class Export_Model:
                 else:
                     pdf_data = {
                         'record_id':row['record_id'],
-                        'site_id':row['site_id'],
-                        'region_id':row['region_id'],
+                        'site_name':site_name,
+                        'region_name':region_name,
                         'records_user_id':row['records_user_id'],
                         'records_date':row['records_date'],
                         'records_name':row['records_name'],
