@@ -1,10 +1,16 @@
 import logging
 logger = logging.getLogger(__name__)
 
+from Configs import baseConfig
+config = baseConfig()
+
 from peewee import DatabaseError
+from peewee import IntegrityError
 
 from schemas.sites.sites import Sites
 from schemas.sites.regions import Regions
+from schemas.users.users import Users
+from schemas.users.users_sites import Users_sites
 
 from werkzeug.exceptions import InternalServerError
 from werkzeug.exceptions import Conflict
@@ -18,6 +24,8 @@ class Site_Model:
         """
         self.Sites = Sites
         self.Regions = Regions
+        self.Users = Users
+        self.Users_sites = Users_sites
 
     def create_region(self, name: str, region_code: str) -> str:
         """
@@ -167,6 +175,27 @@ class Site_Model:
                 site = self.Sites.create(name=name, region_id=region_id, site_code=site_code)
 
                 logger.info("- Site '%s' successfully created" % name)
+
+                user_sites = []
+                user_sites.append(site.id)
+
+                super_admin = config["SUPER_ADMIN"]
+
+                try:
+                    user = self.Users.get(self.Users.email == super_admin["EMAIL"])
+                except self.Users.DoesNotExist:
+                    logger.error("No user found")
+                    raise Unauthorized()
+                else:
+                    logger.info("- Adding super admin to site: %s" % name)
+
+                    for site_id in user_sites:
+                        try:
+                            self.Users_sites.create(user_id=user.id, site_id=site_id)
+                            logger.info("- Successfully added site_id=%s to user_id=%s" % (site_id, user.id))
+                        except IntegrityError as error:
+                            logger.error(error)
+                    
                 return str(site)
             else:
                 logger.error("Site '%s' with region_id=%s exist or site_code '%s' with region_id=%s exist" % (name, region_id, site_code, region_id))
@@ -245,7 +274,6 @@ class Site_Model:
         except DatabaseError as err:
             logger.error("failed to find site %s check logs" % site_id)
             raise InternalServerError(err) from None
-
 
     def fetch_sites(self, region_id: int) -> dict:
         """
