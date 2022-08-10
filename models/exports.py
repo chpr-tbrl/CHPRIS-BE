@@ -42,8 +42,6 @@ class Export_Model:
         """
         try:
             Site = Site_Model()
-            site_name = Site.fetch_site(site_id=site_id)["name"]
-            region_name = Site.fetch_region(region_id=region_id)["name"]
 
             field_names = []
 
@@ -84,6 +82,7 @@ class Export_Model:
             export_filepath = os.path.join("%s/datasets" % export["PATH"], export_file)
             
             logger.debug("Gathering data ...")
+
             if region_id == "all" and site_id == "all":
                 records = self.Records.select().where(
                     self.Records.records_date.between(start_date, end_date)
@@ -114,6 +113,9 @@ class Export_Model:
                 writer.writeheader()        
 
                 for row in records.iterator():
+                    site_name = Site.fetch_site(site_id=row["site_id"])["name"]
+                    region_name = Site.fetch_region(region_id=row["region_id"])["name"]
+
                     # specimen_collections
                     specimen_collections_results = []
 
@@ -429,11 +431,9 @@ class Export_Model:
     def pdf(self, start_date:str, end_date:str, permitted_decrypted_data: bool, region_id:str = None, site_id:str = None) -> dict:
         """
         """
-        try:            
+        try:          
             Site = Site_Model()
-            site_name = Site.fetch_site(site_id=site_id)["name"]
-            region_name = Site.fetch_region(region_id=region_id)["name"]
-
+  
             logger.debug("Gathering data ...")
 
             if region_id == "all" and site_id == "all":
@@ -460,6 +460,9 @@ class Export_Model:
             logger.debug("exporting data please wait ...")
 
             for row in records.iterator():
+                site_name = Site.fetch_site(site_id=row["site_id"])["name"]
+                region_name = Site.fetch_region(region_id=row["region_id"])["name"]
+
                 # specimen_collections
                 specimen_collections_results = []
 
