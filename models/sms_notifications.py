@@ -316,7 +316,7 @@ class SMS_Model:
             return lab_schema
 
         except Exception as error:
-            raise InternalServerError(error) from None
+            raise InternalServerError(error)
 
     def __requester_schema__(self, records_date_of_test_request: str, record_id: int, records_name: str, smr_result: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_urine_lf_lam_result: str, info_line: str) -> str:
         """
@@ -348,7 +348,7 @@ class SMS_Model:
             return requester_schema
 
         except Exception as error:
-            raise InternalServerError(error) from None
+            raise InternalServerError(error)
 
     def __client_schema__(self) -> str:
         """
@@ -359,7 +359,7 @@ class SMS_Model:
             return client_schema
 
         except Exception as error:
-            raise InternalServerError(error) from None
+            raise InternalServerError(error)
 
     def __send_sms_message__(self, text: str, contacts: list) -> None:
         """

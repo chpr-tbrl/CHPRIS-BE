@@ -18,6 +18,7 @@ from flask import jsonify
 v1 = Blueprint("v1", __name__)
 
 from security.cookie import Cookie
+from security.data import Data
 
 from datetime import timedelta
 from datetime import date
@@ -37,6 +38,7 @@ from models.sessions import Session_Model
 from models.exports import Export_Model
 from models.contacts import Contact_Model
 from models.sms_notifications import SMS_Model
+from models.otp import OTP_Model
 
 # exceptions
 from werkzeug.exceptions import BadRequest
@@ -1960,6 +1962,9 @@ def updateProfile() -> None:
             raise BadRequest()
 
         cookie = Cookie()
+        Session = Session_Model()
+        User = User_Model()
+
         e_cookie = request.cookies.get(cookie_name)
         d_cookie = cookie.decrypt(e_cookie)
         json_cookie = json.loads(d_cookie)
@@ -1969,11 +1974,7 @@ def updateProfile() -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        Session = Session_Model()
-
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
-
-        User = User_Model()
 
         User.check_account_status(user_id=user_id)
 
@@ -2030,7 +2031,6 @@ def updateProfile() -> None:
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
-        cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
         res.set_cookie(
@@ -2044,6 +2044,261 @@ def updateProfile() -> None:
 
         return res, 200
 
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/recovery", methods=["PUT", "POST"])
+def accountRecovery() -> None:
+    """
+    """
+    try:
+        if not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        user_agent = request.headers.get("User-Agent")
+
+        User = User_Model()
+        Session = Session_Model()
+        cookie = Cookie()
+        data = Data()
+
+        if request.method == "POST":
+            if not "email" in request.json or not request.json["email"]:
+                logger.error("no email")
+                raise BadRequest()
+
+            email = request.json["email"]
+        
+            user = User.fetch_user(
+                email=email,
+                account_status="approved",
+                no_sites=True
+            )
+
+            res = jsonify({
+                "phone_number": user["phone_number"]
+            })
+
+            phone_number_hash = data.hash(data=user["phone_number"])
+
+            session = Session.create(unique_identifier=phone_number_hash, user_agent=user_agent)
+
+            cookie_data = json.dumps({
+                "sid": session["sid"],
+                "user_id": user["id"],
+                "cookie": session["data"],
+                "type": "recovery",
+                "status": "initialized"
+            })
+
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+
+        elif request.method == "PUT":
+            if not request.cookies.get(cookie_name):
+                logger.error("no cookie")
+                raise Unauthorized()
+            elif not "new_password" in request.json or not request.json["new_password"]:
+                logger.error("no new_password")
+                raise BadRequest()
+
+            e_cookie = request.cookies.get(cookie_name)
+            d_cookie = cookie.decrypt(e_cookie)
+            json_cookie = json.loads(d_cookie)
+
+            sid = json_cookie["sid"]
+            uid = json_cookie["uid"]
+            user_id = json_cookie["user_id"]
+            user_cookie = json_cookie["cookie"]
+            session_type = json_cookie["type"]
+            session_status = json_cookie["status"]
+
+            Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+            if session_type != "recovery":
+                logger.error("invalid session type")
+                raise BadRequest()
+            elif session_status != "approved":
+                logger.error("invalid session status")
+                raise BadRequest()
+
+            new_password = request.json["new_password"]
+
+            User.create_password(
+                id=user_id,
+                new_password=new_password
+            )
+
+            res = Response()
+       
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/otp", methods=["PUT", "POST"])
+def OTP() -> None:
+    """
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+        elif not "phone_number" in request.json or not request.json["phone_number"]:
+            logger.error("no phone_number")
+            raise BadRequest()
+
+        cookie = Cookie()
+        Session = Session_Model()
+        Otp = OTP_Model()
+        data = Data()
+
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        phone_number = request.json["phone_number"]
+
+        sid = json_cookie["sid"]
+        uid = data.hash(data=phone_number)
+        user_cookie = json_cookie["cookie"]
+        session_type = json_cookie["type"]
+        session_status = json_cookie["status"]
+        user_id = json_cookie["user_id"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        if session_type != "recovery":
+            logger.error("invalid session type")
+            raise BadRequest()
+        
+        if request.method == "POST":
+            if session_status != "initialized":
+                logger.error("invalid session status")
+                raise BadRequest()
+
+            otp = Otp.create(phone_number=phone_number)
+
+            def trigger_sms(text: str, contacts: list) -> None:
+                """
+                """
+                Otp.__send__(text=text, contacts=contacts)
+
+                return None
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'text': otp["text"], 'contacts': otp["contacts"]})
+                thread.start()
+                return response
+
+            res = Response()
+
+            session = Session.update(sid=sid, unique_identifier=uid)
+
+            cookie_data = json.dumps({
+                "sid": session["sid"],
+                "cookie": session["data"],
+                "type": "recovery",
+                "status": "pending",
+                "otp_id": otp["id"],
+                "user_id": user_id
+            })
+
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+
+            return res, 201
+
+        elif request.method == "PUT":
+            if not "code" in request.json or not request.json["code"]:
+                logger.error("no code")
+                raise BadRequest()
+            elif session_status != "pending":
+                logger.error("invalid session status")
+                raise BadRequest()
+
+            otp_id = json_cookie["otp_id"]
+            code = request.json["code"]
+
+            otp = Otp.check(
+                otp_id=otp_id,
+                phone_number=phone_number,
+                code=code
+            )
+
+            res = Response()
+
+            session = Session.update(sid=sid, unique_identifier=uid)
+
+            cookie_data = json.dumps({
+                "sid": session["sid"],
+                "uid": session["uid"],
+                "cookie": session["data"],
+                "type": "recovery",
+                "status": "approved",
+                "user_id": user_id
+            })
+
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+
+            return res, 200
+       
     except BadRequest as err:
         return str(err), 400
 
