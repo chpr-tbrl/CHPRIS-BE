@@ -14,6 +14,7 @@ from schemas.users.baseModel import users_db
 from schemas.users.users import Users
 from schemas.users.sessions import Sessions
 from schemas.users.users_sites import Users_sites
+from schemas.users.users_otp import Users_otp
 
 from schemas.sites.baseModel import sites_db
 from schemas.sites.sites import Sites
@@ -92,7 +93,8 @@ def create_tables() -> None:
             [
                 Users, 
                 Sessions,
-                Users_sites
+                Users_sites,
+                Users_otp
             ]
         )
 

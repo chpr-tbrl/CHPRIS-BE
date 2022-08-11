@@ -6,22 +6,26 @@ Manage Users, Sites and Records endpoints
 
 - [Users](#users)
   1. [Signup](#1-signup)
-  1. [Login](#2-login)
-  1. [Admin login](#3-admin-login)
-  1. [Admin logout](#4-admin-logout)
-  1. [Logout](#5-logout)
-  1. [Fetch profile](#6-fetch-profile)
-  1. [Fetch admin profile](#7-fetch-admin-profile)
-  1. [Update profile](#8-update-profile)
-  1. [Update admins profile](#9-update-admins-profile)
-  1. [Fetch all users](#10-fetch-all-users)
-  1. [Fetch a user](#11-fetch-a-user)
-  1. [Update a user](#12-update-a-user)
-  1. [Update account status](#13-update-account-status)
-  1. [Update password](#14-update-password)
-  1. [Update admin password](#15-update-admin-password)
-  1. [Add sites](#16-add-sites)
-  1. [Remove sites](#17-remove-sites)
+  1. [Recovery](#2-recovery)
+  1. [Recovery Check](#3-recovery-check)
+  1. [OTP](#4-otp)
+  1. [OTP Check](#5-otp-check)
+  1. [Login](#6-login)
+  1. [Admin login](#7-admin-login)
+  1. [Admin logout](#8-admin-logout)
+  1. [Logout](#9-logout)
+  1. [Fetch profile](#10-fetch-profile)
+  1. [Fetch admin profile](#11-fetch-admin-profile)
+  1. [Update profile](#12-update-profile)
+  1. [Update admins profile](#13-update-admins-profile)
+  1. [Fetch all users](#14-fetch-all-users)
+  1. [Fetch a user](#15-fetch-a-user)
+  1. [Update a user](#16-update-a-user)
+  1. [Update account status](#17-update-account-status)
+  1. [Update password](#18-update-password)
+  1. [Update admin password](#19-update-admin-password)
+  1. [Add sites](#20-add-sites)
+  1. [Remove sites](#21-remove-sites)
 - [Sites](#sites)
   1. [Create site](#1-create-site)
   1. [Update site](#2-update-site)
@@ -91,7 +95,117 @@ URL: {{domain}}/v1/signup
 }
 ```
 
-### 2. Login
+### 2. Recovery
+
+Initialize password recovery for a user's account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/recovery
+```
+
+**_Body:_**
+
+```js
+{
+    "email": "string"
+}
+```
+
+### 3. Recovery Check
+
+Finalize password recovery for a user's account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/recovery
+```
+
+**_Body:_**
+
+```js
+{
+    "new_password": "string"
+}
+```
+
+### 4. OTP
+
+Initialize otp for a user's account recovery.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/otp
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number": "string"
+}
+```
+
+### 5. OTP Check
+
+Validate otp for a user's account recovery.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/otp
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number": "string",
+    "code": "string"
+}
+```
+
+### 6. Login
 
 Login to user's account.
 
@@ -119,7 +233,7 @@ URL: {{domain}}/v1/login
 }
 ```
 
-### 3. Admin login
+### 7. Admin login
 
 Login to admin account.
 
@@ -147,7 +261,7 @@ URL: {{domain}}/v1/admin/login
 }
 ```
 
-### 4. Admin logout
+### 8. Admin logout
 
 Logout of admin account.
 
@@ -166,7 +280,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/logout
 ```
 
-### 5. Logout
+### 9. Logout
 
 Logout of current account.
 
@@ -185,7 +299,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/logout
 ```
 
-### 6. Fetch profile
+### 10. Fetch profile
 
 Fetch currently authenticated user's account information.
 
@@ -204,7 +318,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/profile
 ```
 
-### 7. Fetch admin profile
+### 11. Fetch admin profile
 
 Fetch currently authenticated admin user's account information. Only permitted accounts can perform this action.
 
@@ -223,7 +337,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/profile
 ```
 
-### 8. Update profile
+### 12. Update profile
 
 Update currently authenticated user's account information.
 
@@ -254,7 +368,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 9. Update admins profile
+### 13. Update admins profile
 
 Update currently authenticated admin user's account information. Only permitted accounts can perform this action.
 
@@ -286,7 +400,7 @@ URL: {{domain}}/v1/admin/users
 }
 ```
 
-### 10. Fetch all users
+### 14. Fetch all users
 
 Fetch all users' account information. Only permitted accounts can perform this action.
 
@@ -306,7 +420,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users
 ```
 
-### 11. Fetch a user
+### 15. Fetch a user
 
 Fetch a user's account information. Only permitted accounts can perform this action.
 
@@ -326,7 +440,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users/{{user_id}}
 ```
 
-### 12. Update a user
+### 16. Update a user
 
 Update a user's account information. Only permitted accounts can perform this action.
 
@@ -359,7 +473,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 13. Update account status
+### 17. Update account status
 
 Update a user's account status. Only permitted accounts can perform this action.
 
@@ -387,7 +501,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 14. Update password
+### 18. Update password
 
 Update a user's password.
 
@@ -416,7 +530,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 15. Update admin password
+### 19. Update admin password
 
 Update admin user's password. Only permitted accounts can perform this action.
 
@@ -445,7 +559,7 @@ URL: {{domain}}/v1/admin/users
 }
 ```
 
-### 16. Add sites
+### 20. Add sites
 
 Add a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -471,7 +585,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}/sites
 [];
 ```
 
-### 17. Remove sites
+### 21. Remove sites
 
 Remove a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -1337,15 +1451,20 @@ Export data permitted to access.
 ```bash
 Method: GET
 Content-Type: application/json
-URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}?start_date=<yy-mm-dd>&end_date=<yy-mm-dd>
 ```
 
 **_Query params:_**
 
-| Key        | Value  | Description |
-| ---------- | ------ | ----------- |
-| start_date | <date> |             |
-| end_date   | <date> |             |
+| Key        | Value      | Description |
+| ---------- | ---------- | ----------- |
+| start_date | <yy-mm-dd> |             |
+| end_date   | <yy-mm-dd> |             |
+
+---
+
+- Export all sites in a region by setting `site_id = all`
+- Export all regions and all sites by setting `region_id = all` and `site_id = all`
 
 ---
 
