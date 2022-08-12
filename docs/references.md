@@ -1451,15 +1451,15 @@ Export data permitted to access.
 ```bash
 Method: GET
 Content-Type: application/json
-URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}?start_date=<yy-mm-dd>&end_date=<yy-mm-dd>
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}?start_date=yy-mm-dd&end_date=yy-mm-dd
 ```
 
 **_Query params:_**
 
-| Key        | Value      | Description |
-| ---------- | ---------- | ----------- |
-| start_date | <yy-mm-dd> |             |
-| end_date   | <yy-mm-dd> |             |
+| Key        | Value    | Description |
+| ---------- | -------- | ----------- |
+| start_date | yy-mm-dd |             |
+| end_date   | yy-mm-dd |             |
 
 ---
 
