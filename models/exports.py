@@ -459,6 +459,8 @@ class Export_Model:
 
             logger.debug("exporting data please wait ...")
 
+            pdf_data = []
+
             for row in records.iterator():
                 site_name = Site.fetch_site(site_id=row["site_id"])["name"]
                 region_name = Site.fetch_region(region_id=row["region_id"])["name"]
@@ -528,7 +530,7 @@ class Export_Model:
 
                     data = self.Data()
 
-                    pdf_data = {
+                    pdf_data.append({
                         'record_id':row['record_id'],
                         'site_name':site_name,
                         'region_name':region_name,
@@ -645,9 +647,9 @@ class Export_Model:
                         'tb_treatment_outcome_result': None if len(tb_treatment_outcomes_results)<1 else tb_treatment_outcomes_results[0]['tb_treatment_outcome_result'],
                         'tb_treatment_outcome_comments': None if len(tb_treatment_outcomes_results)<1 else tb_treatment_outcomes_results[0]['tb_treatment_outcome_comments'],
                         'tb_treatment_outcome_close_patient_file': None if len(tb_treatment_outcomes_results)<1 else tb_treatment_outcomes_results[0]['tb_treatment_outcome_close_patient_file']
-                    }
+                    })
                 else:
-                    pdf_data = {
+                    pdf_data.append({
                         'record_id':row['record_id'],
                         'site_name':site_name,
                         'region_name':region_name,
@@ -764,7 +766,7 @@ class Export_Model:
                         'tb_treatment_outcome_result': None if len(tb_treatment_outcomes_results)<1 else tb_treatment_outcomes_results[0]['tb_treatment_outcome_result'],
                         'tb_treatment_outcome_comments': None if len(tb_treatment_outcomes_results)<1 else tb_treatment_outcomes_results[0]['tb_treatment_outcome_comments'],
                         'tb_treatment_outcome_close_patient_file': None if len(tb_treatment_outcomes_results)<1 else tb_treatment_outcomes_results[0]['tb_treatment_outcome_close_patient_file']
-                    }
+                    })
 
             logger.info("- Export complete")
 
