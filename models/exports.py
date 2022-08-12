@@ -20,6 +20,9 @@ from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
 
 import os
 import csv
+import requests
+from flask import jsonify
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -461,6 +464,8 @@ class Export_Model:
 
             pdf_data = []
 
+            date_format = "%d/%m/%Y"
+
             for row in records.iterator():
                 site_name = Site.fetch_site(site_id=row["site_id"])["name"]
                 region_name = Site.fetch_region(region_id=row["region_id"])["name"]
@@ -772,7 +777,11 @@ class Export_Model:
 
             self.purge(max_days=7)
 
-            return pdf_data
+            pdf_url = export["PDF_URL"]
+
+            res = requests.post(url=pdf_url, json=jsonify(pdf_data).json)
+
+            return res.text.strip()
 
         except Exception as error:
             raise InternalServerError(error)
