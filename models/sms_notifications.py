@@ -138,7 +138,7 @@ class SMS_Model:
             logger.debug("lab_xpert_mtb_rif_assay_grades: %s" % xpert_grade)
             logger.debug("grade: %s" % grade)
 
-            sms_result = self.__lab_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=xpert_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
+            sms_result = self.__lab_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=xpert_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=xpert_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
 
             logger.debug("SMS_result: %s" % sms_result)
             
@@ -256,7 +256,7 @@ class SMS_Model:
             logger.debug("lab_xpert_mtb_rif_assay_grades: %s" % xpert_grade)
             logger.debug("grade: %s" % grade)
 
-            sms_result = self.__requester_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=xpert_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
+            sms_result = self.__requester_schema__(records_date_of_test_request=records_date_of_test_request, record_id=record_id, records_name=record_name, smr_result=smr_result, lab_xpert_mtb_rif_assay_result=xpert_result, lab_xpert_mtb_rif_assay_grades=grade, lab_xpert_mtb_rif_assay_rif_result=xpert_rif_result, lab_urine_lf_lam_result=lab_urine_lf_lam_result, info_line=info_line)
 
             logger.debug("SMS_result: %s" % sms_result)
             
