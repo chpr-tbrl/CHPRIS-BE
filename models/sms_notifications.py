@@ -85,15 +85,15 @@ class SMS_Model:
             records_name = result[0]["records_name"].split()
             records_date_of_test_request = result[0]["records_date_of_test_request"]
 
-            lab_smear_microscopy_result_result_1 = result[0]["lab_smear_microscopy_result_result_1"].lower()
-            lab_smear_microscopy_result_result_2 = result[0]["lab_smear_microscopy_result_result_2"].lower()
-            lab_xpert_mtb_rif_assay_result = result[0]["lab_xpert_mtb_rif_assay_result"].lower()
-            lab_xpert_mtb_rif_assay_grades = result[0]["lab_xpert_mtb_rif_assay_grades"].lower()
-            lab_xpert_mtb_rif_assay_rif_result = result[0]["lab_xpert_mtb_rif_assay_rif_result"].lower()
-            lab_xpert_mtb_rif_assay_result_2 = result[0]["lab_xpert_mtb_rif_assay_result_2"].lower()
-            lab_xpert_mtb_rif_assay_grades_2 = result[0]["lab_xpert_mtb_rif_assay_grades_2"].lower()
-            lab_xpert_mtb_rif_assay_rif_result_2 = result[0]["lab_xpert_mtb_rif_assay_rif_result_2"].lower()
-            lab_urine_lf_lam_result = result[0]["lab_urine_lf_lam_result"].lower()
+            lab_smear_microscopy_result_result_1 = result[0]["lab_smear_microscopy_result_result_1"].lower() if result[0]["lab_smear_microscopy_result_result_1"] else None
+            lab_smear_microscopy_result_result_2 = result[0]["lab_smear_microscopy_result_result_2"].lower() if result[0]["lab_smear_microscopy_result_result_2"] else None
+            lab_xpert_mtb_rif_assay_result = result[0]["lab_xpert_mtb_rif_assay_result"].lower() if result[0]["lab_xpert_mtb_rif_assay_result"] else None
+            lab_xpert_mtb_rif_assay_grades = result[0]["lab_xpert_mtb_rif_assay_grades"].lower() if result[0]["lab_xpert_mtb_rif_assay_grades"] else None
+            lab_xpert_mtb_rif_assay_rif_result = result[0]["lab_xpert_mtb_rif_assay_rif_result"].lower() if result[0]["lab_xpert_mtb_rif_assay_rif_result"] else None
+            lab_xpert_mtb_rif_assay_result_2 = result[0]["lab_xpert_mtb_rif_assay_result_2"].lower() if result[0]["lab_xpert_mtb_rif_assay_result_2"] else None
+            lab_xpert_mtb_rif_assay_grades_2 = result[0]["lab_xpert_mtb_rif_assay_grades_2"].lower() if result[0]["lab_xpert_mtb_rif_assay_grades_2"] else None
+            lab_xpert_mtb_rif_assay_rif_result_2 = result[0]["lab_xpert_mtb_rif_assay_rif_result_2"].lower() if result[0]["lab_xpert_mtb_rif_assay_rif_result_2"] else None
+            lab_urine_lf_lam_result = result[0]["lab_urine_lf_lam_result"].lower() if result[0]["lab_urine_lf_lam_result"] else None
             info_line = "670656041"
             
             record_name = "%s%s" % (records_name[0], "" if len(records_name)<2 else " %s." % records_name[1][0])
@@ -203,15 +203,15 @@ class SMS_Model:
             records_name = result[0]["records_name"].split()
             records_date_of_test_request = result[0]["records_date_of_test_request"]
 
-            lab_smear_microscopy_result_result_1 = result[0]["lab_smear_microscopy_result_result_1"].lower()
-            lab_smear_microscopy_result_result_2 = result[0]["lab_smear_microscopy_result_result_2"].lower()
-            lab_xpert_mtb_rif_assay_result = result[0]["lab_xpert_mtb_rif_assay_result"].lower()
-            lab_xpert_mtb_rif_assay_grades = result[0]["lab_xpert_mtb_rif_assay_grades"].lower()
-            lab_xpert_mtb_rif_assay_rif_result = result[0]["lab_xpert_mtb_rif_assay_rif_result"].lower()
-            lab_xpert_mtb_rif_assay_result_2 = result[0]["lab_xpert_mtb_rif_assay_result_2"].lower()
-            lab_xpert_mtb_rif_assay_grades_2 = result[0]["lab_xpert_mtb_rif_assay_grades_2"].lower()
-            lab_xpert_mtb_rif_assay_rif_result_2 = result[0]["lab_xpert_mtb_rif_assay_rif_result_2"].lower()
-            lab_urine_lf_lam_result = result[0]["lab_urine_lf_lam_result"].lower()
+            lab_smear_microscopy_result_result_1 = result[0]["lab_smear_microscopy_result_result_1"].lower() if result[0]["lab_smear_microscopy_result_result_1"] else None
+            lab_smear_microscopy_result_result_2 = result[0]["lab_smear_microscopy_result_result_2"].lower() if result[0]["lab_smear_microscopy_result_result_2"] else None
+            lab_xpert_mtb_rif_assay_result = result[0]["lab_xpert_mtb_rif_assay_result"].lower() if result[0]["lab_xpert_mtb_rif_assay_result"] else None
+            lab_xpert_mtb_rif_assay_grades = result[0]["lab_xpert_mtb_rif_assay_grades"].lower() if result[0]["lab_xpert_mtb_rif_assay_grades"] else None
+            lab_xpert_mtb_rif_assay_rif_result = result[0]["lab_xpert_mtb_rif_assay_rif_result"].lower() if result[0]["lab_xpert_mtb_rif_assay_rif_result"] else None
+            lab_xpert_mtb_rif_assay_result_2 = result[0]["lab_xpert_mtb_rif_assay_result_2"].lower() if result[0]["lab_xpert_mtb_rif_assay_result_2"] else None
+            lab_xpert_mtb_rif_assay_grades_2 = result[0]["lab_xpert_mtb_rif_assay_grades_2"].lower() if result[0]["lab_xpert_mtb_rif_assay_grades_2"] else None
+            lab_xpert_mtb_rif_assay_rif_result_2 = result[0]["lab_xpert_mtb_rif_assay_rif_result_2"].lower() if result[0]["lab_xpert_mtb_rif_assay_rif_result_2"] else None
+            lab_urine_lf_lam_result = result[0]["lab_urine_lf_lam_result"].lower() if result[0]["lab_urine_lf_lam_result"] else None
             info_line = "670656041"
             
             record_name = "%s%s" % (records_name[0], "" if len(records_name)<2 else " %s." % records_name[1][0])
