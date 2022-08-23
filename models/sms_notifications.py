@@ -299,17 +299,17 @@ class SMS_Model:
             if smr_result in ["not_done"]:
                 pass
             else:
-                lab_schema += "AFB, %s\n" % smr_result.upper()
+                lab_schema += "AFB, %s\n" % smr_result.upper().replace("_", " ")
 
             if lab_xpert_mtb_rif_assay_result in ["not_done", "error_invalid"]:
                 pass
             else:
-                lab_schema += "XPERT, %s%s%s\n" % (lab_xpert_mtb_rif_assay_result.upper(), "" if not lab_xpert_mtb_rif_assay_grades else " (%s)" % lab_xpert_mtb_rif_assay_grades.upper(), "" if lab_xpert_mtb_rif_assay_rif_result in ["not_done", "error_invalid"] else ", %s" % lab_xpert_mtb_rif_assay_rif_result.upper())
+                lab_schema += "XPERT, %s%s%s\n" % (lab_xpert_mtb_rif_assay_result.upper().replace("_", " "), "" if not lab_xpert_mtb_rif_assay_grades else " (%s)" % lab_xpert_mtb_rif_assay_grades.upper().replace("_", " "), "" if lab_xpert_mtb_rif_assay_rif_result in ["not_done", "error_invalid"] else ", RIF RESISTANCE %s" % lab_xpert_mtb_rif_assay_rif_result.upper().replace("_", " "))
             
             if lab_urine_lf_lam_result in ["not_done", "error_invalid"]:
                 pass
             else:
-                lab_schema += "URINE, %s\n" % lab_urine_lf_lam_result.upper()
+                lab_schema += "URINE, %s\n" % lab_urine_lf_lam_result.upper().replace("_", " ")
 
             lab_schema += "INFO %s" % info_line
 
@@ -331,17 +331,17 @@ class SMS_Model:
             if smr_result in ["not_done"]:
                 pass
             else:
-                requester_schema += "AFB, %s\n" % smr_result.upper()
+                requester_schema += "AFB, %s\n" % smr_result.upper().replace("_", " ")
 
             if lab_xpert_mtb_rif_assay_result in ["not_done", "error_invalid"]:
                 pass
             else:
-                requester_schema += "XPERT, %s%s%s\n" % (lab_xpert_mtb_rif_assay_result.upper(), "" if not lab_xpert_mtb_rif_assay_grades else " (%s)" % lab_xpert_mtb_rif_assay_grades.upper(), "" if lab_xpert_mtb_rif_assay_rif_result in ["not_done", "error_invalid"] else ", %s" % lab_xpert_mtb_rif_assay_rif_result.upper())
+                requester_schema += "XPERT, %s%s%s\n" % (lab_xpert_mtb_rif_assay_result.upper().replace("_", " "), "" if not lab_xpert_mtb_rif_assay_grades else " (%s)" % lab_xpert_mtb_rif_assay_grades.upper().replace("_", " "), "" if lab_xpert_mtb_rif_assay_rif_result in ["not_done", "error_invalid"] else ", RIF RESISTANCE %s" % lab_xpert_mtb_rif_assay_rif_result.upper().replace("_", " "))
             
             if lab_urine_lf_lam_result in ["not_done", "error_invalid"]:
                 pass
             else:
-                requester_schema += "URINE, %s\n" % lab_urine_lf_lam_result.upper()
+                requester_schema += "URINE, %s\n" % lab_urine_lf_lam_result.upper().replace("_", " ")
 
             requester_schema += "INFO %s" % info_line
 
