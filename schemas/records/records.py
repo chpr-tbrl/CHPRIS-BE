@@ -4,6 +4,7 @@ from peewee import BooleanField
 from peewee import IntegerField
 from peewee import PrimaryKeyField
 from peewee import DateField
+from peewee import TextField
 
 from schemas.records.baseModel import BaseModel
 from datetime import datetime
@@ -38,8 +39,16 @@ class Records(BaseModel):
     records_patient_category_outpatient = BooleanField(null=True)
     records_patient_category_anc = BooleanField(null=True)
     records_patient_category_diabetes_clinic = BooleanField(null=True)
+    records_patient_category_prisoner = BooleanField(null=True)
     records_patient_category_other = CharField(null=True)
-    records_reason_for_test_presumptive_tb = BooleanField(null=True)
+    records_reason_for_test = CharField(null=True)
+    records_reason_for_test_follow_up_months = IntegerField(null=True)
     records_tb_treatment_history = CharField()
-    records_tb_treatment_history_contact_of_tb_patient = CharField(null=True)
+    records_tb_treatment_history_contact_of_tb_patient = BooleanField(null=True)
+    records_tb_treatment_history_other = TextField(null=True)
+    records_tb_type = CharField()
+    records_tb_treatment_number = CharField()
+    records_sms_notifications = BooleanField(default=False)
+    records_requester_name = CharField(null=True)
+    records_requester_telephone = CharField(null=True)
     iv = CharField()

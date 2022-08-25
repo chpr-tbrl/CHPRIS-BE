@@ -6,20 +6,26 @@ Manage Users, Sites and Records endpoints
 
 - [Users](#users)
   1. [Signup](#1-signup)
-  1. [Login](#2-login)
-  1. [Admin login](#3-admin-login)
-  1. [Fetch profile](#4-fetch-profile)
-  1. [Fetch admin profile](#5-fetch-admin-profile)
-  1. [Update profile](#6-update-profile)
-  1. [Update admins profile](#7-update-admins-profile)
-  1. [Fetch all users](#8-fetch-all-users)
-  1. [Fetch a user](#9-fetch-a-user)
-  1. [Update a user](#10-update-a-user)
-  1. [Update account status](#11-update-account-status)
-  1. [Update password](#12-update-password)
-  1. [Update admin password](#13-update-admin-password)
-  1. [Add sites](#14-add-sites)
-  1. [Remove sites](#15-remove-sites)
+  1. [Recovery](#2-recovery)
+  1. [Recovery Check](#3-recovery-check)
+  1. [OTP](#4-otp)
+  1. [OTP Check](#5-otp-check)
+  1. [Login](#6-login)
+  1. [Admin login](#7-admin-login)
+  1. [Admin logout](#8-admin-logout)
+  1. [Logout](#9-logout)
+  1. [Fetch profile](#10-fetch-profile)
+  1. [Fetch admin profile](#11-fetch-admin-profile)
+  1. [Update profile](#12-update-profile)
+  1. [Update admins profile](#13-update-admins-profile)
+  1. [Fetch all users](#14-fetch-all-users)
+  1. [Fetch a user](#15-fetch-a-user)
+  1. [Update a user](#16-update-a-user)
+  1. [Update account status](#17-update-account-status)
+  1. [Update password](#18-update-password)
+  1. [Update admin password](#19-update-admin-password)
+  1. [Add sites](#20-add-sites)
+  1. [Remove sites](#21-remove-sites)
 - [Sites](#sites)
   1. [Create site](#1-create-site)
   1. [Update site](#2-update-site)
@@ -84,11 +90,122 @@ URL: {{domain}}/v1/signup
     "email": "string",
     "password": "string",
     "occupation": "string",
-    "site_id": "integer"
+    "site_id": "integer",
+    "sms_notifications_type": "string"
 }
 ```
 
-### 2. Login
+### 2. Recovery
+
+Initialize password recovery for a user's account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/recovery
+```
+
+**_Body:_**
+
+```js
+{
+    "email": "string"
+}
+```
+
+### 3. Recovery Check
+
+Finalize password recovery for a user's account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/recovery
+```
+
+**_Body:_**
+
+```js
+{
+    "new_password": "string"
+}
+```
+
+### 4. OTP
+
+Initialize otp for a user's account recovery.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/otp
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number": "string"
+}
+```
+
+### 5. OTP Check
+
+Validate otp for a user's account recovery.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `409` - Conflict
+- `403` - Forbidden
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: PUT
+Content-Type: application/json
+URL: {{domain}}/v1/otp
+```
+
+**_Body:_**
+
+```js
+{
+    "phone_number": "string",
+    "code": "string"
+}
+```
+
+### 6. Login
 
 Login to user's account.
 
@@ -116,7 +233,7 @@ URL: {{domain}}/v1/login
 }
 ```
 
-### 3. Admin login
+### 7. Admin login
 
 Login to admin account.
 
@@ -144,7 +261,45 @@ URL: {{domain}}/v1/admin/login
 }
 ```
 
-### 4. Fetch profile
+### 8. Admin logout
+
+Logout of admin account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/admin/logout
+```
+
+### 9. Logout
+
+Logout of current account.
+
+**_Responses:_**
+
+- `200` - OK
+- `400` - Bad Request
+- `401` - Unauthorised
+- `500` - Internal Server Error
+
+**_Endpoint:_**
+
+```bash
+Method: POST
+Content-Type: application/json
+URL: {{domain}}/v1/logout
+```
+
+### 10. Fetch profile
 
 Fetch currently authenticated user's account information.
 
@@ -163,7 +318,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/profile
 ```
 
-### 5. Fetch admin profile
+### 11. Fetch admin profile
 
 Fetch currently authenticated admin user's account information. Only permitted accounts can perform this action.
 
@@ -182,7 +337,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/profile
 ```
 
-### 6. Update profile
+### 12. Update profile
 
 Update currently authenticated user's account information.
 
@@ -207,11 +362,13 @@ URL: {{domain}}/v1/users
 {
     "phone_number":"string",
     "name": "string",
-    "occupation": "string"
+    "occupation": "string",
+    "sms_notifications": "boolean",
+    "sms_notifications_type": "string"
 }
 ```
 
-### 7. Update admins profile
+### 13. Update admins profile
 
 Update currently authenticated admin user's account information. Only permitted accounts can perform this action.
 
@@ -237,11 +394,13 @@ URL: {{domain}}/v1/admin/users
 {
     "phone_number":"string",
     "name": "string",
-    "occupation": "string"
+    "occupation": "string",
+    "sms_notifications": "boolean",
+    "sms_notifications_type": "string"
 }
 ```
 
-### 8. Fetch all users
+### 14. Fetch all users
 
 Fetch all users' account information. Only permitted accounts can perform this action.
 
@@ -261,7 +420,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users
 ```
 
-### 9. Fetch a user
+### 15. Fetch a user
 
 Fetch a user's account information. Only permitted accounts can perform this action.
 
@@ -281,7 +440,7 @@ Content-Type: application/json
 URL: {{domain}}/v1/admin/users/{{user_id}}
 ```
 
-### 10. Update a user
+### 16. Update a user
 
 Update a user's account information. Only permitted accounts can perform this action.
 
@@ -314,7 +473,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 11. Update account status
+### 17. Update account status
 
 Update a user's account status. Only permitted accounts can perform this action.
 
@@ -342,7 +501,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}
 }
 ```
 
-### 12. Update password
+### 18. Update password
 
 Update a user's password.
 
@@ -371,7 +530,7 @@ URL: {{domain}}/v1/users
 }
 ```
 
-### 13. Update admin password
+### 19. Update admin password
 
 Update admin user's password. Only permitted accounts can perform this action.
 
@@ -400,7 +559,7 @@ URL: {{domain}}/v1/admin/users
 }
 ```
 
-### 14. Add sites
+### 20. Add sites
 
 Add a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -426,7 +585,7 @@ URL: {{domain}}/v1/admin/users/{{user_id}}/sites
 [];
 ```
 
-### 15. Remove sites
+### 21. Remove sites
 
 Remove a list of sites to a user's account. Only permitted accounts can perform this action.
 
@@ -556,7 +715,8 @@ URL: {{domain}}/v1/admin/regions
 
 ```js
 {
-    "name": "string"
+    "name": "string",
+    "region_code": "string"
 }
 ```
 
@@ -584,7 +744,8 @@ URL: {{domain}}/v1/admin/regions/{{region_id}}
 
 ```js
 {
-    "name": "string"
+    "name": "string",
+    "region_code":"string"
 }
 ```
 
@@ -657,10 +818,18 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records
     "records_patient_category_outpatient":"boolean",
     "records_patient_category_anc":"boolean",
     "records_patient_category_diabetes_clinic":"boolean",
+    "records_patient_category_prisoner": "boolean",
     "records_patient_category_other":"string",
-    "records_reason_for_test_presumptive_tb":"boolean",
+    "records_reason_for_test":"string",
+    "records_reason_for_test_follow_up_months":"integer",
     "records_tb_treatment_history":"string",
-    "records_tb_treatment_history_contact_of_tb_patient":"string"
+    "records_tb_treatment_history_contact_of_tb_patient":"boolean",
+    "records_tb_treatment_history_other": "string",
+    "records_tb_type":"string",
+    "records_tb_treatment_number":"string",
+    "records_sms_notifications":"boolean",
+    "records_requester_name": "string",
+    "records_requester_telephone": "string"
 }
 ```
 
@@ -711,10 +880,18 @@ URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/records/{{record_id}}
     "records_patient_category_outpatient":"boolean",
     "records_patient_category_anc":"boolean",
     "records_patient_category_diabetes_clinic":"boolean",
+    "records_patient_category_prisoner": "boolean",
     "records_patient_category_other":"string",
-    "records_reason_for_test_presumptive_tb":"boolean",
+    "records_reason_for_test":"string",
+    "records_reason_for_test_follow_up_months":"integer",
     "records_tb_treatment_history":"string",
-    "records_tb_treatment_history_contact_of_tb_patient":"string"
+    "records_tb_treatment_history_contact_of_tb_patient":"boolean",
+    "records_tb_treatment_history_other": "string",
+    "records_tb_type":"string",
+    "records_tb_treatment_number":"string",
+    "records_sms_notifications":"boolean",
+    "records_requester_name": "string",
+    "records_requester_telephone": "string"
 }
 ```
 
@@ -894,11 +1071,38 @@ URL: {{domain}}/v1/records/{{record_id}}/labs
     "lab_xpert_mtb_rif_assay_result":"string",
     "lab_xpert_mtb_rif_assay_grades":"string",
     "lab_xpert_mtb_rif_assay_rif_result":"string",
+    "lab_xpert_mtb_rif_assay_result_2":"string",
+    "lab_xpert_mtb_rif_assay_grades_2":"string",
+    "lab_xpert_mtb_rif_assay_rif_result_2":"string",
     "lab_xpert_mtb_rif_assay_date":"date",
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
     "lab_urine_lf_lam_date":"date",
-    "lab_urine_lf_lam_done_by":"string"
+    "lab_urine_lf_lam_done_by":"string",
+    "lab_culture_mgit_culture":"string",
+    "lab_culture_lj_culture":"string",
+    "lab_culture_date":"date",
+    "lab_culture_done_by":"string",
+    "lab_lpa_mtbdrplus_isoniazid":"string",
+    "lab_lpa_mtbdrplus_rifampin":"string",
+    "lab_lpa_mtbdrs_flouoroquinolones":"string",
+    "lab_lpa_mtbdrs_kanamycin":"string",
+    "lab_lpa_mtbdrs_amikacin":"string",
+    "lab_lpa_mtbdrs_capreomycin":"string",
+    "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_lpa_date":"date",
+    "lab_lpa_done_by":"string",
+    "lab_dst_isonazid":"string",
+    "lab_dst_rifampin":"string",
+    "lab_dst_ethambutol":"string",
+    "lab_dst_kanamycin":"string",
+    "lab_dst_ofloxacin":"string",
+    "lab_dst_levofloxacinekanamycin":"string",
+    "lab_dst_moxifloxacinekanamycin":"string",
+    "lab_dst_amikacinekanamycin":"string",
+    "lab_dst_date":"date",
+    "lab_dst_done_by":"string",
+    "lab_result_type":"string"
 }
 ```
 
@@ -935,11 +1139,38 @@ URL: {{domain}}/v1/labs/{{labs_id}}
     "lab_xpert_mtb_rif_assay_result":"string",
     "lab_xpert_mtb_rif_assay_grades":"string",
     "lab_xpert_mtb_rif_assay_rif_result":"string",
+    "lab_xpert_mtb_rif_assay_result_2":"string",
+    "lab_xpert_mtb_rif_assay_grades_2":"string",
+    "lab_xpert_mtb_rif_assay_rif_result_2":"string",
     "lab_xpert_mtb_rif_assay_date":"date",
     "lab_xpert_mtb_rif_assay_done_by":"string",
     "lab_urine_lf_lam_result":"string",
     "lab_urine_lf_lam_date":"date",
-    "lab_urine_lf_lam_done_by":"string"
+    "lab_urine_lf_lam_done_by":"string",
+    "lab_culture_mgit_culture":"string",
+    "lab_culture_lj_culture":"string",
+    "lab_culture_date":"date",
+    "lab_culture_done_by":"string",
+    "lab_lpa_mtbdrplus_isoniazid":"string",
+    "lab_lpa_mtbdrplus_rifampin":"string",
+    "lab_lpa_mtbdrs_flouoroquinolones":"string",
+    "lab_lpa_mtbdrs_kanamycin":"string",
+    "lab_lpa_mtbdrs_amikacin":"string",
+    "lab_lpa_mtbdrs_capreomycin":"string",
+    "lab_lpa_mtbdrs_low_level_kanamycin":"string",
+    "lab_lpa_date":"date",
+    "lab_lpa_done_by":"string",
+    "lab_dst_isonazid":"string",
+    "lab_dst_rifampin":"string",
+    "lab_dst_ethambutol":"string",
+    "lab_dst_kanamycin":"string",
+    "lab_dst_ofloxacin":"string",
+    "lab_dst_levofloxacinekanamycin":"string",
+    "lab_dst_moxifloxacinekanamycin":"string",
+    "lab_dst_amikacinekanamycin":"string",
+    "lab_dst_date":"date",
+    "lab_dst_done_by":"string",
+    "lab_result_type":"string"
 }
 ```
 
@@ -1220,15 +1451,20 @@ Export data permitted to access.
 ```bash
 Method: GET
 Content-Type: application/json
-URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}
+URL: {{domain}}/v1/regions/{{region_id}}/sites/{{site_id}}/exports/{{export_type}}?start_date=yy-mm-dd&end_date=yy-mm-dd
 ```
 
 **_Query params:_**
 
-| Key        | Value  | Description |
-| ---------- | ------ | ----------- |
-| start_date | <date> |             |
-| end_date   | <date> |             |
+| Key        | Value    | Description |
+| ---------- | -------- | ----------- |
+| start_date | yy-mm-dd |             |
+| end_date   | yy-mm-dd |             |
+
+---
+
+- Export all sites in a region by setting `site_id = all`
+- Export all regions and all sites by setting `region_id = all` and `site_id = all`
 
 ---
 

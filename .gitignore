@@ -1,7 +1,7 @@
 # Byte-compiled / optimized / DLL files
 default.ini
 logs/
-datasets/
+datasets/*.csv
 __pycache__/
 .vscode/
 *.py[cod]

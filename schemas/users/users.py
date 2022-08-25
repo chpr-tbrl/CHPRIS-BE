@@ -1,3 +1,4 @@
+from email.policy import default
 from peewee import CharField
 from peewee import DateTimeField
 from peewee import IntegerField
@@ -22,5 +23,7 @@ class Users(BaseModel):
     permitted_export_range = IntegerField(default=1)
     permitted_decrypted_data = BooleanField(default=False)
     permitted_approve_accounts = BooleanField(default=False)
+    sms_notifications = BooleanField(default=True)
+    sms_notifications_type = CharField(default="positive")
     iv = CharField()
     createdAt = DateTimeField(default=datetime.now)

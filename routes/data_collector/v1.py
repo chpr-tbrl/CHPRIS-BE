@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import json 
+from threading import Thread
 
 # configurations
 from Configs import baseConfig
@@ -9,7 +10,7 @@ config = baseConfig()
 api = config["API"]
 cookie_name = api['COOKIE_NAME']
 
-from flask import Blueprint
+from flask import Blueprint, after_this_request
 from flask import Response
 from flask import request
 from flask import jsonify
@@ -17,6 +18,7 @@ from flask import jsonify
 v1 = Blueprint("v1", __name__)
 
 from security.cookie import Cookie
+from security.data import Data
 
 from datetime import timedelta
 from datetime import date
@@ -34,8 +36,9 @@ from models.sites import Site_Model
 from models.records import Record_Model
 from models.sessions import Session_Model
 from models.exports import Export_Model
-
-# from models.data_exports import data_export
+from models.contacts import Contact_Model
+from models.sms_notifications import SMS_Model
+from models.otp import OTP_Model
 
 # exceptions
 from werkzeug.exceptions import BadRequest
@@ -90,6 +93,9 @@ def signup() -> None:
         elif not "site_id" in request.json or not request.json["site_id"]:
             logger.error("no site_id")
             raise BadRequest()
+        elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+            logger.error("no sms_notifications_type")
+            raise BadRequest()
 
         email = request.json["email"]
         password = request.json["password"]
@@ -97,6 +103,7 @@ def signup() -> None:
         name = request.json["name"]
         site_id = request.json["site_id"]
         occupation = request.json["occupation"]
+        sms_notifications_type = request.json["sms_notifications_type"]
 
         User = User_Model()
 
@@ -106,7 +113,8 @@ def signup() -> None:
             phone_number=phone_number,
             name=name,
             occupation=occupation,
-            site_id=site_id 
+            site_id=site_id,
+            sms_notifications_type=sms_notifications_type
         )
 
         return "", 200
@@ -204,46 +212,6 @@ def login() -> dict:
 def createRecord(region_id: int, site_id: int) -> None:
     """
     Create a new record.
-
-    Parameters:
-        region_id: int,
-        site_id: int
-
-    Body:
-        records_name: str,
-        records_age: int,
-        records_sex: str,
-        records_date_of_test_request: str,
-        records_address: str,
-        records_telephone: str,
-        records_telephone_2: str,
-        records_has_art_unique_code: str,
-        records_art_unique_code: str,
-        records_status: str,
-        records_ward_bed_number: str,
-        records_currently_pregnant: str,
-        records_symptoms_current_cough: str,
-        records_symptoms_fever: bool,
-        records_symptoms_night_sweats: bool,
-        records_symptoms_weight_loss: bool,
-        records_symptoms_none_of_the_above: bool,
-        records_patient_category_hospitalized: bool,
-        records_patient_category_child: bool,
-        records_patient_category_to_initiate_art: bool,
-        records_patient_category_on_art_symptomatic: bool,
-        records_patient_category_outpatient: bool,
-        records_patient_category_anc: bool,
-        records_patient_category_diabetes_clinic: bool,
-        records_patient_category_other: str,
-        records_reason_for_test_presumptive_tb: bool,
-        records_tb_treatment_history: str,
-        records_tb_treatment_history_contact_of_tb_patient: str
-    
-    Response:
-        200: None,
-        400: str,
-        401: str,
-        500: str
     """
     try:
         if not request.cookies.get(cookie_name):
@@ -299,10 +267,18 @@ def createRecord(region_id: int, site_id: int) -> None:
             request.json["records_patient_category_outpatient"],
             request.json["records_patient_category_anc"],
             request.json["records_patient_category_diabetes_clinic"],
+            request.json["records_patient_category_prisoner"],
             request.json["records_patient_category_other"],
-            request.json["records_reason_for_test_presumptive_tb"],
+            request.json["records_reason_for_test"],
+            request.json["records_reason_for_test_follow_up_months"],
             request.json["records_tb_treatment_history"],
-            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+            request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_treatment_history_other"],
+            request.json["records_tb_type"],
+            request.json["records_tb_treatment_number"],
+            request.json["records_sms_notifications"],
+            request.json["records_requester_name"],
+            request.json["records_requester_telephone"]
         )
        
         Record = Record_Model()
@@ -399,10 +375,18 @@ def updateRecord(region_id: int, site_id: int, record_id: int) -> None:
             request.json["records_patient_category_outpatient"],
             request.json["records_patient_category_anc"],
             request.json["records_patient_category_diabetes_clinic"],
+            request.json["records_patient_category_prisoner"],
             request.json["records_patient_category_other"],
-            request.json["records_reason_for_test_presumptive_tb"],
+            request.json["records_reason_for_test"],
+            request.json["records_reason_for_test_follow_up_months"],
             request.json["records_tb_treatment_history"],
-            request.json["records_tb_treatment_history_contact_of_tb_patient"]
+            request.json["records_tb_treatment_history_contact_of_tb_patient"],
+            request.json["records_tb_treatment_history_other"],
+            request.json["records_tb_type"],
+            request.json["records_tb_treatment_number"],
+            request.json["records_sms_notifications"],
+            request.json["records_requester_name"],
+            request.json["records_requester_telephone"]
         )
        
         Record = Record_Model()
@@ -964,18 +948,82 @@ def createLabRecord(record_id: int) -> None:
             request.json["lab_xpert_mtb_rif_assay_result"],
             request.json["lab_xpert_mtb_rif_assay_grades"],
             request.json["lab_xpert_mtb_rif_assay_rif_result"],
+            request.json["lab_xpert_mtb_rif_assay_result_2"],
+            request.json["lab_xpert_mtb_rif_assay_grades_2"],
+            request.json["lab_xpert_mtb_rif_assay_rif_result_2"],
             request.json["lab_xpert_mtb_rif_assay_date"],
             request.json["lab_xpert_mtb_rif_assay_done_by"],
             request.json["lab_urine_lf_lam_result"],
             request.json["lab_urine_lf_lam_date"],
             request.json["lab_urine_lf_lam_done_by"],
+            request.json["lab_culture_mgit_culture"],
+            request.json["lab_culture_lj_culture"],
+            request.json["lab_culture_date"],
+            request.json["lab_culture_done_by"],
+            request.json["lab_lpa_mtbdrplus_isoniazid"],
+            request.json["lab_lpa_mtbdrplus_rifampin"],
+            request.json["lab_lpa_mtbdrs_flouoroquinolones"],
+            request.json["lab_lpa_mtbdrs_kanamycin"],
+            request.json["lab_lpa_mtbdrs_amikacin"],
+            request.json["lab_lpa_mtbdrs_capreomycin"],
+            request.json["lab_lpa_mtbdrs_low_level_kanamycin"],
+            request.json["lab_lpa_date"],
+            request.json["lab_lpa_done_by"],
+            request.json["lab_dst_isonazid"],
+            request.json["lab_dst_rifampin"],
+            request.json["lab_dst_ethambutol"],
+            request.json["lab_dst_kanamycin"],
+            request.json["lab_dst_ofloxacin"],
+            request.json["lab_dst_levofloxacinekanamycin"],
+            request.json["lab_dst_moxifloxacinekanamycin"],
+            request.json["lab_dst_amikacinekanamycin"],
+            request.json["lab_dst_date"],
+            request.json["lab_dst_done_by"]
         )
        
         Record = Record_Model()
 
-        Record.create_lab(*payload)
+        lab_id = Record.create_lab(*payload)
 
-        res = jsonify()
+        Contact = Contact_Model()
+        
+        Sms = SMS_Model()
+
+        xpert_1 = request.json["lab_xpert_mtb_rif_assay_result"]
+
+        def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
+            """
+            """
+            if xpert_1.lower() in ["detected", "not_detected", "error_invalid"]:
+                Sms.send_client(contacts=contacts['client'])
+
+            Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
+            Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
+
+            return None
+
+        logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
+        if request.json["lab_result_type"].lower() == "positive":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': int(lab_id), 'contacts': contacts})
+                thread.start()
+                return response
+
+        elif request.json["lab_result_type"].lower() == "negative":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': int(lab_id), 'contacts': contacts})
+                thread.start()
+                return response
+        else:
+            pass
+
+        res = Response()
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
@@ -1049,19 +1097,85 @@ def updateLabRecord(lab_id: int) -> None:
             request.json["lab_xpert_mtb_rif_assay_result"],
             request.json["lab_xpert_mtb_rif_assay_grades"],
             request.json["lab_xpert_mtb_rif_assay_rif_result"],
+            request.json["lab_xpert_mtb_rif_assay_result_2"],
+            request.json["lab_xpert_mtb_rif_assay_grades_2"],
+            request.json["lab_xpert_mtb_rif_assay_rif_result_2"],
             request.json["lab_xpert_mtb_rif_assay_date"],
             request.json["lab_xpert_mtb_rif_assay_done_by"],
             request.json["lab_urine_lf_lam_result"],
             request.json["lab_urine_lf_lam_date"],
             request.json["lab_urine_lf_lam_done_by"],
+            request.json["lab_culture_mgit_culture"],
+            request.json["lab_culture_lj_culture"],
+            request.json["lab_culture_date"],
+            request.json["lab_culture_done_by"],
+            request.json["lab_lpa_mtbdrplus_isoniazid"],
+            request.json["lab_lpa_mtbdrplus_rifampin"],
+            request.json["lab_lpa_mtbdrs_flouoroquinolones"],
+            request.json["lab_lpa_mtbdrs_kanamycin"],
+            request.json["lab_lpa_mtbdrs_amikacin"],
+            request.json["lab_lpa_mtbdrs_capreomycin"],
+            request.json["lab_lpa_mtbdrs_low_level_kanamycin"],
+            request.json["lab_lpa_date"],
+            request.json["lab_lpa_done_by"],
+            request.json["lab_dst_isonazid"],
+            request.json["lab_dst_rifampin"],
+            request.json["lab_dst_ethambutol"],
+            request.json["lab_dst_kanamycin"],
+            request.json["lab_dst_ofloxacin"],
+            request.json["lab_dst_levofloxacinekanamycin"],
+            request.json["lab_dst_moxifloxacinekanamycin"],
+            request.json["lab_dst_amikacinekanamycin"],
+            request.json["lab_dst_date"],
+            request.json["lab_dst_done_by"]
         )
        
         Record = Record_Model()
 
-        Record.update_lab(*payload)
+        record_id = Record.update_lab(*payload)
 
-        res = jsonify()
+        Contact = Contact_Model()
+        
+        Sms = SMS_Model()
 
+        xpert_1 = request.json["lab_xpert_mtb_rif_assay_result"]
+        xpert_1_done = request.json["lab_xpert_mtb_rif_assay_result_done"]
+
+        def trigger_sms(record_id: int, lab_id: int, contacts: dict) -> None:
+            """
+            """
+            if not xpert_1_done:
+                if xpert_1.lower() in ["detected", "not_detected", "error_invalid"]:
+                    Sms.send_client(contacts=contacts['client'])
+
+            Sms.send_lab(record_id=record_id, lab_id=lab_id, contacts=contacts['lab'])
+            Sms.send_requester(record_id=record_id, lab_id=lab_id, contacts=contacts['requester'])
+
+            return None
+
+        logger.debug("lab_result_type: %s" % request.json["lab_result_type"])
+        if request.json["lab_result_type"].lower() == "positive":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="positive,all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+
+        elif request.json["lab_result_type"].lower() == "negative":
+            contacts = Contact.all(record_id=record_id, sms_notification_type="all")
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'record_id': record_id, 'lab_id': lab_id, 'contacts': contacts})
+                thread.start()
+                return response
+        else:
+            pass
+
+        res = Response()
+        
         session = Session.update(sid=sid, unique_identifier=user_id)
 
         cookie = Cookie()
@@ -1848,6 +1962,9 @@ def updateProfile() -> None:
             raise BadRequest()
 
         cookie = Cookie()
+        Session = Session_Model()
+        User = User_Model()
+
         e_cookie = request.cookies.get(cookie_name)
         d_cookie = cookie.decrypt(e_cookie)
         json_cookie = json.loads(d_cookie)
@@ -1857,11 +1974,7 @@ def updateProfile() -> None:
         user_cookie = json_cookie["cookie"]
         user_agent = request.headers.get("User-Agent")
 
-        Session = Session_Model()
-
         user_id = Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
-
-        User = User_Model()
 
         User.check_account_status(user_id=user_id)
 
@@ -1875,16 +1988,26 @@ def updateProfile() -> None:
             elif not "occupation" in request.json or not request.json["occupation"]:
                 logger.error("no occupation")
                 raise BadRequest()
+            elif not "sms_notifications" in request.json or not request.json["sms_notifications"]:
+                logger.error("no sms_notifications")
+                raise BadRequest()
+            elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+                logger.error("no sms_notifications_type")
+                raise BadRequest()
 
             phone_number = request.json["phone_number"]
             name = request.json["name"]
             occupation = request.json["occupation"]
+            sms_notifications = request.json["sms_notifications"]
+            sms_notifications_type = request.json["sms_notifications_type"]
 
             User.update_profile(
                 id=user_id,
                 phone_number=phone_number,
                 name=name,
-                occupation=occupation
+                occupation=occupation,
+                sms_notifications=sms_notifications,
+                sms_notifications_type=sms_notifications_type
             )
 
         elif request.method == "POST":
@@ -1908,7 +2031,6 @@ def updateProfile() -> None:
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
-        cookie = Cookie()
         cookie_data = json.dumps({"sid": session["sid"], "uid": session["uid"], "cookie": session["data"]})
         e_cookie = cookie.encrypt(cookie_data)
         res.set_cookie(
@@ -1922,6 +2044,261 @@ def updateProfile() -> None:
 
         return res, 200
 
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/recovery", methods=["PUT", "POST"])
+def accountRecovery() -> None:
+    """
+    """
+    try:
+        if not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        user_agent = request.headers.get("User-Agent")
+
+        User = User_Model()
+        Session = Session_Model()
+        cookie = Cookie()
+        data = Data()
+
+        if request.method == "POST":
+            if not "email" in request.json or not request.json["email"]:
+                logger.error("no email")
+                raise BadRequest()
+
+            email = request.json["email"]
+        
+            user = User.fetch_user(
+                email=email,
+                account_status="approved",
+                no_sites=True
+            )
+
+            res = jsonify({
+                "phone_number": user["phone_number"]
+            })
+
+            phone_number_hash = data.hash(data=user["phone_number"])
+
+            session = Session.create(unique_identifier=phone_number_hash, user_agent=user_agent)
+
+            cookie_data = json.dumps({
+                "sid": session["sid"],
+                "user_id": user["id"],
+                "cookie": session["data"],
+                "type": "recovery",
+                "status": "initialized"
+            })
+
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+
+        elif request.method == "PUT":
+            if not request.cookies.get(cookie_name):
+                logger.error("no cookie")
+                raise Unauthorized()
+            elif not "new_password" in request.json or not request.json["new_password"]:
+                logger.error("no new_password")
+                raise BadRequest()
+
+            e_cookie = request.cookies.get(cookie_name)
+            d_cookie = cookie.decrypt(e_cookie)
+            json_cookie = json.loads(d_cookie)
+
+            sid = json_cookie["sid"]
+            uid = json_cookie["uid"]
+            user_id = json_cookie["user_id"]
+            user_cookie = json_cookie["cookie"]
+            session_type = json_cookie["type"]
+            session_status = json_cookie["status"]
+
+            Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+            if session_type != "recovery":
+                logger.error("invalid session type")
+                raise BadRequest()
+            elif session_status != "approved":
+                logger.error("invalid session status")
+                raise BadRequest()
+
+            new_password = request.json["new_password"]
+
+            User.create_password(
+                id=user_id,
+                new_password=new_password
+            )
+
+            res = Response()
+       
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/otp", methods=["PUT", "POST"])
+def OTP() -> None:
+    """
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+        elif not "phone_number" in request.json or not request.json["phone_number"]:
+            logger.error("no phone_number")
+            raise BadRequest()
+
+        cookie = Cookie()
+        Session = Session_Model()
+        Otp = OTP_Model()
+        data = Data()
+
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        phone_number = request.json["phone_number"]
+
+        sid = json_cookie["sid"]
+        uid = data.hash(data=phone_number)
+        user_cookie = json_cookie["cookie"]
+        session_type = json_cookie["type"]
+        session_status = json_cookie["status"]
+        user_id = json_cookie["user_id"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        if session_type != "recovery":
+            logger.error("invalid session type")
+            raise BadRequest()
+        
+        if request.method == "POST":
+            if session_status != "initialized":
+                logger.error("invalid session status")
+                raise BadRequest()
+
+            otp = Otp.create(phone_number=phone_number)
+
+            def trigger_sms(text: str, contacts: list) -> None:
+                """
+                """
+                Otp.__send__(text=text, contacts=contacts)
+
+                return None
+
+            @after_this_request
+            def send_sms(response):
+                thread = Thread(target=trigger_sms, kwargs={'text': otp["text"], 'contacts': otp["contacts"]})
+                thread.start()
+                return response
+
+            res = Response()
+
+            session = Session.update(sid=sid, unique_identifier=uid)
+
+            cookie_data = json.dumps({
+                "sid": session["sid"],
+                "cookie": session["data"],
+                "type": "recovery",
+                "status": "pending",
+                "otp_id": otp["id"],
+                "user_id": user_id
+            })
+
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+
+            return res, 201
+
+        elif request.method == "PUT":
+            if not "code" in request.json or not request.json["code"]:
+                logger.error("no code")
+                raise BadRequest()
+            elif session_status != "pending":
+                logger.error("invalid session status")
+                raise BadRequest()
+
+            otp_id = json_cookie["otp_id"]
+            code = request.json["code"]
+
+            otp = Otp.check(
+                otp_id=otp_id,
+                phone_number=phone_number,
+                code=code
+            )
+
+            res = Response()
+
+            session = Session.update(sid=sid, unique_identifier=uid)
+
+            cookie_data = json.dumps({
+                "sid": session["sid"],
+                "uid": session["uid"],
+                "cookie": session["data"],
+                "type": "recovery",
+                "status": "approved",
+                "user_id": user_id
+            })
+
+            e_cookie = cookie.encrypt(cookie_data)
+            res.set_cookie(
+                cookie_name,
+                e_cookie,
+                max_age=timedelta(milliseconds=session["data"]["maxAge"]),
+                secure=session["data"]["secure"],
+                httponly=session["data"]["httpOnly"],
+                samesite=session["data"]["sameSite"],
+            )
+
+            return res, 200
+       
     except BadRequest as err:
         return str(err), 400
 
@@ -2077,9 +2454,14 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
 
         Export = Export_Model()
         
-        download_path = Export.records(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
+        if format == "csv":
+            download_path = Export.csv(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
 
-        res = Response(download_path)
+            res = Response(download_path)
+        elif format == "pdf":
+            pdf_download_path = Export.pdf(start_date=start_date, end_date=end_date, region_id=region_id, site_id=site_id, permitted_decrypted_data=permitted_decrypted_data)
+
+            res = Response(pdf_download_path)
 
         session = Session.update(sid=sid, unique_identifier=user_id)
 
@@ -2108,6 +2490,57 @@ def dataExport(region_id: str, site_id: str, format: str) -> str:
 
     except Conflict as err:
         return str(err), 409
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/logout", methods=["POST"])
+def logout() -> None:
+    """
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session = Session_Model()
+
+        Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        res = Response()
+
+        res.delete_cookie(cookie_name)
+
+        logger.info("- Successfully cleared cookie")
+
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except Forbidden as err:
+        return str(err), 403
 
     except InternalServerError as err:
         logger.exception(err)

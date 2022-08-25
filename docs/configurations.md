@@ -20,6 +20,13 @@ On Ubuntu **libmysqlclient-dev** is required
 
 ```
 sudo apt install python3-dev libmysqlclient-dev
+sudo apt-get install libapache2-mod-wsgi-py3 
+```
+
+If using apache2 wsgi on Ubuntu
+
+```
+sudo apt-get install libapache2-mod-wsgi-py3 
 ```
 
 ## Installation
@@ -53,6 +60,14 @@ To set up Database and API, copy the template files "example.default.ini" and re
 ```
 cp configs/example.default.ini configs/default.ini
 ```
+
+### export path
+
+In the `default.ini` file setup export path by:
+
+- Creating a `datasets` directory at the desired path.
+
+- Place the desired path address in the `default.ini` file under the `export` section. Do not add the `datasets` directory in the path address.
 
 ## How to use
 

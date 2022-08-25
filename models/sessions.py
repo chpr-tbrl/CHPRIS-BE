@@ -66,7 +66,7 @@ class Session_Model:
             logger.error("FAILED TO CREATE SESSION FOR %s CHECK LOGS" % unique_identifier)
             raise InternalServerError(err) from None
 
-    def find(self, sid: str, unique_identifier: str, user_agent: str, cookie: dict) -> int:
+    def find(self, sid: str, unique_identifier: str, user_agent: str, cookie: dict) -> str:
         """
         """
         try:
@@ -115,7 +115,7 @@ class Session_Model:
                 raise Unauthorized()
 
             logger.info("SESSION %s FOUND" % sid)
-            return int(result[0]["unique_identifier"])
+            return str(result[0]["unique_identifier"])
 
         except DatabaseError as err:
             logger.error("FAILED FINDING SESSION %s CHECK LOGS" % sid)

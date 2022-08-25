@@ -239,16 +239,26 @@ def updateProfile() -> None:
             elif not "occupation" in request.json or not request.json["occupation"]:
                 logger.error("no occupation")
                 raise BadRequest()
+            elif not "sms_notifications" in request.json or not request.json["sms_notifications"]:
+                logger.error("no sms_notifications")
+                raise BadRequest()
+            elif not "sms_notifications_type" in request.json or not request.json["sms_notifications_type"]:
+                logger.error("no sms_notifications_type")
+                raise BadRequest()
 
             phone_number = request.json["phone_number"]
             name = request.json["name"]
             occupation = request.json["occupation"]
+            sms_notifications = request.json["sms_notifications"]
+            sms_notifications_type = request.json["sms_notifications_type"]
 
             User.update_profile(
                 id=user_id,
                 phone_number=phone_number,
                 name=name,
-                occupation=occupation
+                occupation=occupation,
+                sms_notifications=sms_notifications,
+                sms_notifications_type=sms_notifications_type
             )
 
         elif request.method == "POST":
@@ -532,6 +542,7 @@ def createRegion() -> None:
 
     Body:
         name: str,
+        region_code: str
 
     Response:
         200: None
@@ -547,6 +558,9 @@ def createRegion() -> None:
             raise BadRequest()
         elif not "name" in request.json or not request.json["name"]:
             logger.error("no name")
+            raise BadRequest()
+        elif not "region_code" in request.json or not request.json["region_code"]:
+            logger.error("no region_code")
             raise BadRequest()
 
         cookie = Cookie()
@@ -568,10 +582,11 @@ def createRegion() -> None:
         User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
+        region_code = request.json["region_code"]
 
         Site = Site_Model()
 
-        Site.create_region(name=name)
+        Site.create_region(name=name, region_code=region_code)
 
         res = jsonify()
 
@@ -657,10 +672,11 @@ def updateRegion(region_id) -> None:
         User.check_permission(user_id=user_id, scope=["admin", "super_admin"])
 
         name = request.json["name"]
+        region_code = request.json["region_code"]
 
         Site = Site_Model()
 
-        Site.update_region(region_id=region_id, name=name)
+        Site.update_region(region_id=region_id, name=name, region_code=region_code)
 
         res = jsonify()
 
@@ -935,6 +951,54 @@ def findAUser() -> dict:
             httponly=session["data"]["httpOnly"],
             samesite=session["data"]["sameSite"],
         )
+
+        return res, 200
+
+    except BadRequest as err:
+        return str(err), 400
+
+    except Unauthorized as err:
+        return str(err), 401
+
+    except InternalServerError as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+    except Exception as err:
+        logger.exception(err)
+        return "internal server error", 500
+
+@v1.route("/logout", methods=["POST"])
+def logout() -> None:
+    """
+    """
+    try:
+        if not request.cookies.get(cookie_name):
+            logger.error("no cookie")
+            raise Unauthorized()
+        elif not request.headers.get("User-Agent"):
+            logger.error("no user agent")
+            raise BadRequest()
+
+        cookie = Cookie()
+        e_cookie = request.cookies.get(cookie_name)
+        d_cookie = cookie.decrypt(e_cookie)
+        json_cookie = json.loads(d_cookie)
+
+        sid = json_cookie["sid"]
+        uid = json_cookie["uid"]
+        user_cookie = json_cookie["cookie"]
+        user_agent = request.headers.get("User-Agent")
+
+        Session = Session_Model()
+
+        Session.find(sid=sid, unique_identifier=uid, user_agent=user_agent, cookie=user_cookie) 
+
+        res = Response()
+
+        res.delete_cookie(cookie_name)
+
+        logger.info("- Successfully cleared cookie")
 
         return res, 200
 

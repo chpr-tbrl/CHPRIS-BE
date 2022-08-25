@@ -35,48 +35,12 @@ class Record_Model:
 
     # record
 
-    def create_record(self, site_id: int, region_id: int, records_user_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str) -> str:
+    def create_record(self, site_id: int, region_id: int, records_user_id: str, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_prisoner: bool, records_patient_category_other: str, records_reason_for_test: str, records_reason_for_test_follow_up_months: int, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: bool, records_tb_treatment_history_other: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
         """
         Create a new record.
-
-        Arguments::
-            site_id: int,
-            region_id: int, 
-            records_user_id: int,
-            records_name: str,
-            records_age: int,
-            records_sex: str,
-            records_date_of_test_request: str,
-            records_address: str,
-            records_telephone: str,
-            records_telephone_2: str,
-            records_has_art_unique_code: str,
-            records_art_unique_code: str,
-            records_status: str,
-            records_ward_bed_number: str,
-            records_currently_pregnant: str,
-            records_symptoms_current_cough: str,
-            records_symptoms_fever: bool,
-            records_symptoms_night_sweats: bool,
-            records_symptoms_weight_loss: bool,
-            records_symptoms_none_of_the_above: bool,
-            records_patient_category_hospitalized: bool,
-            records_patient_category_child: bool,
-            records_patient_category_to_initiate_art: bool,
-            records_patient_category_on_art_symptomatic: bool,
-            records_patient_category_outpatient: bool,
-            records_patient_category_anc: bool,
-            records_patient_category_diabetes_clinic: bool,
-            records_patient_category_other: str,
-            records_reason_for_test_presumptive_tb: bool,
-            records_tb_treatment_history: str,
-            records_tb_treatment_history_contact_of_tb_patient: str
-        
-        Returns:
-            str
         """
         try:
-            logger.debug("creating record for %d ..." % records_user_id)
+            logger.debug("creating record for %s ..." % records_user_id)
             
             data = self.Data()
 
@@ -108,10 +72,18 @@ class Record_Model:
                 records_patient_category_outpatient=records_patient_category_outpatient,
                 records_patient_category_anc=records_patient_category_anc,
                 records_patient_category_diabetes_clinic=records_patient_category_diabetes_clinic,
+                records_patient_category_prisoner=records_patient_category_prisoner,
                 records_patient_category_other=records_patient_category_other,
-                records_reason_for_test_presumptive_tb=records_reason_for_test_presumptive_tb,
+                records_reason_for_test=records_reason_for_test,
+                records_reason_for_test_follow_up_months=records_reason_for_test_follow_up_months,
                 records_tb_treatment_history=records_tb_treatment_history,
-                records_tb_treatment_history_contact_of_tb_patient= data.encrypt(records_tb_treatment_history_contact_of_tb_patient)["e_data"],
+                records_tb_treatment_history_contact_of_tb_patient= records_tb_treatment_history_contact_of_tb_patient,
+                records_tb_treatment_history_other= records_tb_treatment_history_other,
+                records_tb_type=records_tb_type,
+                records_tb_treatment_number=records_tb_treatment_number,
+                records_sms_notifications=records_sms_notifications,
+                records_requester_name= data.encrypt(records_requester_name)["e_data"],
+                records_requester_telephone= data.encrypt(records_requester_telephone)["e_data"],
                 iv = data.iv
             )
 
@@ -123,51 +95,15 @@ class Record_Model:
             raise BadRequest()
 
         except DatabaseError as err:
-            logger.error("creating record %d failed check logs" % records_user_id)
-            raise InternalServerError(err) from None
+            logger.error("creating record %s failed check logs" % records_user_id)
+            raise InternalServerError(err)
 
-    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_other: str, records_reason_for_test_presumptive_tb: bool, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: str) -> str:
+    def update_record(self, site_id: int, region_id: int, record_id: int, records_name: str, records_age: int, records_sex: str, records_date_of_test_request: str, records_address: str, records_telephone: str, records_telephone_2: str, records_has_art_unique_code: str, records_art_unique_code: str, records_status: str, records_ward_bed_number: str, records_currently_pregnant: str, records_symptoms_current_cough: str, records_symptoms_fever: bool, records_symptoms_night_sweats: bool, records_symptoms_weight_loss: bool, records_symptoms_none_of_the_above: bool, records_patient_category_hospitalized: bool, records_patient_category_child: bool, records_patient_category_to_initiate_art: bool, records_patient_category_on_art_symptomatic: bool, records_patient_category_outpatient: bool, records_patient_category_anc: bool, records_patient_category_diabetes_clinic: bool, records_patient_category_prisoner: bool, records_patient_category_other: str, records_reason_for_test: str, records_reason_for_test_follow_up_months: int, records_tb_treatment_history: str, records_tb_treatment_history_contact_of_tb_patient: bool, records_tb_treatment_history_other: str, records_tb_type: str, records_tb_treatment_number: str, records_sms_notifications: bool, records_requester_name: str, records_requester_telephone: str) -> str:
         """
         Update a record.
-
-        Arguments::
-            site_id: int,
-            region_id: int, 
-            record_id: int,
-            records_name: str,
-            records_age: int,
-            records_sex: str,
-            records_date_of_test_request: str,
-            records_address: str,
-            records_telephone: str,
-            records_telephone_2: str,
-            records_has_art_unique_code: str,
-            records_art_unique_code: str,
-            records_status: str,
-            records_ward_bed_number: str,
-            records_currently_pregnant: str,
-            records_symptoms_current_cough: str,
-            records_symptoms_fever: bool,
-            records_symptoms_night_sweats: bool,
-            records_symptoms_weight_loss: bool,
-            records_symptoms_none_of_the_above: bool,
-            records_patient_category_hospitalized: bool,
-            records_patient_category_child: bool,
-            records_patient_category_to_initiate_art: bool,
-            records_patient_category_on_art_symptomatic: bool,
-            records_patient_category_outpatient: bool,
-            records_patient_category_anc: bool,
-            records_patient_category_diabetes_clinic: bool,
-            records_patient_category_other: str,
-            records_reason_for_test_presumptive_tb: bool,
-            records_tb_treatment_history: str,
-            records_tb_treatment_history_contact_of_tb_patient: str
-        
-        Returns:
-            str
         """
         try:
-            logger.debug("updating record for %d ..." % record_id)
+            logger.debug("updating record for %s ..." % record_id)
             
             data = self.Data()
 
@@ -198,10 +134,18 @@ class Record_Model:
                 records_patient_category_outpatient=records_patient_category_outpatient,
                 records_patient_category_anc=records_patient_category_anc,
                 records_patient_category_diabetes_clinic=records_patient_category_diabetes_clinic,
+                records_patient_category_prisoner=records_patient_category_prisoner,
                 records_patient_category_other=records_patient_category_other,
-                records_reason_for_test_presumptive_tb=records_reason_for_test_presumptive_tb,
+                records_reason_for_test=records_reason_for_test,
+                records_reason_for_test_follow_up_months=records_reason_for_test_follow_up_months,
                 records_tb_treatment_history=records_tb_treatment_history,
-                records_tb_treatment_history_contact_of_tb_patient= data.encrypt(records_tb_treatment_history_contact_of_tb_patient)["e_data"],
+                records_tb_treatment_history_contact_of_tb_patient= records_tb_treatment_history_contact_of_tb_patient,
+                records_tb_treatment_history_other= records_tb_treatment_history_other,
+                records_tb_type=records_tb_type,
+                records_tb_treatment_number=records_tb_treatment_number,
+                records_sms_notifications=records_sms_notifications,
+                records_requester_name= data.encrypt(records_requester_name)["e_data"],
+                records_requester_telephone= data.encrypt(records_requester_telephone)["e_data"],
                 iv = data.iv
             ).where(
                 self.Records.record_id == record_id
@@ -217,8 +161,8 @@ class Record_Model:
             raise BadRequest()
 
         except DatabaseError as err:
-            logger.error("updating record %d failed check logs" % record_id)
-            raise InternalServerError(err) from None
+            logger.error("updating record %s failed check logs" % record_id)
+            raise InternalServerError(err)
 
     def fetch_record(self, record_id: int, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool) -> list:
         """
@@ -235,7 +179,7 @@ class Record_Model:
             list
         """
         try:
-            logger.debug("finding records for %d ..." % records_user_id)
+            logger.debug("finding records for %s ..." % records_user_id)
 
             result = []
             
@@ -283,10 +227,18 @@ class Record_Model:
                         'records_patient_category_outpatient':record['records_patient_category_outpatient'],
                         'records_patient_category_anc':record['records_patient_category_anc'],
                         'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
+                        'records_patient_category_prisoner':record['records_patient_category_prisoner'],
                         'records_patient_category_other':record['records_patient_category_other'],
-                        'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
+                        'records_reason_for_test':record['records_reason_for_test'],
+                        'records_reason_for_test_follow_up_months':record['records_reason_for_test_follow_up_months'],
                         'records_tb_treatment_history':record['records_tb_treatment_history'],
-                        'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(record['records_tb_treatment_history_contact_of_tb_patient'], iv)
+                        'records_tb_treatment_history_contact_of_tb_patient': record['records_tb_treatment_history_contact_of_tb_patient'],
+                        'records_tb_treatment_history_other': record['records_tb_treatment_history_other'],
+                        'records_tb_type':record['records_tb_type'],
+                        'records_tb_treatment_number':record['records_tb_treatment_number'],
+                        'records_sms_notifications':record['records_sms_notifications'],
+                        'records_requester_name': data.decrypt(record['records_requester_name'], iv),
+                        'records_requester_telephone': data.decrypt(record['records_requester_telephone'], iv)
                     })
                 else:
                     result.append({
@@ -319,18 +271,26 @@ class Record_Model:
                         'records_patient_category_outpatient':record['records_patient_category_outpatient'],
                         'records_patient_category_anc':record['records_patient_category_anc'],
                         'records_patient_category_diabetes_clinic':record['records_patient_category_diabetes_clinic'],
+                        'records_patient_category_prisoner':record['records_patient_category_prisoner'],
                         'records_patient_category_other':record['records_patient_category_other'],
-                        'records_reason_for_test_presumptive_tb':record['records_reason_for_test_presumptive_tb'],
+                        'records_reason_for_test':record['records_reason_for_test'],
+                        'records_reason_for_test_follow_up_months':record['records_reason_for_test_follow_up_months'],
                         'records_tb_treatment_history':record['records_tb_treatment_history'],
-                        'records_tb_treatment_history_contact_of_tb_patient':record['records_tb_treatment_history_contact_of_tb_patient']
+                        'records_tb_treatment_history_contact_of_tb_patient':record['records_tb_treatment_history_contact_of_tb_patient'],
+                        'records_tb_treatment_history_other': record['records_tb_treatment_history_other'],
+                        'records_tb_type':record['records_tb_type'],
+                        'records_tb_treatment_number':record['records_tb_treatment_number'],
+                        'records_sms_notifications':record['records_sms_notifications'],
+                        'records_requester_name': record['records_requester_name'],
+                        'records_requester_telephone': record['records_requester_telephone']
                     })
 
             logger.info("- Successfully found records with site_id = %s & region_id = %s requested by user_id = %s" % (site_id, region_id, records_user_id))
             return result
 
         except DatabaseError as err:
-            logger.error("failed to find record for %d check logs" % records_user_id)
-            raise InternalServerError(err) from None
+            logger.error("failed to find record for %s check logs" % records_user_id)
+            raise InternalServerError(err)
 
     def fetch_records(self, site_id: int, region_id: int, records_user_id: int, permitted_decrypted_data: bool, records_name: str, record_id: int, records_telephone: str) -> list:
         """
@@ -349,7 +309,7 @@ class Record_Model:
             list
         """
         try:
-            logger.debug("finding records for %d ..." % records_user_id)
+            logger.debug("finding records for %s ..." % records_user_id)
 
             result = []
 
@@ -450,8 +410,8 @@ class Record_Model:
             return result
 
         except DatabaseError as err:
-            logger.error("failed to find record for %d check logs" % records_user_id)
-            raise InternalServerError(err) from None
+            logger.error("failed to find record for %s check logs" % records_user_id)
+            raise InternalServerError(err)
 
     # specimen collection 
 
@@ -511,7 +471,7 @@ class Record_Model:
             
         except DatabaseError as err:
             logger.error("creating Specimen_collection record failed check logs")
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def update_specimen_collection(self, specimen_collection_id: int, specimen_collection_1_date: str, specimen_collection_1_specimen_collection_type: str, specimen_collection_1_other: str, specimen_collection_1_period: str, specimen_collection_1_aspect: str, specimen_collection_1_received_by: str, specimen_collection_2_date: str, specimen_collection_2_specimen_collection_type: str, specimen_collection_2_other: str, specimen_collection_2_period: str, specimen_collection_2_aspect: str, specimen_collection_2_received_by: str) -> str:
         """
@@ -551,7 +511,7 @@ class Record_Model:
             
         except DatabaseError as err:
             logger.error("updating Specimen_collection record failed check logs")
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def fetch_specimen_collection(self, specimen_collection_records_id: int) -> list:
         """
@@ -564,7 +524,7 @@ class Record_Model:
             list
         """
         try:
-            logger.debug("finding specimen_collection records for %d ..." % specimen_collection_records_id)
+            logger.debug("finding specimen_collection records for %s ..." % specimen_collection_records_id)
 
             result = []
             
@@ -577,20 +537,20 @@ class Record_Model:
             for specimen_collection in specimen_collections:
                 result.append(specimen_collection)
 
-            logger.info("- Successfully found specimen_collection records for %d" % specimen_collection_records_id)
+            logger.info("- Successfully found specimen_collection records for %s" % specimen_collection_records_id)
             return result
 
         except DatabaseError as err:
-            logger.error("failed to find specimen_collection record for %d check logs" % specimen_collection_records_id)
-            raise InternalServerError(err) from None
+            logger.error("failed to find specimen_collection record for %s check logs" % specimen_collection_records_id)
+            raise InternalServerError(err)
 
     # labs
 
-    def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str) -> str:
+    def create_lab(self, lab_records_id: int, lab_user_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_culture_date: str, lab_culture_done_by: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_lpa_date: str, lab_lpa_done_by: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str, lab_dst_date: str, lab_dst_done_by: str) -> int:
         """
         """
         try:
-            logger.debug("creating lab record for %d ..." % lab_user_id)
+            logger.debug("creating lab record for %s ..." % lab_user_id)
             
             lab = self.Labs.create(
                 lab_records_id=lab_records_id,
@@ -605,11 +565,37 @@ class Record_Model:
                 lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result,
                 lab_xpert_mtb_rif_assay_grades=lab_xpert_mtb_rif_assay_grades,
                 lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result,
+                lab_xpert_mtb_rif_assay_result_2=lab_xpert_mtb_rif_assay_result_2,
+                lab_xpert_mtb_rif_assay_grades_2=lab_xpert_mtb_rif_assay_grades_2,
+                lab_xpert_mtb_rif_assay_rif_result_2=lab_xpert_mtb_rif_assay_rif_result_2,
                 lab_xpert_mtb_rif_assay_date=lab_xpert_mtb_rif_assay_date,
                 lab_xpert_mtb_rif_assay_done_by=lab_xpert_mtb_rif_assay_done_by,
                 lab_urine_lf_lam_result=lab_urine_lf_lam_result,
                 lab_urine_lf_lam_date=lab_urine_lf_lam_date,
-                lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by
+                lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by,
+                lab_culture_mgit_culture=lab_culture_mgit_culture,
+                lab_culture_lj_culture=lab_culture_lj_culture,
+                lab_culture_date=lab_culture_date,
+                lab_culture_done_by=lab_culture_done_by,
+                lab_lpa_mtbdrplus_isoniazid=lab_lpa_mtbdrplus_isoniazid,
+                lab_lpa_mtbdrplus_rifampin=lab_lpa_mtbdrplus_rifampin,
+                lab_lpa_mtbdrs_flouoroquinolones=lab_lpa_mtbdrs_flouoroquinolones,
+                lab_lpa_mtbdrs_kanamycin=lab_lpa_mtbdrs_kanamycin,
+                lab_lpa_mtbdrs_amikacin=lab_lpa_mtbdrs_amikacin,
+                lab_lpa_mtbdrs_capreomycin=lab_lpa_mtbdrs_capreomycin,
+                lab_lpa_mtbdrs_low_level_kanamycin=lab_lpa_mtbdrs_low_level_kanamycin,
+                lab_lpa_date=lab_lpa_date,
+                lab_lpa_done_by=lab_lpa_done_by,
+                lab_dst_isonazid=lab_dst_isonazid,
+                lab_dst_rifampin=lab_dst_rifampin,
+                lab_dst_ethambutol=lab_dst_ethambutol,
+                lab_dst_kanamycin=lab_dst_kanamycin,
+                lab_dst_ofloxacin=lab_dst_ofloxacin,
+                lab_dst_levofloxacinekanamycin=lab_dst_levofloxacinekanamycin,
+                lab_dst_moxifloxacinekanamycin=lab_dst_moxifloxacinekanamycin,
+                lab_dst_amikacinekanamycin=lab_dst_amikacinekanamycin,
+                lab_dst_date=lab_dst_date,
+                lab_dst_done_by=lab_dst_done_by
             )
 
             logger.info("- Lab record %s successfully created" % lab)
@@ -625,13 +611,13 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("creating Lab record %s failed check logs" % lab)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
-    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str) -> str:
+    def update_lab(self, lab_id: int, lab_date_specimen_collection_received: str, lab_received_by: str, lab_registration_number: str, lab_smear_microscopy_result_result_1: str, lab_smear_microscopy_result_result_2: str, lab_smear_microscopy_result_date: str, lab_smear_microscopy_result_done_by: str, lab_xpert_mtb_rif_assay_result: str, lab_xpert_mtb_rif_assay_grades: str, lab_xpert_mtb_rif_assay_rif_result: str, lab_xpert_mtb_rif_assay_result_2: str,lab_xpert_mtb_rif_assay_grades_2: str, lab_xpert_mtb_rif_assay_rif_result_2: str, lab_xpert_mtb_rif_assay_date: str, lab_xpert_mtb_rif_assay_done_by: str, lab_urine_lf_lam_result: str, lab_urine_lf_lam_date: str, lab_urine_lf_lam_done_by: str, lab_culture_mgit_culture: str, lab_culture_lj_culture: str, lab_culture_date: str, lab_culture_done_by: str, lab_lpa_mtbdrplus_isoniazid: str, lab_lpa_mtbdrplus_rifampin: str, lab_lpa_mtbdrs_flouoroquinolones: str, lab_lpa_mtbdrs_kanamycin: str, lab_lpa_mtbdrs_amikacin: str, lab_lpa_mtbdrs_capreomycin: str, lab_lpa_mtbdrs_low_level_kanamycin: str, lab_lpa_date: str, lab_lpa_done_by: str, lab_dst_isonazid: str, lab_dst_rifampin: str, lab_dst_ethambutol: str, lab_dst_kanamycin: str, lab_dst_ofloxacin: str, lab_dst_levofloxacinekanamycin: str, lab_dst_moxifloxacinekanamycin: str, lab_dst_amikacinekanamycin: str, lab_dst_date: str, lab_dst_done_by: str) -> int:
         """
         """
         try:
-            logger.debug("updating lab record %d ..." % lab_id)
+            logger.debug("updating lab record %s ..." % lab_id)
             
             lab = self.Labs.update(
                 lab_date_specimen_collection_received=lab_date_specimen_collection_received,
@@ -644,19 +630,47 @@ class Record_Model:
                 lab_xpert_mtb_rif_assay_result=lab_xpert_mtb_rif_assay_result,
                 lab_xpert_mtb_rif_assay_grades=lab_xpert_mtb_rif_assay_grades,
                 lab_xpert_mtb_rif_assay_rif_result=lab_xpert_mtb_rif_assay_rif_result,
+                lab_xpert_mtb_rif_assay_result_2=lab_xpert_mtb_rif_assay_result_2,
+                lab_xpert_mtb_rif_assay_grades_2=lab_xpert_mtb_rif_assay_grades_2,
+                lab_xpert_mtb_rif_assay_rif_result_2=lab_xpert_mtb_rif_assay_rif_result_2,
                 lab_xpert_mtb_rif_assay_date=lab_xpert_mtb_rif_assay_date,
                 lab_xpert_mtb_rif_assay_done_by=lab_xpert_mtb_rif_assay_done_by,
                 lab_urine_lf_lam_result=lab_urine_lf_lam_result,
                 lab_urine_lf_lam_date=lab_urine_lf_lam_date,
-                lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by
+                lab_urine_lf_lam_done_by=lab_urine_lf_lam_done_by,
+                lab_culture_mgit_culture=lab_culture_mgit_culture,
+                lab_culture_lj_culture=lab_culture_lj_culture,
+                lab_culture_date=lab_culture_date,
+                lab_culture_done_by=lab_culture_done_by,
+                lab_lpa_mtbdrplus_isoniazid=lab_lpa_mtbdrplus_isoniazid,
+                lab_lpa_mtbdrplus_rifampin=lab_lpa_mtbdrplus_rifampin,
+                lab_lpa_mtbdrs_flouoroquinolones=lab_lpa_mtbdrs_flouoroquinolones,
+                lab_lpa_mtbdrs_kanamycin=lab_lpa_mtbdrs_kanamycin,
+                lab_lpa_mtbdrs_amikacin=lab_lpa_mtbdrs_amikacin,
+                lab_lpa_mtbdrs_capreomycin=lab_lpa_mtbdrs_capreomycin,
+                lab_lpa_mtbdrs_low_level_kanamycin=lab_lpa_mtbdrs_low_level_kanamycin,
+                lab_lpa_date=lab_lpa_date,
+                lab_lpa_done_by=lab_lpa_done_by,
+                lab_dst_isonazid=lab_dst_isonazid,
+                lab_dst_rifampin=lab_dst_rifampin,
+                lab_dst_ethambutol=lab_dst_ethambutol,
+                lab_dst_kanamycin=lab_dst_kanamycin,
+                lab_dst_ofloxacin=lab_dst_ofloxacin,
+                lab_dst_levofloxacinekanamycin=lab_dst_levofloxacinekanamycin,
+                lab_dst_moxifloxacinekanamycin=lab_dst_moxifloxacinekanamycin,
+                lab_dst_amikacinekanamycin=lab_dst_amikacinekanamycin,
+                lab_dst_date=lab_dst_date,
+                lab_dst_done_by=lab_dst_done_by
             ).where(
                 self.Labs.lab_id == lab_id
             )
 
             lab.execute()
 
+            lab_obj = self.Labs.get(self.Labs.lab_id == lab_id)
+
             logger.info("- Lab record %s successfully updated" % lab_id)
-            return lab_id
+            return lab_obj.lab_records_id
 
         except OperationalError as error:
             logger.error(error)
@@ -668,13 +682,13 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("updating Lab record %s failed check logs" % lab_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
             
     def fetch_lab(self, lab_records_id: int) -> list:
         """
         """
         try:
-            logger.debug("finding lab records for %d ..." % lab_records_id)
+            logger.debug("finding lab records for %s ..." % lab_records_id)
 
             result = []
             
@@ -687,12 +701,12 @@ class Record_Model:
             for lab in labs:
                 result.append(lab)
 
-            logger.info("- Successfully found lab records for %d" % lab_records_id)
+            logger.info("- Successfully found lab records for %s" % lab_records_id)
             return result
 
         except DatabaseError as err:
-            logger.error("failed to find lab record for %d check logs" % lab_records_id)
-            raise InternalServerError(err) from None
+            logger.error("failed to find lab record for %s check logs" % lab_records_id)
+            raise InternalServerError(err)
 
     # follow up
 
@@ -725,7 +739,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("creating Follow_up record %s failed check logs" % follow_up)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def update_follow_up(self, follow_up_id: int, follow_up_xray: str, follow_up_amoxicillin: str, follow_up_other_antibiotic: str, follow_up_schedule_date: str, follow_up_comments: str) -> str:
         """
@@ -758,7 +772,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("updating Follow_up record %s failed check logs" % follow_up_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def fetch_follow_up(self, follow_up_records_id: int) -> list:
         """
@@ -782,7 +796,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("failed to finding follow_ups record for %s check logs" % follow_up_records_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     # outcome recorded
 
@@ -814,7 +828,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("creating outcome_recorded record %s failed check logs" % outcome_recorded)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def update_outcome_recorded(self, outcome_recorded_id: int, outcome_recorded_started_tb_treatment_outcome: str, outcome_recorded_tb_rx_number: str, outcome_recorded_other: str, outcome_recorded_comments: str) -> str:
         """
@@ -846,7 +860,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("updating outcome_recorded record %s failed check logs" % outcome_recorded_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def fetch_outcome_recorded(self, outcome_recorded_records_id: int) -> list:
         """
@@ -870,7 +884,7 @@ class Record_Model:
             
         except DatabaseError as err:
             logger.error("failed to finding outcome_recorded record for %s check logs" % outcome_recorded_records_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     # tb treatment outcome
 
@@ -901,7 +915,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("creating tb_treatment_outcome record %s failed check logs" % tb_treatment_outcome)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def update_tb_treatment_outcome(self, tb_treatment_outcome_id: int, tb_treatment_outcome_result: str, tb_treatment_outcome_comments: str, tb_treatment_outcome_close_patient_file: bool) -> str:
         """
@@ -932,7 +946,7 @@ class Record_Model:
 
         except DatabaseError as err:
             logger.error("updating tb_treatment_outcome record %s failed check logs" % tb_treatment_outcome_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def fetch_tb_treatment_outcome(self, tb_treatment_outcome_records_id: int) -> list:
         """
@@ -956,4 +970,4 @@ class Record_Model:
             
         except DatabaseError as err:
             logger.error("failed to finding tb_treatment_outcome record for %s check logs" % tb_treatment_outcome_records_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)

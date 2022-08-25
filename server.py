@@ -12,6 +12,7 @@ from Configs import baseConfig
 config = baseConfig()
 api = config["API"]
 SSL = config["SSL_API"]
+export = config["EXPORT"]
 
 from flask import Flask
 from flask import send_from_directory
@@ -25,6 +26,8 @@ from controllers.sync_database import create_tables
 from controllers.sync_database import create_super_admin
 from controllers.SSL import isSSL
 
+# from schemas.migration import migrate_records
+
 app = Flask(__name__)
 
 CORS(
@@ -35,6 +38,9 @@ CORS(
 
 create_database()
 create_tables()
+
+# migrate_records()
+
 create_super_admin()
 
 app.register_blueprint(data_collector_api_v1, url_prefix="/v1")
@@ -43,7 +49,7 @@ app.register_blueprint(admin_v1, url_prefix="/v1/admin")
 @app.route("/downloads/<path:path>")
 def downloads(path):
     app.logger.debug("Requesting %s download ..." % path)
-    return send_from_directory("datasets", path)
+    return send_from_directory(directory="%s/datasets" % export["PATH"], path=path)
 
 checkSSL = isSSL(path_crt_file=SSL["CERTIFICATE"], path_key_file=SSL["KEY"], path_pem_file=SSL["PEM"])
 
