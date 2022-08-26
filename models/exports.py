@@ -88,21 +88,21 @@ class Export_Model:
 
             if region_id == "all" and site_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date)
+                    self.Records.records_date_of_test_request.between(start_date, end_date)
                     ).dicts()        
             elif region_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date), 
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
                     self.Records.site_id == site_id
                     ).dicts()       
             elif site_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date), 
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
                     self.Records.region_id == region_id
                     ).dicts()        
             else:
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date),
+                    self.Records.records_date_of_test_request.between(start_date, end_date),
                     self.Records.region_id == region_id,
                     self.Records.site_id == site_id
                     ).dicts()
@@ -444,21 +444,21 @@ class Export_Model:
 
             if region_id == "all" and site_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date)
+                    self.Records.records_date_of_test_request.between(start_date, end_date)
                     ).dicts()        
             elif region_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date), 
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
                     self.Records.site_id == site_id
                     ).dicts()       
             elif site_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date), 
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
                     self.Records.region_id == region_id
                     ).dicts()        
             else:
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date),
+                    self.Records.records_date_of_test_request.between(start_date, end_date),
                     self.Records.region_id == region_id,
                     self.Records.site_id == site_id
                     ).dicts()
