@@ -354,11 +354,14 @@ class Record_Model:
                         self.Records.records_sex,
                         self.Records.records_date_of_test_request,
                         self.Records.iv
-                    ).where(
+                    )
+                    .where(
                         self.Records.site_id == site_id,
                         self.Records.region_id == region_id,
-                        self.Records.records_date >= date.today()
-                    ).dicts()
+                    )
+                    .order_by(self.Records.records_date.desc())
+                    .limit(10)
+                    .dicts()
                 )
 
             for record in records.iterator():

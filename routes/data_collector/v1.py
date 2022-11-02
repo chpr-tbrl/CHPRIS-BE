@@ -514,6 +514,9 @@ def findRecord() -> list:
                 for record in Record.fetch_records(*payload):
                     result.append(record)
 
+                if len(request.args) == 0:
+                    break
+
         res = jsonify(result)
 
         session = Session.update(sid=sid, unique_identifier=user_id)
