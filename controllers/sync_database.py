@@ -14,6 +14,7 @@ from schemas.users.baseModel import users_db
 from schemas.users.users import Users
 from schemas.users.sessions import Sessions
 from schemas.users.users_sites import Users_sites
+from schemas.users.users_otp import Users_otp
 
 from schemas.sites.baseModel import sites_db
 from schemas.sites.sites import Sites
@@ -27,6 +28,9 @@ from schemas.records.lab import Labs
 from schemas.records.follow_up import Follow_ups
 from schemas.records.outcome_recorded import Outcome_recorded
 from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
+
+from models.sites import Site_Model
+from models.users import User_Model
 
 from werkzeug.exceptions import InternalServerError
 
@@ -89,7 +93,8 @@ def create_tables() -> None:
             [
                 Users, 
                 Sessions,
-                Users_sites
+                Users_sites,
+                Users_otp
             ]
         )
 
@@ -140,7 +145,7 @@ def create_super_admin() -> None:
         logger.debug("Creating super admin ...")
     
         try:
-            Users.get(Users.email == super_admin["EMAIL"])
+            user = Users.get(Users.email == super_admin["EMAIL"])
         except Users.DoesNotExist:
             from security.data import Data
             data = Data()
@@ -160,7 +165,23 @@ def create_super_admin() -> None:
                 iv = data.iv
             )
         else:
+            Site = Site_Model()
+            User = User_Model()
+            regions = Site.fetch_regions()
+
+            all_sites = []
+
+            for region in regions:
+                region_id = region["id"]
+                _all_sites = Site.fetch_sites(region_id=region_id)
+
+                for _all_site in _all_sites:
+                    all_sites.append(_all_site["id"])
+        
+            User.add_site(users_sites=all_sites, user_id=user.id)
+
             users_db.close()
-            
+            sites_db.close()
+
     except Exception as error:
         raise InternalServerError(error)

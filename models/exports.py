@@ -1,7 +1,15 @@
+from cgi import print_exception
 import logging
 logger = logging.getLogger(__name__)
 
+from Configs import baseConfig
+
+config = baseConfig()
+export = config["EXPORT"]
+
 from security.data import Data
+
+from models.sites import Site_Model
 
 from schemas.records.records import Records
 from schemas.records.specimen_collection import Specimen_collections
@@ -12,6 +20,9 @@ from schemas.records.tb_treatment_outcome import Tb_treatment_outcomes
 
 import os
 import csv
+import requests
+from flask import jsonify
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -29,153 +40,85 @@ class Export_Model:
         self.Tb_treatment_outcomes = Tb_treatment_outcomes
         self.Data = Data
 
-    def records(self, start_date:str, end_date:str, permitted_decrypted_data: bool, region_id:str = None, site_id:str = None) -> str:
+    def csv(self, start_date:str, end_date:str, permitted_decrypted_data: bool, region_id:str = None, site_id:str = None) -> str:
         """
         """
         try:
-            field_names = [
-                'record_id',
-                'site_id',
-                'region_id',
-                'records_user_id',
-                'records_date',
-                'records_name',
-                'records_age',
-                'records_sex',
-                'records_date_of_test_request',
-                'records_address',
-                'records_telephone',
-                'records_telephone_2',
-                'records_has_art_unique_code',
-                'records_art_unique_code',
-                'records_status',
-                'records_ward_bed_number',
-                'records_currently_pregnant',
-                'records_symptoms_current_cough',
-                'records_symptoms_fever',
-                'records_symptoms_night_sweats',
-                'records_symptoms_weight_loss',
-                'records_symptoms_none_of_the_above',
-                'records_patient_category_hospitalized',
-                'records_patient_category_child',
-                'records_patient_category_to_initiate_art',
-                'records_patient_category_on_art_symptomatic',
-                'records_patient_category_outpatient',
-                'records_patient_category_anc',
-                'records_patient_category_diabetes_clinic',
-                'records_patient_category_other',
-                'records_reason_for_test_presumptive_tb',
-                'records_tb_treatment_history',
-                'records_tb_treatment_history_contact_of_tb_patient',
-                'records_tb_type',
-                'records_tb_treatment_number',
-                'records_sms_notifications',
+            Site = Site_Model()
 
-                'specimen_collection_user_id',
-                'specimen_collection_1_date',
-                'specimen_collection_1_specimen_collection_type',
-                'specimen_collection_1_other',
-                'specimen_collection_1_period',
-                'specimen_collection_1_aspect',
-                'specimen_collection_1_received_by',
-                'specimen_collection_2_date',
-                'specimen_collection_2_specimen_collection_type',
-                'specimen_collection_2_other',
-                'specimen_collection_2_period',
-                'specimen_collection_2_aspect',
-                'specimen_collection_2_received_by',
+            field_names = []
 
-                'lab_user_id',
-                'lab_date_specimen_collection_received',
-                'lab_received_by',
-                'lab_registration_number',
-                'lab_smear_microscopy_result_result_1',
-                'lab_smear_microscopy_result_result_2',
-                'lab_smear_microscopy_result_date',
-                'lab_smear_microscopy_result_done_by',
-                'lab_xpert_mtb_rif_assay_result',
-                'lab_xpert_mtb_rif_assay_grades',
-                'lab_xpert_mtb_rif_assay_rif_result',
-                'lab_xpert_mtb_rif_assay_date',
-                'lab_xpert_mtb_rif_assay_done_by',
-                'lab_urine_lf_lam_result',
-                'lab_urine_lf_lam_date',
-                'lab_urine_lf_lam_done_by',
-                'lab_culture_mgit_culture',
-                'lab_culture_lj_culture',
-                'lab_lpa_mtbdrplus_isoniazid',
-                'lab_lpa_mtbdrplus_rifampin',
-                'lab_lpa_mtbdrs_flouoroquinolones',
-                'lab_lpa_mtbdrs_kanamycin',
-                'lab_lpa_mtbdrs_amikacin',
-                'lab_lpa_mtbdrs_capreomycin',
-                'lab_lpa_mtbdrs_low_level_kanamycin',
-                'lab_dst_isonazid',
-                'lab_dst_rifampin',
-                'lab_dst_ethambutol',
-                'lab_dst_kanamycin',
-                'lab_dst_ofloxacin',
-                'lab_dst_levofloxacinekanamycin',
-                'lab_dst_moxifloxacinekanamycin',
-                'lab_dst_amikacinekanamycin',
+            for record_names in self.Records._meta.fields.keys():
+                if record_names == "site_id":
+                    field_names.append("site_name")
+                elif record_names == "region_id":
+                    field_names.append("region_name")
+                elif record_names == "iv":
+                    pass
+                else:
+                    field_names.append(record_names)
 
-                'follow_up_user_id',
-                'follow_up_xray',
-                'follow_up_amoxicillin',
-                'follow_up_other_antibiotic',
-                'follow_up_schedule_date',
-                'follow_up_comments',
+            for specimen_collections_names in self.Specimen_collections._meta.fields.keys():
+                field_names.append(specimen_collections_names)
 
-                'outcome_recorded_user_id',
-                'outcome_recorded_started_tb_treatment_outcome',
-                'outcome_recorded_tb_rx_number',
-                'outcome_recorded_other',
-                'outcome_recorded_comments',
+            for labs_names in self.Labs._meta.fields.keys():
+                field_names.append(labs_names)
 
-                'tb_treatment_outcome_user_id',
-                'tb_treatment_outcome_result',
-                'tb_treatment_outcome_comments',
-                'tb_treatment_outcome_close_patient_file',
-            ]
+            for follow_ups_names in self.Follow_ups._meta.fields.keys():
+                field_names.append(follow_ups_names)
 
-            if not os.path.exists("datasets/"):
-                    os.makedirs("datasets/")
+            for outcome_recorded_names in self.Outcome_recorded._meta.fields.keys():
+                field_names.append(outcome_recorded_names)
+
+            for tb_treatment_outcomes_names in self.Tb_treatment_outcomes._meta.fields.keys():
+                field_names.append(tb_treatment_outcomes_names)
 
             now = datetime.now()
-            date_time = now.strftime("%m-%d-%Y-%H:%M:%S")
+            date_time = now.strftime("%m-%d-%Y-%H_%M_%S")
 
             export_file = '%s_record_export.csv' % date_time
-            export_filepath = os.path.abspath(os.path.join('datasets', export_file))
+
+            if not os.path.exists("%s/datasets" % export["PATH"]):
+                error_msg = "dataset directory not found at '%s'" % export["PATH"]
+                raise FileNotFoundError(error_msg)
+
+            export_filepath = os.path.join("%s/datasets" % export["PATH"], export_file)
             
             logger.debug("Gathering data ...")
+
             if region_id == "all" and site_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date)
+                    self.Records.records_date_of_test_request.between(start_date, end_date)
                     ).dicts()        
             elif region_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date), 
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
                     self.Records.site_id == site_id
                     ).dicts()       
             elif site_id == "all":
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date), 
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
                     self.Records.region_id == region_id
                     ).dicts()        
             else:
                 records = self.Records.select().where(
-                    self.Records.records_date.between(start_date, end_date),
+                    self.Records.records_date_of_test_request.between(start_date, end_date),
                     self.Records.region_id == region_id,
                     self.Records.site_id == site_id
                     ).dicts()
 
             logger.debug("exporting data please wait ...")
 
+            logger.info("export path: %s" % export_filepath)
+
             with open(export_filepath, 'w') as fh:
                 writer = csv.DictWriter(fh, fieldnames=field_names)
                 writer.writeheader()        
 
                 for row in records.iterator():
+                    site_name = Site.fetch_site(site_id=row["site_id"])["name"]
+                    region_name = Site.fetch_region(region_id=row["region_id"])["name"]
+
                     # specimen_collections
                     specimen_collections_results = []
 
@@ -243,8 +186,8 @@ class Export_Model:
 
                         writer.writerow({
                             'record_id':row['record_id'],
-                            'site_id':row['site_id'],
-                            'region_id':row['region_id'],
+                            'site_name':site_name,
+                            'region_name':region_name,
                             'records_user_id':row['records_user_id'],
                             'records_date':row['records_date'],
                             'records_name': data.decrypt(row['records_name'], iv),
@@ -271,10 +214,13 @@ class Export_Model:
                             'records_patient_category_outpatient':row['records_patient_category_outpatient'],
                             'records_patient_category_anc':row['records_patient_category_anc'],
                             'records_patient_category_diabetes_clinic':row['records_patient_category_diabetes_clinic'],
+                            'records_patient_category_prisoner':row['records_patient_category_prisoner'],
                             'records_patient_category_other':row['records_patient_category_other'],
-                            'records_reason_for_test_presumptive_tb':row['records_reason_for_test_presumptive_tb'],
+                            'records_reason_for_test':row['records_reason_for_test'],
+                            'records_reason_for_test_follow_up_months':row['records_reason_for_test_follow_up_months'],
                             'records_tb_treatment_history':row['records_tb_treatment_history'],
-                            'records_tb_treatment_history_contact_of_tb_patient': data.decrypt(row['records_tb_treatment_history_contact_of_tb_patient'], iv),
+                            'records_tb_treatment_history_contact_of_tb_patient': row['records_tb_treatment_history_contact_of_tb_patient'],
+                            'records_tb_treatment_history_other': row['records_tb_treatment_history_other'],
                             'records_tb_type':row['records_tb_type'],
                             'records_tb_treatment_number':row['records_tb_treatment_number'],
                             'records_sms_notifications':row['records_sms_notifications'],
@@ -306,6 +252,9 @@ class Export_Model:
                             'lab_xpert_mtb_rif_assay_result': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_result'],
                             'lab_xpert_mtb_rif_assay_grades': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_grades'],
                             'lab_xpert_mtb_rif_assay_rif_result': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_rif_result'],
+                            'lab_xpert_mtb_rif_assay_result_2': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_result_2'],
+                            'lab_xpert_mtb_rif_assay_grades_2': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_grades_2'],
+                            'lab_xpert_mtb_rif_assay_rif_result_2': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_rif_result_2'],
                             'lab_xpert_mtb_rif_assay_date': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_date'],
                             'lab_xpert_mtb_rif_assay_done_by': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_done_by'],
                             'lab_urine_lf_lam_result': None if len(labs_results)<1 else labs_results[0]['lab_urine_lf_lam_result'],
@@ -313,6 +262,8 @@ class Export_Model:
                             'lab_urine_lf_lam_done_by': None if len(labs_results)<1 else labs_results[0]['lab_urine_lf_lam_done_by'],
                             'lab_culture_mgit_culture': None if len(labs_results)<1 else labs_results[0]['lab_culture_mgit_culture'],
                             'lab_culture_lj_culture': None if len(labs_results)<1 else labs_results[0]['lab_culture_lj_culture'],
+                            'lab_culture_date': None if len(labs_results)<1 else labs_results[0]['lab_culture_date'],
+                            'lab_culture_done_by': None if len(labs_results)<1 else labs_results[0]['lab_culture_done_by'],
                             'lab_lpa_mtbdrplus_isoniazid': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrplus_isoniazid'],
                             'lab_lpa_mtbdrplus_rifampin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrplus_rifampin'],
                             'lab_lpa_mtbdrs_flouoroquinolones': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_flouoroquinolones'],
@@ -320,6 +271,8 @@ class Export_Model:
                             'lab_lpa_mtbdrs_amikacin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_amikacin'],
                             'lab_lpa_mtbdrs_capreomycin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_capreomycin'],
                             'lab_lpa_mtbdrs_low_level_kanamycin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_low_level_kanamycin'],
+                            'lab_lpa_date': None if len(labs_results)<1 else labs_results[0]['lab_lpa_date'],
+                            'lab_lpa_done_by': None if len(labs_results)<1 else labs_results[0]['lab_lpa_done_by'],
                             'lab_dst_isonazid': None if len(labs_results)<1 else labs_results[0]['lab_dst_isonazid'],
                             'lab_dst_rifampin': None if len(labs_results)<1 else labs_results[0]['lab_dst_rifampin'],
                             'lab_dst_ethambutol': None if len(labs_results)<1 else labs_results[0]['lab_dst_ethambutol'],
@@ -328,6 +281,8 @@ class Export_Model:
                             'lab_dst_levofloxacinekanamycin': None if len(labs_results)<1 else labs_results[0]['lab_dst_levofloxacinekanamycin'],
                             'lab_dst_moxifloxacinekanamycin': None if len(labs_results)<1 else labs_results[0]['lab_dst_moxifloxacinekanamycin'],
                             'lab_dst_amikacinekanamycin': None if len(labs_results)<1 else labs_results[0]['lab_dst_amikacinekanamycin'],
+                            'lab_dst_date': None if len(labs_results)<1 else labs_results[0]['lab_dst_date'],
+                            'lab_dst_done_by': None if len(labs_results)<1 else labs_results[0]['lab_dst_done_by'],
 
                             'follow_up_user_id': None if len(follow_ups_results)<1 else follow_ups_results[0]['follow_up_user_id'],
                             'follow_up_xray': None if len(follow_ups_results)<1 else follow_ups_results[0]['follow_up_xray'],
@@ -350,8 +305,8 @@ class Export_Model:
                     else:
                         writer.writerow({
                             'record_id':row['record_id'],
-                            'site_id':row['site_id'],
-                            'region_id':row['region_id'],
+                            'site_name':site_name,
+                            'region_name':region_name,
                             'records_user_id':row['records_user_id'],
                             'records_date':row['records_date'],
                             'records_name':row['records_name'],
@@ -378,10 +333,13 @@ class Export_Model:
                             'records_patient_category_outpatient':row['records_patient_category_outpatient'],
                             'records_patient_category_anc':row['records_patient_category_anc'],
                             'records_patient_category_diabetes_clinic':row['records_patient_category_diabetes_clinic'],
+                            'records_patient_category_prisoner':row['records_patient_category_prisoner'],
                             'records_patient_category_other':row['records_patient_category_other'],
-                            'records_reason_for_test_presumptive_tb':row['records_reason_for_test_presumptive_tb'],
+                            'records_reason_for_test':row['records_reason_for_test'],
+                            'records_reason_for_test_follow_up_months':row['records_reason_for_test_follow_up_months'],
                             'records_tb_treatment_history':row['records_tb_treatment_history'],
                             'records_tb_treatment_history_contact_of_tb_patient':row['records_tb_treatment_history_contact_of_tb_patient'],
+                            'records_tb_treatment_history_other': row['records_tb_treatment_history_other'],
                             'records_tb_type':row['records_tb_type'],
                             'records_tb_treatment_number':row['records_tb_treatment_number'],
                             'records_sms_notifications':row['records_sms_notifications'],
@@ -413,6 +371,9 @@ class Export_Model:
                             'lab_xpert_mtb_rif_assay_result': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_result'],
                             'lab_xpert_mtb_rif_assay_grades': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_grades'],
                             'lab_xpert_mtb_rif_assay_rif_result': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_rif_result'],
+                            'lab_xpert_mtb_rif_assay_result_2': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_result_2'],
+                            'lab_xpert_mtb_rif_assay_grades_2': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_grades_2'],
+                            'lab_xpert_mtb_rif_assay_rif_result_2': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_rif_result_2'],
                             'lab_xpert_mtb_rif_assay_date': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_date'],
                             'lab_xpert_mtb_rif_assay_done_by': None if len(labs_results)<1 else labs_results[0]['lab_xpert_mtb_rif_assay_done_by'],
                             'lab_urine_lf_lam_result': None if len(labs_results)<1 else labs_results[0]['lab_urine_lf_lam_result'],
@@ -420,6 +381,8 @@ class Export_Model:
                             'lab_urine_lf_lam_done_by': None if len(labs_results)<1 else labs_results[0]['lab_urine_lf_lam_done_by'],
                             'lab_culture_mgit_culture': None if len(labs_results)<1 else labs_results[0]['lab_culture_mgit_culture'],
                             'lab_culture_lj_culture': None if len(labs_results)<1 else labs_results[0]['lab_culture_lj_culture'],
+                            'lab_culture_date': None if len(labs_results)<1 else labs_results[0]['lab_culture_date'],
+                            'lab_culture_done_by': None if len(labs_results)<1 else labs_results[0]['lab_culture_done_by'],
                             'lab_lpa_mtbdrplus_isoniazid': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrplus_isoniazid'],
                             'lab_lpa_mtbdrplus_rifampin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrplus_rifampin'],
                             'lab_lpa_mtbdrs_flouoroquinolones': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_flouoroquinolones'],
@@ -427,6 +390,8 @@ class Export_Model:
                             'lab_lpa_mtbdrs_amikacin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_amikacin'],
                             'lab_lpa_mtbdrs_capreomycin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_capreomycin'],
                             'lab_lpa_mtbdrs_low_level_kanamycin': None if len(labs_results)<1 else labs_results[0]['lab_lpa_mtbdrs_low_level_kanamycin'],
+                            'lab_lpa_date': None if len(labs_results)<1 else labs_results[0]['lab_lpa_date'],
+                            'lab_lpa_done_by': None if len(labs_results)<1 else labs_results[0]['lab_lpa_done_by'],
                             'lab_dst_isonazid': None if len(labs_results)<1 else labs_results[0]['lab_dst_isonazid'],
                             'lab_dst_rifampin': None if len(labs_results)<1 else labs_results[0]['lab_dst_rifampin'],
                             'lab_dst_ethambutol': None if len(labs_results)<1 else labs_results[0]['lab_dst_ethambutol'],
@@ -435,6 +400,8 @@ class Export_Model:
                             'lab_dst_levofloxacinekanamycin': None if len(labs_results)<1 else labs_results[0]['lab_dst_levofloxacinekanamycin'],
                             'lab_dst_moxifloxacinekanamycin': None if len(labs_results)<1 else labs_results[0]['lab_dst_moxifloxacinekanamycin'],
                             'lab_dst_amikacinekanamycin': None if len(labs_results)<1 else labs_results[0]['lab_dst_amikacinekanamycin'],
+                            'lab_dst_date': None if len(labs_results)<1 else labs_results[0]['lab_dst_date'],
+                            'lab_dst_done_by': None if len(labs_results)<1 else labs_results[0]['lab_dst_done_by'],
 
                             'follow_up_user_id': None if len(follow_ups_results)<1 else follow_ups_results[0]['follow_up_user_id'],
                             'follow_up_xray': None if len(follow_ups_results)<1 else follow_ups_results[0]['follow_up_xray'],
@@ -462,7 +429,213 @@ class Export_Model:
             return "%s/%s" % ("/downloads", export_file)
 
         except Exception as error:
-            raise InternalServerError(error) from None
+            raise InternalServerError(error)
+
+    def pdf(self, start_date:str, end_date:str, permitted_decrypted_data: bool, region_id:str = None, site_id:str = None) -> dict:
+        """
+        """
+        try:         
+            Site = Site_Model()
+            data = self.Data()
+            pdf_data = []
+            date_format = "%d/%m/%Y"
+                    
+            logger.debug("Gathering data ...")
+
+            if region_id == "all" and site_id == "all":
+                records = self.Records.select().where(
+                    self.Records.records_date_of_test_request.between(start_date, end_date)
+                    ).dicts()        
+            elif region_id == "all":
+                records = self.Records.select().where(
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
+                    self.Records.site_id == site_id
+                    ).dicts()       
+            elif site_id == "all":
+                records = self.Records.select().where(
+                    self.Records.records_date_of_test_request.between(start_date, end_date), 
+                    self.Records.region_id == region_id
+                    ).dicts()        
+            else:
+                records = self.Records.select().where(
+                    self.Records.records_date_of_test_request.between(start_date, end_date),
+                    self.Records.region_id == region_id,
+                    self.Records.site_id == site_id
+                    ).dicts()
+
+            logger.debug("exporting data please wait ...")
+
+            for row in records.iterator():
+                iv = row["iv"]
+                dict_data = {}
+
+                site_name = Site.fetch_site(site_id=row["site_id"])["name"]
+                region_name = Site.fetch_region(region_id=row["region_id"])["name"]
+
+                for record_field in self.Records._meta.fields.keys():
+                    if record_field == "site_id":
+                        dict_data["site_name"] = site_name
+                    elif record_field == "region_id":
+                        dict_data["region_name"] = region_name
+                    elif record_field == "records_name":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_address":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_telephone":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_telephone_2":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_art_unique_code":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_ward_bed_number":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_requester_name":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif record_field == "records_requester_telephone":
+                        if permitted_decrypted_data:
+                            dict_data[f"{record_field}"] = data.decrypt(row[f"{record_field}"], iv)
+                        else:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"]
+                    elif "date" in record_field:
+                        if row[f"{record_field}"]:
+                            dict_data[f"{record_field}"] = row[f"{record_field}"].strftime(date_format)
+                        else:
+                            dict_data[f"{record_field}"] = None
+                    elif record_field == "iv":
+                        pass
+                    else:
+                        dict_data[f"{record_field}"] = row[f"{record_field}"]
+
+                # specimen_collections
+                specimen_collections = (
+                    self.Specimen_collections.select()
+                    .where(self.Specimen_collections.specimen_collection_records_id == row['record_id'])
+                    .dicts()
+                )
+
+                for specimen_collections_field in self.Specimen_collections._meta.fields.keys():
+                    if len(specimen_collections)<1:
+                        dict_data[f"{specimen_collections_field}"] = None
+                    else:
+                        if "date" in specimen_collections_field:
+                            if specimen_collections[0][f"{specimen_collections_field}"]:
+                                dict_data[f"{specimen_collections_field}"] = specimen_collections[0][f"{specimen_collections_field}"].strftime(date_format)
+                            else:
+                                dict_data[f"{specimen_collections_field}"] = None
+                        else:
+                            dict_data[f"{specimen_collections_field}"] = specimen_collections[0][f"{specimen_collections_field}"]
+        
+                # labs
+                labs = (
+                    self.Labs.select()
+                    .where(self.Labs.lab_records_id == row['record_id'])
+                    .dicts()
+                )
+
+                for labs_field in self.Labs._meta.fields.keys():
+                    if len(labs)<1:
+                        dict_data[f"{labs_field}"] = None
+                    else:
+                        if "date" in labs_field:
+                            if labs[0][f"{labs_field}"]:
+                                dict_data[f"{labs_field}"] = labs[0][f"{labs_field}"].strftime(date_format)
+                            else:
+                                dict_data[f"{labs_field}"] = None
+                        else:
+                            dict_data[f"{labs_field}"] = labs[0][f"{labs_field}"]
+
+                # follow_ups
+                follow_ups = (
+                    self.Follow_ups.select()
+                    .where(self.Follow_ups.follow_up_records_id == row['record_id'])
+                    .dicts()
+                )
+
+                for follow_ups_field in self.Follow_ups._meta.fields.keys():
+                    if len(follow_ups)<1:
+                        dict_data[f"{follow_ups_field}"] = None
+                    else:
+                        if "date" in follow_ups_field:
+                            if follow_ups[0][f"{follow_ups_field}"]:
+                                dict_data[f"{follow_ups_field}"] = follow_ups[0][f"{follow_ups_field}"].strftime(date_format)
+                            else:
+                                dict_data[f"{follow_ups_field}"] = None
+                        else:
+                            dict_data[f"{follow_ups_field}"] = follow_ups[0][f"{follow_ups_field}"]
+                            
+                # outcomes_recorded        
+                outcomes_recorded = (
+                    self.Outcome_recorded.select()
+                    .where(self.Outcome_recorded.outcome_recorded_records_id == row['record_id'])
+                    .dicts()
+                )
+
+                for outcome_recorded_field in self.Outcome_recorded._meta.fields.keys():
+                    if len(outcomes_recorded)<1:
+                        dict_data[f"{outcome_recorded_field}"] = None
+                    else:
+                        if "date" in outcome_recorded_field:
+                            if outcomes_recorded[0][f"{outcome_recorded_field}"]:
+                                dict_data[f"{outcome_recorded_field}"] = outcomes_recorded[0][f"{outcome_recorded_field}"].strftime(date_format)
+                            else:
+                                dict_data[f"{outcome_recorded_field}"] = None
+                        else:
+                            dict_data[f"{outcome_recorded_field}"] = outcomes_recorded[0][f"{outcome_recorded_field}"]
+
+                # tb_treatment_outcomes        
+                tb_treatment_outcomes = (
+                    self.Tb_treatment_outcomes.select()
+                    .where(self.Tb_treatment_outcomes.tb_treatment_outcome_records_id == row['record_id'])
+                    .dicts()
+                )
+
+                for tb_treatment_outcomes_field in self.Tb_treatment_outcomes._meta.fields.keys():
+                    if len(tb_treatment_outcomes)<1:
+                        dict_data[f"{tb_treatment_outcomes_field}"] = None
+                    else:
+                        if "date" in tb_treatment_outcomes_field:
+                            if tb_treatment_outcomes[0][f"{tb_treatment_outcomes_field}"]:
+                                dict_data[f"{tb_treatment_outcomes_field}"] = tb_treatment_outcomes[0][f"{tb_treatment_outcomes_field}"].strftime(date_format)
+                            else:
+                                dict_data[f"{tb_treatment_outcomes_field}"] = None
+                        else:
+                            dict_data[f"{tb_treatment_outcomes_field}"] = tb_treatment_outcomes[0][f"{tb_treatment_outcomes_field}"]
+
+                pdf_data.append(dict_data)
+
+            logger.info("- Export complete")
+
+            self.purge(max_days=7)
+
+            pdf_url = export["PDF_URL"]
+
+            res = requests.post(url=pdf_url, json=pdf_data)
+
+            return res.text.strip()
+
+        except Exception as error:
+            raise InternalServerError(error)
 
     def purge(self, max_days:int) -> None:
         """
@@ -470,12 +643,12 @@ class Export_Model:
         try:
             logger.debug("removing export files older than %d day(s) ..." % max_days)
 
-            export_filepath = os.path.abspath('datasets')
+            export_filepath = os.path.join("%s/datasets" % export["PATH"])
             date_limit = datetime.now() - timedelta(max_days)
             files = os.listdir(export_filepath)
 
             for file in files:
-                file_path = os.path.abspath(os.path.join("datasets", file))
+                file_path = os.path.join("%s/datasets" % export["PATH"], file)
                 filetime = datetime.fromtimestamp(os.path.getctime(file_path))
             
                 if filetime < date_limit:
@@ -483,4 +656,4 @@ class Export_Model:
                     logger.info("- '%s' removed. Created: %s" % (file, filetime))
 
         except Exception as error:
-            raise InternalServerError(error) from None
+            raise InternalServerError(error)

@@ -64,7 +64,7 @@ class User_Model:
                     iv = data.iv
                 )
 
-                logger.debug("adding user '%s' to site '%d' ..." % (email, site_id))
+                logger.debug("adding user '%s' to site '%s' ..." % (email, site_id))
                 self.Users_sites.create(
                     user_id=user.id,
                     site_id=site_id
@@ -78,7 +78,7 @@ class User_Model:
 
         except DatabaseError as err:
             logger.error("creating user '%s' failed check logs" % email)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def authenticate(self, email: str, password: str, admin: bool = False) -> dict:
         """
@@ -118,9 +118,9 @@ class User_Model:
         
         except DatabaseError as err:
             logger.error("verifying user %s failed check logs" % email)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
-    def fetch_user(self, user_id: int, account_status: str = None, no_sites: bool = False) -> dict:
+    def fetch_user(self, user_id: int = None, account_status: str = None, no_sites: bool = False, email: str = None) -> dict:
         """
         Find a single user.
 
@@ -139,18 +139,32 @@ class User_Model:
             
             data = self.Data()
 
-            if not account_status:
-                users = (
-                    self.Users.select()
-                    .where(self.Users.id == user_id)
-                    .dicts()
-                )
+            if email:
+                if not account_status:
+                    users = (
+                        self.Users.select()
+                        .where(self.Users.email == email)
+                        .dicts()
+                    )
+                else:
+                    users = (
+                        self.Users.select()
+                        .where(self.Users.email == email, self.Users.account_status == account_status)
+                        .dicts()
+                    )
             else:
-                users = (
-                    self.Users.select()
-                    .where(self.Users.id == user_id, self.Users.account_status == account_status)
-                    .dicts()
-                )
+                if not account_status:
+                    users = (
+                        self.Users.select()
+                        .where(self.Users.id == user_id)
+                        .dicts()
+                    )
+                else:
+                    users = (
+                        self.Users.select()
+                        .where(self.Users.id == user_id, self.Users.account_status == account_status)
+                        .dicts()
+                    )
 
             for user in users:
                 iv = user["iv"]
@@ -234,7 +248,7 @@ class User_Model:
 
         except DatabaseError as err:
             logger.error("failed to find user %s check logs" % user_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def fetch_users(self, account_status: str = None, no_sites: bool = False) -> list:
         """
@@ -338,7 +352,7 @@ class User_Model:
 
         except DatabaseError as err:
             logger.error("failed to fetch all users check logs")
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def update(self, id: int, account_status: str, permitted_export_types: str, account_type: str, permitted_export_range: int, permitted_approve_accounts: bool, permitted_decrypted_data: bool) -> int:
         """
@@ -361,7 +375,7 @@ class User_Model:
                 logger.error("invalid account_status '%s'" % account_status)
                 raise Unauthorized()               
 
-            logger.debug("Updating user %d record ..." % id)
+            logger.debug("Updating user %s record ..." % id)
             
             user = self.Users.update(account_status=account_status, permitted_export_types=permitted_export_types, account_type=account_type, permitted_export_range=permitted_export_range, permitted_approve_accounts=permitted_approve_accounts, permitted_decrypted_data=permitted_decrypted_data).where(self.Users.id == id)
 
@@ -371,8 +385,8 @@ class User_Model:
             return id
 
         except DatabaseError as err:
-            logger.error("failed to update users %d check logs" % id)
-            raise InternalServerError(err) from None
+            logger.error("failed to update users %s check logs" % id)
+            raise InternalServerError(err)
 
     def update_account_status(self, user_id: int, account_status: str) -> bool:
         """
@@ -408,7 +422,7 @@ class User_Model:
             return True
         except DatabaseError as err:
             logger.error("Failed to updated_account_status for user %s check logs" % user_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def check_permission(self, user_id: int, scope: list, permitted_approve_accounts: bool = False) -> str:
         """
@@ -443,7 +457,7 @@ class User_Model:
 
         except DatabaseError as err:
             logger.error("failed to find user %s check logs" % user_id)
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def add_site(self, users_sites: list, user_id: int) -> None:
         """
@@ -465,7 +479,7 @@ class User_Model:
 
         except DatabaseError as err:
             logger.error("creating users_sites failed check logs")
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
     def remove_site(self, users_sites: list, user_id: int) -> None:
         """
@@ -489,9 +503,9 @@ class User_Model:
 
         except DatabaseError as err:
             logger.error("removing users_sites failed check logs")
-            raise InternalServerError(err) from None
+            raise InternalServerError(err)
 
-    def update_profile(self, id: int, phone_number: str, name: str, occupation: str, sms_notifications: bool, sms_notifications_type: str) -> int:
+    def update_profile(self, id: str, phone_number: str, name: str, occupation: str, sms_notifications: bool, sms_notifications_type: str) -> int:
         """
         Update a user's profile information.
 
@@ -507,7 +521,7 @@ class User_Model:
             int
         """
         try:
-            logger.debug("Updating user %d record ..." % id)
+            logger.debug("Updating user %s record ..." % id)
 
             data = self.Data()
             
@@ -526,8 +540,8 @@ class User_Model:
             return id
 
         except DatabaseError as err:
-            logger.error("failed to update user %d. Check logs" % id)
-            raise InternalServerError(err) from None
+            logger.error("failed to update user %s. Check logs" % id)
+            raise InternalServerError(err)
 
     def update_password(self, id: int, current_password: str, new_password: str) -> int:
         """
@@ -542,15 +556,15 @@ class User_Model:
             int
         """
         try:
-            user = self.Users.select(
-                self.Users.password_hash
-            ).where(
-                self.Users.id == id
-                ).dicts()
+            user = (
+                self.Users.select(self.Users.password_hash)
+                .where(self.Users.id == id)
+                .dicts()
+            )
 
             password = user[0]["password_hash"]
 
-            logger.debug("Updating user %d password ..." % id)
+            logger.debug("Updating user %s password ..." % id)
 
             data = self.Data()
 
@@ -568,8 +582,37 @@ class User_Model:
             return id
 
         except DatabaseError as err:
-            logger.error("failed to update user %d  password. Check logs" % id)
-            raise InternalServerError(err) from None
+            logger.error("failed to update user %s  password. Check logs" % id)
+            raise InternalServerError(err)
+
+    def create_password(self, id: int, new_password: str) -> int:
+        """
+        Create a user's password.
+
+        Arguments:
+            id: int,
+            new_password: str
+
+        Returns:
+            int
+        """
+        try:
+            logger.debug("Creating user %s password ..." % id)
+
+            data = self.Data()
+            
+            upd_user = self.Users.update(
+                password_hash=data.hash(new_password)
+            ).where(self.Users.id == id)
+
+            upd_user.execute()
+
+            logger.info("- Successfully created user %s password" % id)
+            return id
+
+        except DatabaseError as err:
+            logger.error("failed to create user %s  password. Check logs" % id)
+            raise InternalServerError(err)
 
     def check_account_status(self, user_id: int) -> bool:
         """
@@ -587,5 +630,5 @@ class User_Model:
                 return True
 
         except DatabaseError as err:
-            logger.error("failed to check account status for user %d. Check logs" % user_id)
-            raise InternalServerError(err) from None
+            logger.error("failed to check account status for user %s. Check logs" % user_id)
+            raise InternalServerError(err)
